@@ -36,11 +36,12 @@ let
            homepage = "http://github.com/tweag/inline-java#readme";
            description = "Java interop via inline Java code in Haskell modules";
            license = stdenv.lib.licenses.bsd3;
-         }) { jdk = pkgs.openjdk7; };
+         }) { jdk = pkgs.jdk; };
 
       "jvm" = self.callPackage
         ({ mkDerivation, base, bytestring, distributed-closure, hspec, jni
          , singletons, stdenv, text, vector
+         , jdk
          }:
          mkDerivation {
            pname = "jvm";
@@ -50,11 +51,12 @@ let
              base bytestring distributed-closure jni singletons text vector
            ];
            testHaskellDepends = [ base bytestring hspec text ];
-           doCheck = false;
+           buildDepends = [ jdk ];           
+           #doCheck = false;
            homepage = "http://github.com/tweag/inline-java/tree/master/jvm#readme";
            description = "Call JVM methods from Haskell";
            license = stdenv.lib.licenses.bsd3;
-         }) {};
+         }) { jdk = pkgs.jdk; };
 
       "jni" = self.callPackage
         ({ mkDerivation, base, bytestring, choice, containers, inline-c
@@ -75,7 +77,7 @@ let
            description = "Complete JNI raw bindings";
            license = stdenv.lib.licenses.bsd3;
            hydraPlatforms = stdenv.lib.platforms.none;
-         }) {jdk = pkgs.openjdk7;};
+         }) {jdk = pkgs.jdk;};
     };
   };
 
