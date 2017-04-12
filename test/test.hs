@@ -5,10 +5,12 @@
 
 module Main where
 
-import Data.Int
-import Data.Text (Text)
-import Language.Java
-import Language.Java.Inline
+import qualified Data.ByteString.Char8 as B
+import           Data.Int
+import           Data.Text                  (Text)
+import           Language.Java
+import           Language.Java.Inline
+import           System.Environment         (getEnv)
 
 main' :: IO Int32
 main' = withJVM [] $ do
@@ -17,15 +19,13 @@ main' = withJVM [] $ do
     reify rc
 
 main :: IO Int32
-main = withJVM [ "-Djava.class.path=/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/stanford-corenlp-3.7.0.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/protobuf.jar"
-               ] $ do
-    rc <- [java| {
-                   //import edu.stanford.nlp.simple.*;
-                
-                   // edu.stanford.nlp.simple.Document doc = new edu.stanford.nlp.simple.Document("add your sentence here! it can contain multiple sentences");
-                   edu.stanford.nlp.simple.Document s = new edu.stanford.nlp.simple.Document("test"); 
-                   //Document doc = new Document("add your sentence here! it can contain multiple sentences");
-                   
-                   return 0;
-                 } |]
-    reify rc
+main = do
+    clspath <- getEnv "CLASSPATH"
+    withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
+      rc <- [java|
+              {
+                edu.stanford.nlp.simple.Document doc = new edu.stanford.nlp.simple.Document("add your sentence here! it can contain multiple sentences");
+                return 0;
+              }
+            |]
+      reify rc
