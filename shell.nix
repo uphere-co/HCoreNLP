@@ -5,8 +5,8 @@ with pkgs;
 let
   inline-java-src = fetchgit {
     url = "git://github.com/wavewave/inline-java.git";
-    rev = "5cf55d2efe5ffb7737bec6bf4233b2c49b636f35";
-    sha256 = "00idhzhs5qxvbr3xgps4kkm8b2ql0ib0liyprkcl3mj0a9ffr5jl";
+    rev = "593cdf3a02a866c6822539c0e89adc8ed913a9ba";
+    sha256 = "1xngx5i7gpg4h33w6iznrphd1ji0f8dmf5lb5awsnxp72kszvqi5";
   };
   
   myhaskellpkgs = haskell.packages.ghc802.override {
@@ -88,5 +88,8 @@ in
 stdenv.mkDerivation {
   name = "corenlp-dev";
   buildInputs = [ hsenv jdk ];
+  shellHook = ''
+    CLASSPATH=/home/wavewave/repo/workspace/corenlp/stanford-english-corenlp-2016-10-31-models.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/stanford-corenlp-3.7.0.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/protobuf.jar
+  '';
 }
 
