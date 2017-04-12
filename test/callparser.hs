@@ -2,24 +2,28 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Main where
 
+import           Control.Monad                (void)
 import qualified Data.ByteString.Char8 as B
+import           Data.Foldable                (forM_)
 import           Data.Int
-import           Data.Text                  (Text)
+import           Data.Monoid                  ((<>))
+import           Data.Text                    (Text)
+import qualified Data.Text.IO          as TIO
 import           Language.Java         as J
 import           Language.Java.Inline
 import           System.Environment         (getEnv)
 
-main :: IO Int32
+main :: IO ()
 main = do
     clspath <- getEnv "CLASSPATH"
-    -- let otxt = [ "I am a boy." 
-    --           , "You are a girl." ] :: [Text]
-    let otxt = "I am a boy." :: Text
+    let otxts = [ "I am a boy." 
+                , "You are a girl." ] :: [Text]
+    -- let otxt = "I am a boy." :: Text
     withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-      txt <- reflect otxt 
       props :: J ('Class "java.util.Properties") <-
         [java|{
                 // omit regexner, it crashed.
@@ -46,27 +50,28 @@ main = do
                 return pipeline;
               }
         |]
+      putStrLn "==========================="
+      forM_ otxts $ \otxt -> do
+        txt <- reflect otxt
+        TIO.putStrLn ("Text: " <> otxt)
+        void @IO @Int32
+          [java|{
+                  String inputFormat = $props.getProperty("inputFormat", "text");
+                  String date = $props.getProperty("date");
+                  String text = $txt;
+                  edu.stanford.nlp.pipeline.Annotation annotation = new edu.stanford.nlp.pipeline.Annotation(text);
 
-
-      rc <-
-        [java|{
-                String inputFormat = $props.getProperty("inputFormat", "text");
-                String date = $props.getProperty("date");
-                String text = $txt;
-                System.out.println(text);
-                edu.stanford.nlp.pipeline.Annotation annotation = new edu.stanford.nlp.pipeline.Annotation(text);
-
-                $pipeline.annotate(annotation);
-                edu.stanford.nlp.pipeline.AnnotationOutputter.Options options = edu.stanford.nlp.pipeline.AnnotationOutputter.getOptions($pipeline);
-                java.io.PrintWriter wrtr = new java.io.PrintWriter(System.out) ;
-                try { 
-                  $pipeline.jsonPrint(annotation,wrtr );
+                  $pipeline.annotate(annotation);
+                  edu.stanford.nlp.pipeline.AnnotationOutputter.Options options = edu.stanford.nlp.pipeline.AnnotationOutputter.getOptions($pipeline);
+                  java.io.PrintWriter wrtr = new java.io.PrintWriter(System.out) ;
+                  try { 
+                    $pipeline.jsonPrint(annotation,wrtr );
+                  }
+                  catch( java.io.IOException e ) {
+                    System.out.println(e);
+                  }
+                  return 0;
                 }
-                catch( java.io.IOException e ) {
-                  System.out.println(e);
-                }
-                return 0;
-              }
-        |]
-      reify rc 
-      -- return 0
+          |]
+        putStrLn "\n---------------------------"
+
