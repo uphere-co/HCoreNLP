@@ -21,10 +21,15 @@ main' = withJVM [] $ do
 main :: IO Int32
 main = do
     clspath <- getEnv "CLASSPATH"
+    let otxt = "add your sentence here! it can contain multiple sentences" :: Text
     withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
+      txt <- reflect otxt 
       rc <- [java|
               {
-                edu.stanford.nlp.simple.Document doc = new edu.stanford.nlp.simple.Document("add your sentence here! it can contain multiple sentences");
+                edu.stanford.nlp.simple.Document doc = new edu.stanford.nlp.simple.Document($txt);
+                for(edu.stanford.nlp.simple.Sentence sent : doc.sentences() ) {
+                  System.out.println("The second word of the sentence '" + sent + "' is " + sent.word(1));
+                }
                 return 0;
               }
             |]
