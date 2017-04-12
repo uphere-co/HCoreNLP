@@ -54,6 +54,8 @@ main = do
       forM_ otxts $ \otxt -> do
         txt <- reflect otxt
         TIO.putStrLn ("Text: " <> otxt)
+        --  @IO and @Int32 are from TypeApplications. [java| ... |] quotation block is polymorphic
+        --  but it cannot be preprocessed if it does not have a concrete type.
         void @IO @Int32
           [java|{
                   String inputFormat = $props.getProperty("inputFormat", "text");
