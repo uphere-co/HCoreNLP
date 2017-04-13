@@ -6,18 +6,10 @@
 
 module CoreNLP where
 
-import           Control.Monad                (void, (>=>))
-import           Data.Aeson
 import qualified Data.ByteString.Char8 as B
-import qualified Data.ByteString.Lazy.Char8 as BL
-import           Data.Foldable                (forM_)
-import           Data.Int
-import           Data.Monoid                  ((<>))
 import           Data.Text                    (Text)
-import qualified Data.Text.IO          as TIO
 import           Language.Java         as J
 import           Language.Java.Inline
-import           System.Environment         (getEnv)
 
 initProps :: IO (J ('Class "java.util.Properties"))
 initProps =
