@@ -20,9 +20,7 @@ import           System.Environment         (getEnv)
 main :: IO ()
 main = do
     clspath <- getEnv "CLASSPATH"
-    let otxts = [ "I am a boy." 
-                , "You are a girl." ] :: [Text]
-    -- let otxt = "I am a boy." :: Text
+    let otxts = [ "I am a boy.", "You are a girl." ] :: [Text]
     withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
       props :: J ('Class "java.util.Properties") <-
         [java|{
@@ -51,12 +49,13 @@ main = do
               }
         |]
       putStrLn "==========================="
-      forM_ otxts $ \otxt -> do
+      bstrs <- flip mapM otxts $ \otxt -> do
         txt <- reflect otxt
         TIO.putStrLn ("Text: " <> otxt)
         --  @_ and @Int32 are from TypeApplications. [java| ... |] quotation block is polymorphic
         --  but it cannot be preprocessed if it does not have a concrete type.
-        void @_ @Int32
+        -- void @_ @Int32
+        result <- 
           [java|{
                   String inputFormat = $props.getProperty("inputFormat", "text");
                   String date = $props.getProperty("date");
@@ -65,15 +64,25 @@ main = do
 
                   $pipeline.annotate(annotation);
                   edu.stanford.nlp.pipeline.AnnotationOutputter.Options options = edu.stanford.nlp.pipeline.AnnotationOutputter.getOptions($pipeline);
-                  java.io.PrintWriter wrtr = new java.io.PrintWriter(System.out) ;
-                  try { 
-                    $pipeline.jsonPrint(annotation,wrtr );
+                  // java.io.PrintWriter wrtr = new java.io.PrintWriter(System.out) ;
+                  try {
+                    java.io.ByteArrayOutputStream arrayOutputStream = new java.io.ByteArrayOutputStream();
+                    java.io.BufferedWriter bufferedWriter = new java.io.BufferedWriter(
+                      new java.io.OutputStreamWriter(arrayOutputStream)
+                    );
+                  
+                    $pipeline.jsonPrint(annotation,bufferedWriter);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                    System.out.println(arrayOutputStream.size());
+                    return arrayOutputStream.toByteArray();
                   }
                   catch( java.io.IOException e ) {
                     System.out.println(e);
+                    return null; 
                   }
-                  return 0;
                 }
           |]
         putStrLn "\n---------------------------"
-
+        reify result
+      mapM_ B.putStrLn bstrs
