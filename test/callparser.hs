@@ -12,6 +12,7 @@ import           Control.Monad                    ((>=>),join)
 import           Control.Monad.IO.Class           (liftIO)
 import           Control.Monad.Loops              (whileJust_)
 import           Control.Monad.Trans.Class        (lift)
+import           Control.Monad.Trans.Either
 import           Data.Aeson
 import           Data.Aeson.Types
 import qualified Data.Attoparsec.Text       as A
@@ -47,18 +48,12 @@ main = do
         (props,pipeline) <- lift $ initProps >>= \props -> newPipeline props >>= \pipeline -> return (props,pipeline)
         liftIO $ putStrLn "==========================="
         whileJust_  (getInputLine "% ") $ \input -> do
-          r <- lift $ do
-                    r <- runAnnotator props pipeline (T.pack input)
-                    (return . eitherDecode . BL.fromStrict) r
-          case r :: Either String CoreNLPResult of
+          e <- runEitherT $ do
+            v :: CoreNLPResult <- EitherT $ lift $ runAnnotator props pipeline (T.pack input) >>= return . eitherDecode . BL.fromStrict
+            flip mapM_ (map (view CoreNLP.Type.parse) (v ^. sentences)) $ \txt -> do
+              t <- hoistEither (A.parseOnly penntree txt) 
+              liftIO $ TIO.putStrLn (pennTreePrint 0 t)
+          case e of
             Left err -> liftIO $ putStrLn err
-            Right v -> do
-              flip mapM_ (map (view CoreNLP.Type.parse) (v ^. sentences)) $ \txt -> do
-                case A.parseOnly penntree txt of
-                  Left err -> liftIO $ putStrLn err
-                  Right t -> do
-                    liftIO $ TIO.putStrLn (pennTreePrint 0 t)
-            
-
-
+            Right () -> return ()
 
