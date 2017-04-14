@@ -25,7 +25,9 @@ import           System.Environment               (getEnv)
 import           CoreNLP
 import           CoreNLP.Type
 
-
+-- this is an orphan instance of MonadException for CoreNLP to be used as a base monad
+-- for System.Console.Haskeline.InputT. I didn't put this instance into CoreNLP module
+-- since I do not want to pollute the dependency list of HCoreNLP package for some time.
 instance MonadException CoreNLP where
   controlIO f = let runio = RunIO (\m -> unCoreNLP m >>= \x -> return (CoreNLP (pure x)))
                 in join (CoreNLP (f runio))
@@ -35,7 +37,7 @@ main :: IO ()
 main = do
     clspath <- getEnv "CLASSPATH"
     runCoreNLP [ B.pack ("-Djava.class.path=" ++ clspath) ] $ 
-      runInputT defaultSettings $ do
+      runInputT defaultSettings $ do 
         (props,pipeline) <- lift $ initProps >>= \props -> newPipeline props >>= \pipeline -> return (props,pipeline)
         liftIO $ putStrLn "==========================="
         whileJust_  (getInputLine "% ") $ \input -> do
@@ -44,3 +46,6 @@ main = do
                     (return . eitherDecode . BL.fromStrict) r
           liftIO $ print (json :: Either String CoreNLPResult)
           liftIO $ putStrLn "---------------------------"
+
+
+
