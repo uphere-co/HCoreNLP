@@ -77,7 +77,6 @@ runAnnotator props pipeline otxt = do
                  $pipeline.jsonPrint(annotation,bufferedWriter);
                  bufferedWriter.flush();
                  bufferedWriter.close();
-                 System.out.println(arrayOutputStream.size());
                  return arrayOutputStream.toByteArray();
                }
                catch( java.io.IOException e ) {
