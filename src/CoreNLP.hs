@@ -1,18 +1,34 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
 
 module CoreNLP where
 
+import           Control.Monad.IO.Class
+import           Control.Monad.Trans.Class
+import           Control.Monad.Trans.Reader
 import qualified Data.ByteString.Char8 as B
 import           Data.Text                    (Text)
-import           Language.Java         as J
-import           Language.Java.Inline
+import           Language.Java         as J hiding (reflect,reify)
+import           Language.Java.Inline 
+import qualified Language.Java                (reflect,reify)
 
-initProps :: IO (J ('Class "java.util.Properties"))
+newtype CoreNLP a = CoreNLP { unCoreNLP :: IO a }
+                  deriving (Functor, Applicative, Monad, MonadIO)
+
+runCoreNLP :: [B.ByteString]  -> CoreNLP a -> IO a
+runCoreNLP params action = withJVM params (unCoreNLP action) 
+  
+reflect = liftIO . Language.Java.reflect
+reify = liftIO . Language.Java.reify
+
+initProps :: CoreNLP (J ('Class "java.util.Properties"))
 initProps =
+ CoreNLP 
   [java|{
           // omit regexner, it crashed.
           String defaultAnnotators = "tokenize,ssplit,pos,lemma,ner,parse,depparse,mention,coref,natlog,openie";
@@ -33,16 +49,17 @@ initProps =
         }
   |]
 
-newPipeline :: J ('Class "java.util.Properties") -> IO (J ('Class "edu.stanford.nlp.pipeline.StanfordCoreNLP"))
-newPipeline props = [java| new edu.stanford.nlp.pipeline.StanfordCoreNLP($props) |]
+newPipeline :: J ('Class "java.util.Properties") -> CoreNLP (J ('Class "edu.stanford.nlp.pipeline.StanfordCoreNLP"))
+newPipeline props = CoreNLP [java| new edu.stanford.nlp.pipeline.StanfordCoreNLP($props) |]
 
 runAnnotator :: J ('Class "java.util.Properties")
              -> J ('Class "edu.stanford.nlp.pipeline.StanfordCoreNLP")
              -> Text
-             -> IO B.ByteString
+             -> CoreNLP B.ByteString
 runAnnotator props pipeline otxt = do
   txt <- reflect otxt
-  r <- [java|{
+  r <- CoreNLP
+       [java|{
                String inputFormat = $props.getProperty("inputFormat", "text");
                String date = $props.getProperty("date");
                String text = $txt;

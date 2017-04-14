@@ -23,7 +23,8 @@ library
                        inline-java,
                        jni,
                        jvm,
-                       text
+                       text,
+                       transformers
   Exposed-modules:
                        CoreNLP
                        CoreNLP.Type
