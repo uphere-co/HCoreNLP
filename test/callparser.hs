@@ -14,6 +14,7 @@ import           Control.Monad.Loops              (whileJust_)
 import           Control.Monad.Trans.Class        (lift)
 import           Data.Aeson
 import           Data.Aeson.Types
+import qualified Data.Attoparsec.Text       as A
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Text                        (Text)
@@ -23,7 +24,10 @@ import           GHC.Generics
 -- import           Language.Java         as J
 import           System.Console.Haskeline
 import           System.Environment               (getEnv)
--- 
+--
+import           NLP.SyntaxTree.Parser
+import           NLP.SyntaxTree.Printer
+--
 import           CoreNLP
 import           CoreNLP.Type
 
@@ -48,10 +52,13 @@ main = do
                     (return . eitherDecode . BL.fromStrict) r
           case r :: Either String CoreNLPResult of
             Left err -> liftIO $ putStrLn err
-            Right v -> liftIO $ mapM_ TIO.putStrLn (map (view CoreNLP.Type.parse) (v ^. sentences))
+            Right v -> do
+              flip mapM_ (map (view CoreNLP.Type.parse) (v ^. sentences)) $ \txt -> do
+                case A.parseOnly penntree txt of
+                  Left err -> liftIO $ putStrLn err
+                  Right t -> do
+                    liftIO $ TIO.putStrLn (pennTreePrint 0 t)
             
-          -- liftIO $ print (json :: Either String CoreNLPResult)
-          -- liftIO $ putStrLn "---------------------------"
 
 
 
