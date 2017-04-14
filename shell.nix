@@ -1,4 +1,8 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> {}
+, autoencode
+, symbolic
+, uphere-nix-overlay
+}:
 
 with pkgs;
 
@@ -8,9 +12,13 @@ let
     rev = "593cdf3a02a866c6822539c0e89adc8ed913a9ba";
     sha256 = "1xngx5i7gpg4h33w6iznrphd1ji0f8dmf5lb5awsnxp72kszvqi5";
   };
-  
-  myhaskellpkgs = haskell.packages.ghc802.override {
-    overrides = self: super: {
+
+  config1 = import (uphere-nix-overlay + "/nix/haskell-modules/configuration-ghc-8.0.x.nix") { inherit pkgs; };
+  config2 =
+    self: super: {
+      "autoencode" = self.callPackage (import autoencode) {};
+      "symbolic" = self.callPackage (import symbolic) {};
+       
       "inline-java" = self.callPackage
         ({ mkDerivation, base, binary, bytestring, Cabal, containers
          , directory, distributed-closure, filepath, ghc-heap-view, hspec
@@ -78,14 +86,19 @@ let
            license = stdenv.lib.licenses.bsd3;
            hydraPlatforms = stdenv.lib.platforms.none;
          }) {jdk = pkgs.jdk;};
-    };
   };
+
+  myhaskellpkgs = haskell.packages.ghc802.override {
+    overrides = self: super: config1 self super // config2 self super;
+  }; 
 
   hsenv = myhaskellpkgs.ghcWithPackages (p: with p; [
             inline-java
             aeson
             haskeline
+            lens
             monad-loops
+            p.autoencode
           ]);
 
 in
