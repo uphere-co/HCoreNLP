@@ -1,9 +1,9 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
--- {-# LANGUAGE OverloadedRecord
 {-# LANGUAGE TemplateHaskell #-}
 
 module CoreNLP.Type where
@@ -14,33 +14,33 @@ import           Data.Aeson.Types
 import           Data.Text        (Text)
 import           GHC.Generics
 
-data Dependency = Dependency { _dep :: Text
-                             , _governor :: Int
-                             , _governorGloss :: Text
-                             , _dependent :: Int
-                             , _dependentGloss :: Text
+data Dependency = Dependency { _dep_dep :: Text
+                             , _dep_governor :: Int
+                             , _dep_governorGloss :: Text
+                             , _dep_dependent :: Int
+                             , _dep_dependentGloss :: Text
                              }
                 deriving (Show, Eq, Generic)
 
-makeLenses ''Dependency
+makeLensesWith underscoreFields ''Dependency
 
 instance FromJSON Dependency where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 } 
+  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 5 } 
 
 
-data Relation = Relation { _subject :: Text
-                         , _subjectSpan :: (Int,Int)
-                         , _relation :: Text
-                         , _relationSpan :: (Int,Int)
-                         , _object :: Text
-                         , _objectSpan :: (Int,Int)
+data Relation = Relation { _rel_subject :: Text
+                         , _rel_subjectSpan :: (Int,Int)
+                         , _rel_relation :: Text
+                         , _rel_relationSpan :: (Int,Int)
+                         , _rel_object :: Text
+                         , _rel_objectSpan :: (Int,Int)
                          }
               deriving (Show, Eq, Generic)
 
-makeLenses ''Relation
+makeLensesWith underscoreFields ''Relation
 
 instance FromJSON Relation where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 } 
+  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 5 } 
 
 data Token = Token { _token_index :: Int
                    , _token_word :: Text
@@ -56,49 +56,35 @@ data Token = Token { _token_index :: Int
                    }
            deriving (Show, Eq, Generic)
 
--- makeLensesWith underscoreFields ''Token
+makeLensesWith underscoreFields ''Token
 
-makeLensesFor [ ("_token_index"               , "tokenIndex"          )
-              , ("_token_word"                , "word"                )
-              , ("_token_originalText"        , "originalText"        )
-              , ("_token_lemma"               , "lemma"               )
-              , ("_token_characterOffsetBegin", "characterOffsetBegin")
-              , ("_token_characterOffsetEnd"  , "characterOffsetEnd"  )
-              , ("_token_pos"                 , "pos"                 )
-              , ("_token_ner"                 , "ner"                 )
-              , ("_token_speaker"             , "speaker"             )
-              , ("_token_before"              , "before"              )
-              , ("_token_after"               , "after"               )
-              ] ''Token
-                    
 instance FromJSON Token where
   parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 7 } 
 
 
-data Sentence = Sentence { _index :: Int
-                         , _parse :: Text
-                         , _basicDependencies            :: [Dependency]
-                         , _enhancedDependencies         :: [Dependency]
-                         , _enhancedPlusPlusDependencies :: [Dependency]
-                         , _openie :: [Relation]
-                         , _tokens :: [Token]
+data Sentence = Sentence { _sent_index :: Int
+                         , _sent_parse :: Text
+                         , _sent_basicDependencies            :: [Dependency]
+                         , _sent_enhancedDependencies         :: [Dependency]
+                         , _sent_enhancedPlusPlusDependencies :: [Dependency]
+                         , _sent_openie :: [Relation]
+                         , _sent_tokens :: [Token]
                          }
               deriving (Show, Eq, Generic)
 
-makeLenses ''Sentence
+makeLensesWith underscoreFields ''Sentence
 
 instance FromJSON Sentence where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 } 
+  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 6 } 
 
 
 
-data CoreNLPResult = CoreNLPResult { _sentences :: [Sentence]
-                                   , _corefs :: Value }
+data CoreNLPResult = CoreNLPResult { _result_sentences :: [Sentence]
+                                   , _result_corefs :: Value }
                    deriving (Show, Eq, Generic)
 
-makeLenses ''CoreNLPResult
+makeLensesWith underscoreFields ''CoreNLPResult
 
 instance FromJSON CoreNLPResult where
-  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 1 } 
-
+  parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 8 } 
 

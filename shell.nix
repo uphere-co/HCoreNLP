@@ -95,6 +95,7 @@ let
   hsenv = myhaskellpkgs.ghcWithPackages (p: with p; [
             inline-java
             aeson
+            data-default
             haskeline
             lens
             monad-loops
