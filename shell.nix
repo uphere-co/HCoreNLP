@@ -81,7 +81,12 @@ let
     };
   };
 
-  hsenv = myhaskellpkgs.ghcWithPackages (p: with p; [inline-java aeson]);
+  hsenv = myhaskellpkgs.ghcWithPackages (p: with p; [
+            inline-java
+            aeson
+            haskeline
+            monad-loops
+          ]);
 
 in
 
