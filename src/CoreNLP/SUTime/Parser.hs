@@ -8,43 +8,14 @@ import           Data.Attoparsec.Text
 import           Data.Text                 (Text)
 import qualified Data.Text            as T
 
-{- 
-obracket = A.char '['
-
-cbracket = A.char ']'
-
-keyvalue = do
-  k <- A.takeWhile (/= '=')
-  A.char '='
-  v <- ((bracket (A.skipWhile (/= ']'))   >> return Nothing) <|>
-        (A.char ' ' >> return Nothing) <|>
-        (Just <$> A.takeWhile (A.notInClass "[]")))
-  return (k,v)
-
-bracket p = obracket *> p <* cbracket
-  
-line = bracket (A.many1 (A.skipSpace >> keyvalue))
-       -- >> A.skipSpace
--}
-{- 
-item []                   = return []
-item ((k1,p1):[])         = do A.string k1
-                               A.char '='
-                               r <- p1
-                               A.skipWhile (==']')
-                               A.char ']'
-                               return r
-item ((k1,p1):(k2,p2):[]) = error "error"
--}
-
 data TimeTag = TimeTag { tt_txt :: Text
-                       , tt_tkend :: Text
                        , tt_tkns :: Text
-                       , tt_coffend :: Text
                        , tt_bef :: Text
-                       , tt_coffbeg :: Text
                        , tt_aft :: Text
+                       , tt_coffbeg :: Text
+                       , tt_coffend :: Text
                        , tt_tkbeg :: Text
+                       , tt_tkend :: Text
                        , tt_chld :: Text
                        , tt_timex :: Text
                        , tt_sentidx :: Text }
@@ -67,10 +38,3 @@ timetag = do
   return TimeTag {..}
  where conv = T.pack
     
-  {-
-  A.string key1
-  A.char '='
-  str <- A.manyTill A.anyChar (A.string key2)
-  return (T.pack str)
-
--}
