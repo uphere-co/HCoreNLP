@@ -12,8 +12,10 @@ import           Control.Monad                    ((>=>),join)
 import           Control.Monad.IO.Class           (liftIO)
 import           Control.Monad.Loops              (whileJust_)
 import           Control.Monad.Trans.Class        (lift)
+import           Control.Monad.Trans.Either
 import           Data.Aeson
 import           Data.Aeson.Types
+import qualified Data.Attoparsec.Text       as A
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Text                        (Text)
@@ -23,7 +25,10 @@ import           GHC.Generics
 -- import           Language.Java         as J
 import           System.Console.Haskeline
 import           System.Environment               (getEnv)
--- 
+--
+import           NLP.SyntaxTree.Parser
+import           NLP.SyntaxTree.Printer
+--
 import           CoreNLP
 import           CoreNLP.Type
 
@@ -43,15 +48,12 @@ main = do
         (props,pipeline) <- lift $ initProps >>= \props -> newPipeline props >>= \pipeline -> return (props,pipeline)
         liftIO $ putStrLn "==========================="
         whileJust_  (getInputLine "% ") $ \input -> do
-          r <- lift $ do
-                    r <- runAnnotator props pipeline (T.pack input)
-                    (return . eitherDecode . BL.fromStrict) r
-          case r :: Either String CoreNLPResult of
+          e <- runEitherT $ do
+            v :: CoreNLPResult <- EitherT $ lift $ runAnnotator props pipeline (T.pack input) >>= return . eitherDecode . BL.fromStrict
+            flip mapM_ (map (view CoreNLP.Type.parse) (v ^. sentences)) $ \txt -> do
+              t <- hoistEither (A.parseOnly penntree txt) 
+              liftIO $ TIO.putStrLn (pennTreePrint 0 t)
+          case e of
             Left err -> liftIO $ putStrLn err
-            Right v -> liftIO $ mapM_ TIO.putStrLn (map (view CoreNLP.Type.parse) (v ^. sentences))
-            
-          -- liftIO $ print (json :: Either String CoreNLPResult)
-          -- liftIO $ putStrLn "---------------------------"
-
-
+            Right () -> return ()
 
