@@ -16,7 +16,7 @@ let
   config1 = import (uphere-nix-overlay + "/nix/haskell-modules/configuration-ghc-8.0.x.nix") { inherit pkgs; };
   config2 =
     self: super: {
-      "autoencode" = self.callPackage (import autoencode) {};
+      "autoencode" = haskell.lib.dontHaddock (self.callPackage (import autoencode) {});
       "symbolic" = self.callPackage (import symbolic) {};
        
       "inline-java" = self.callPackage
@@ -108,7 +108,7 @@ stdenv.mkDerivation {
   name = "corenlp-dev";
   buildInputs = [ hsenv jdk ];
   shellHook = ''
-    CLASSPATH=/home/wavewave/repo/workspace/corenlp/stanford-english-corenlp-2016-10-31-models.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/stanford-corenlp-3.7.0.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/protobuf.jar
+    CLASSPATH=/home/wavewave/repo/workspace/corenlp/stanford-english-corenlp-2016-10-31-models.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/stanford-corenlp-3.7.0.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/protobuf.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/joda-time.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/jollyday.jar
   '';
 }
 
