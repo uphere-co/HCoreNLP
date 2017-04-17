@@ -39,5 +39,6 @@ main :: IO ()
 main = do
     clspath <- getEnv "CLASSPATH"
     let txt = "Starting next week, Wal-Mart shoppers will receive a discount on 10,000 online-only items if they elect to pick up their orders in-store. Come June, the service will be available on more than 1 million items. The discounts will vary based on the item's size and price."
-    J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $
-      void (sutimeMain txt)
+    J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
+      r <- sutimeMain txt
+      TIO.putStrLn r
