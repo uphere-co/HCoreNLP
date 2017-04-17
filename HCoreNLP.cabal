@@ -23,6 +23,7 @@ library
                        inline-java,
                        jni,
                        jvm,
+                       lens,
                        text,
                        transformers
   Exposed-modules:

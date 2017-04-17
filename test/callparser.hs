@@ -7,6 +7,7 @@
 
 module Main where
 
+import           Control.Lens
 import           Control.Monad                    ((>=>),join)
 import           Control.Monad.IO.Class           (liftIO)
 import           Control.Monad.Loops              (whileJust_)
@@ -17,6 +18,7 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Text                        (Text)
 import qualified Data.Text                  as T
+import qualified Data.Text.IO               as TIO
 import           GHC.Generics
 -- import           Language.Java         as J
 import           System.Console.Haskeline
@@ -41,11 +43,15 @@ main = do
         (props,pipeline) <- lift $ initProps >>= \props -> newPipeline props >>= \pipeline -> return (props,pipeline)
         liftIO $ putStrLn "==========================="
         whileJust_  (getInputLine "% ") $ \input -> do
-          json <- lift $ do
+          r <- lift $ do
                     r <- runAnnotator props pipeline (T.pack input)
                     (return . eitherDecode . BL.fromStrict) r
-          liftIO $ print (json :: Either String CoreNLPResult)
-          liftIO $ putStrLn "---------------------------"
+          case r :: Either String CoreNLPResult of
+            Left err -> liftIO $ putStrLn err
+            Right v -> liftIO $ mapM_ TIO.putStrLn (map (view CoreNLP.Type.parse) (v ^. sentences))
+            
+          -- liftIO $ print (json :: Either String CoreNLPResult)
+          -- liftIO $ putStrLn "---------------------------"
 
 
 
