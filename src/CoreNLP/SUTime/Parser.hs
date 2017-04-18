@@ -65,9 +65,6 @@ getKeyList k = string k >> (either fail return . parseOnly list =<< getText)
        
 timetag :: Parser TimeTag
 timetag = do
-  let tt_numcompval = Nothing
-      tt_normNET = Nothing
-      tt_numtokens = Nothing
   tt_txt     <- getKeyText "[Text="
   tt_numcomptyp <- optional (getKeyText " NumericCompositeType=")
   tt_tkend   <- getKeyInt " TokenEnd="
