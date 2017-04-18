@@ -21,6 +21,11 @@ data TimeTag = TimeTag { tt_txt :: Text
                        , tt_chld :: [Text]
                        , tt_timex :: Text
                        , tt_sentidx :: Int
+                       , tt_numcomptyp :: Maybe Text
+                       , tt_numcompval :: Maybe Text
+                       , tt_normNET :: Maybe Text
+                       , tt_numtokens :: Maybe [Text]
+                       , tt_NET :: Maybe Text
                        }
              deriving Show
 
@@ -29,50 +34,56 @@ list :: Parser [Text]
 list = char '[' *> ((skipSpace *> takeTill (inClass ",]")) `sepBy` (char ',')) --  <* char ']'  
 
 
-next = lookAhead (string " Text=") <|>
-       lookAhead (string " Tokens=") <|>
-       lookAhead (string " TokenBegin=") <|>
-       lookAhead (string " TokenEnd=") <|>
-       lookAhead (string " CharacterOffsetEnd=") <|>
-       lookAhead (string " CharacterOffsetBegin=") <|>       
-       lookAhead (string " Before=") <|>
-       lookAhead (string " After=") <|>
-       lookAhead (string " Children=") <|>
-       lookAhead (string " Timex=") <|>
-       lookAhead (string " SentenceIndex=")
-
+next = test " Text=" <|>
+       test " Tokens=" <|>
+       test " TokenBegin=" <|>
+       test " TokenEnd=" <|>
+       test " CharacterOffsetEnd=" <|>
+       test " CharacterOffsetBegin=" <|>       
+       test " Before=" <|>
+       test " After=" <|>
+       test " Children=" <|>
+       test " Timex=" <|>
+       test " SentenceIndex=" <|>
+       test " NumericCompositeType=" <|>
+       test " NumericCompositeValue=" <|>
+       test " NormalizedNamedEntityTag=" <|>
+       test " NumerizedTokens=" <|>
+       test " NamedEntityTag="
+ where test = lookAhead . string 
 
 conv = T.pack
 
 getText = conv <$> manyTill' anyChar next
 
+getKeyText k = string k >> getText 
+
+getKeyInt k =  string k >> (either fail (return . fst) . TR.decimal =<< getText )
+
+getKeyList k = string k >> (either fail return . parseOnly list =<< getText)
+
        
 timetag :: Parser TimeTag
 timetag = do
-  string "[Text="
-  tt_txt     <- getText  -- conv <$> manyTill' anyChar next
-  string " TokenEnd="
-  tt_tkend <- either fail (return . fst) . TR.decimal =<< getText 
-  string " Tokens="
-  tt_tkns'    <- getText -- conv <$> manyTill' anyChar (string " CharacterOffsetEnd=")
-  tt_tkns <- either fail return (parseOnly list tt_tkns')
-  string " CharacterOffsetEnd="
-  tt_coffend <- either fail (return . fst) . TR.decimal =<< getText -- . conv =<< manyTill' anyChar (string " Before=")
-  string " Before="  
-  tt_bef     <- getText  -- conv <$> manyTill' anyChar (string " CharacterOffsetBegin=")
-  string " CharacterOffsetBegin="  
-  tt_coffbeg <- either fail (return . fst) . TR.decimal =<< getText -- . conv =<< manyTill' anyChar (string " After=")
-  string " After="
-  tt_aft     <- getText -- conv <$> manyTill' anyChar (string " TokenBegin=")
-  string " TokenBegin="  
-  tt_tkbeg   <- either fail (return . fst) . TR.decimal =<< getText -- . conv =<< manyTill' anyChar (string " Children=")
-  string " Children="  
-  tt_chld'    <- getText -- conv <$> manyTill' anyChar (string " Timex=")
-  tt_chld <- either fail return (parseOnly list tt_chld')
-  string " Timex="  
-  tt_timex   <- getText -- conv <$> manyTill' anyChar (string " SentenceIndex=")
+  let tt_numcompval = Nothing
+      tt_normNET = Nothing
+      tt_numtokens = Nothing
+  tt_txt     <- getKeyText "[Text="
+  tt_numcomptyp <- optional (getKeyText " NumericCompositeType=")
+  tt_tkend   <- getKeyInt " TokenEnd="
+  tt_tkns    <- getKeyList " Tokens="
+  tt_NET     <- optional (getKeyText " NamedEntityTag=")
+  tt_coffend <- getKeyInt " CharacterOffsetEnd="
+  tt_bef     <- getKeyText " Before="
+  tt_coffbeg <- getKeyInt " CharacterOffsetBegin="  
+  tt_aft     <- getKeyText " After="
+  tt_numcompval <- optional (getKeyText " NumericCompositeValue=")
+  tt_normNET    <- optional (getKeyText " NormalizedNamedEntityTag=")
+  tt_numtokens  <- optional (getKeyList " NumerizedTokens=")  
+  tt_tkbeg   <- getKeyInt " TokenBegin="
+  tt_chld    <- getKeyList " Children="
+  tt_timex   <- getKeyText " Timex="
   string " SentenceIndex="  
   tt_sentidx <- either fail (return . fst) . TR.decimal . conv =<< manyTill' anyChar (string "]")
-  
   return TimeTag {..}
     
