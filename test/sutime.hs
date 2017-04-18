@@ -48,10 +48,12 @@ main = do
       pp <- prepare
       r <- annotateTime pp txt "2017-04-17"
       TIO.putStrLn r
+      print $ A.parse (many (timetag <* A.skipSpace)) r      
+      
       case A.parseOnly (many (timetag <* A.skipSpace)) r of
         Left err -> print err
         Right xs -> mapM_ print xs
-
+      
 {- 
 main' = do
   let txt = "[Text=next week TokenEnd=3 Tokens=[next-2, week-3] CharacterOffsetEnd=18 Before=  CharacterOffsetBegin=9 After= TokenBegin=1 Children=[next-2, week] =next week Timex=<TIMEX3 tid=\"t1\" type=\"DATE\" value=\"2017-W17\">next week</TIMEX3> SentenceIndex=0]"
