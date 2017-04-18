@@ -28,6 +28,7 @@ library
                        transformers
   Exposed-modules:
                        CoreNLP
+                       CoreNLP.SUTime
                        CoreNLP.Type
                   
   default-language:    Haskell2010
