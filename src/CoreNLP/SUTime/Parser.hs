@@ -1,7 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module CoreNLP.SUTime.Parser where
+module CoreNLP.SUTime.Parser
+( TimeTag(..)
+, timetag
+) where
 
 import           Control.Applicative
 import           Data.Attoparsec.Combinator (lookAhead)
@@ -10,6 +13,8 @@ import           Data.Text                 (Text)
 import qualified Data.Text            as T
 import           Data.Text.Read       as TR
 
+
+-- | data type for time tagging from SUText
 data TimeTag = TimeTag { tt_txt :: Text
                        , tt_tkns :: [Text]
                        , tt_bef :: Text
@@ -62,7 +67,7 @@ getKeyInt k =  string k >> (either fail (return . fst) . TR.decimal =<< getText 
 
 getKeyList k = string k >> (either fail return . parseOnly list =<< getText)
 
-       
+-- | parser for TimeTag from short notation output from SUTime TimeAnnotator.    
 timetag :: Parser TimeTag
 timetag = do
   tt_txt     <- getKeyText "[Text="

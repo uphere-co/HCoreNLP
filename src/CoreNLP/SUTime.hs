@@ -18,7 +18,7 @@ import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
 import qualified Language.Java                (reflect,reify)
 
-
+-- | preparing AnnotationPipeline with SUTime TimeAnnotator
 prepare :: IO (J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline"))
 prepare = do
     [java|{
@@ -32,7 +32,13 @@ prepare = do
           }
     |]
 
-annotateTime :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -> Text -> Text -> IO Text 
+
+-- | With prepared AnnotationPipeline, it takes text and document time as arguments
+--   and then answers time annotation in shorter string format. 
+annotateTime :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -- ^ annotation pipeline object
+             -> Text                                                      -- ^ document
+             -> Text                                                      -- ^ time set to the document, such as "2017-04-17"
+             -> IO Text                                                   -- ^ result short string
 annotateTime pipeline otxt otimetxt = do
   txt <- Language.Java.reflect otxt
   timetxt <- Language.Java.reflect otimetxt
