@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -41,8 +42,19 @@ import           CoreNLP.Type
     -- let txt = "Starting next week, Wal-Mart shoppers will receive a discount on 10,000 online-only items if they elect to pick up their orders in-store. Come June, the service will be available on more than 1 million items. The discounts will vary based on the item's size and price."
 
 formatstr n x = T.pack (printf ("%" ++ show n ++ "s") x)
-format x = T.pack (show (tt_coffbeg x)) <> "\t" <> T.pack (show (tt_coffend x)) <> "\t" <> formatstr 20 (tt_txt x) <> "\t" <> tt_timex x
+format x = T.pack (show (x ^. coffbeg)) <> "\t" <> T.pack (show (x ^. coffend)) <> "\t" <> formatstr 20 (x ^. text) <> "\t" <> x ^. timex
 
+ 
+p = do
+  r1 <- timetag <* A.skipSpace
+  return r1
+{-   r2 <- timetag <* A.skipSpace
+  r3 <- timetag <* A.skipSpace
+  r4 <- timetag <* A.skipSpace
+  r5 <- timetag <* A.skipSpace
+  return (r1,r2,r3,r4,r5)
+  -}
+  
 main :: IO ()
 main = do
     args <- getArgs
@@ -53,10 +65,12 @@ main = do
       pp <- prepare
       r <- annotateTime pp txt "2017-04-17"
       TIO.putStrLn r
-      
+      print $ A.parseOnly p r
+{-       
       case A.parseOnly (many (timetag <* A.skipSpace)) r of
         Left err -> print err
         Right xs -> do 
           TIO.putStrLn txt
           putStrLn "==========================================================="
           mapM_ (TIO.putStrLn . format) xs
+-}
