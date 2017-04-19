@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -45,8 +46,9 @@ import           CoreNLP.Type
     -- let txt = "Starting next week, Wal-Mart shoppers will receive a discount on 10,000 online-only items if they elect to pick up their orders in-store. Come June, the service will be available on more than 1 million items. The discounts will vary based on the item's size and price."
 
 formatstr n x = T.pack (printf ("%" ++ show n ++ "s") x)
-format x = T.pack (show (tt_coffbeg x)) <> "\t" <> T.pack (show (tt_coffend x)) <> "\t" <> formatstr 20 (tt_txt x) <> "\t" <> tt_timex x
+format x = T.pack (show (x ^. coffbeg)) <> "\t" <> T.pack (show (x ^. coffend)) <> "\t" <> formatstr 20 (x ^. text) <> "\t" <> x ^. timex
 
+  
 main :: IO ()
 main = do
     args <- getArgs
@@ -57,7 +59,6 @@ main = do
       pp <- prepare
       r <- annotateTime pp txt "2017-04-17"
       TIO.putStrLn r
-      
       case A.parseOnly (many (timetag <* A.skipSpace)) r of
         Left err -> print err
         Right xs -> do 
@@ -65,7 +66,7 @@ main = do
           putStrLn "==========================================================="
           mapM_ (TIO.putStrLn . format) xs
           putStrLn "==========================================================="
-          let f ttag = ((), tt_coffbeg ttag +1, tt_coffend ttag)
+          let f ttag = ((), ttag^.coffbeg  + 1, ttag^.coffend)
               tagged = map f xs 
           let ann = (AnnotText . map (\(t,m)->(t,isJust m)) . tagText tagged) txt
           mapM_ cutePrintAnnot (lineSplitAnnot 80 ann)

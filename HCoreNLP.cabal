@@ -21,6 +21,7 @@ library
                        aeson,
                        attoparsec,
                        bytestring,
+                       data-default,
                        inline-java,
                        jni,
                        jvm,
