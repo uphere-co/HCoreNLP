@@ -69,6 +69,9 @@ main = do
           let f ttag = ((), ttag^.coffbeg  + 1, ttag^.coffend)
               tagged = map f xs 
           let ann = (AnnotText . map (\(t,m)->(t,isJust m)) . tagText tagged) txt
-          mapM_ cutePrintAnnot (lineSplitAnnot 80 ann)
+              xss = lineSplitAnnot 80 ann
+          flip mapM_ xss $ \xs -> mapM_ cutePrintAnnot xs
+          {- (print . chunkEveryAt 80 . markPosition .  unAnnotText) ann 
+          mapM_ cutePrintAnnot (lineSplitAnnot 80 ann) -}
           
     
