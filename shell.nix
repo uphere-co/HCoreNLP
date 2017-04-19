@@ -103,6 +103,7 @@ let
             lens
             monad-loops
             p.autoencode
+            p.textview            
           ]);
 
 in

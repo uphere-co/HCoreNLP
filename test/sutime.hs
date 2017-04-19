@@ -19,6 +19,7 @@ import           Data.Aeson.Types
 import qualified Data.Attoparsec.Text       as A
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
+import           Data.Maybe                       (isJust)
 import           Data.Monoid
 import           Data.Text                        (Text)
 import qualified Data.Text                  as T
@@ -31,6 +32,9 @@ import           Text.Printf
 --
 import           NLP.SyntaxTree.Parser
 import           NLP.SyntaxTree.Printer
+import           Type
+import           Util.Doc
+import           View
 --
 import           CoreNLP
 import           CoreNLP.SUTime
@@ -60,3 +64,10 @@ main = do
           TIO.putStrLn txt
           putStrLn "==========================================================="
           mapM_ (TIO.putStrLn . format) xs
+          putStrLn "==========================================================="
+          let f ttag = ((), tt_coffbeg ttag +1, tt_coffend ttag)
+              tagged = map f xs 
+          let ann = (AnnotText . map (\(t,m)->(t,isJust m)) . tagText tagged) txt
+          mapM_ cutePrintAnnot (lineSplitAnnot 80 ann)
+          
+    
