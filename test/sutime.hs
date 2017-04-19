@@ -44,10 +44,10 @@ import           CoreNLP.Type
 formatstr n x = T.pack (printf ("%" ++ show n ++ "s") x)
 format x = T.pack (show (x ^. coffbeg)) <> "\t" <> T.pack (show (x ^. coffend)) <> "\t" <> formatstr 20 (x ^. text) <> "\t" <> x ^. timex
 
- 
+{-  
 p = do
   r1 <- timetag <* A.skipSpace
-  return r1
+  return r1 -}
 {-   r2 <- timetag <* A.skipSpace
   r3 <- timetag <* A.skipSpace
   r4 <- timetag <* A.skipSpace
@@ -65,12 +65,12 @@ main = do
       pp <- prepare
       r <- annotateTime pp txt "2017-04-17"
       TIO.putStrLn r
-      print $ A.parseOnly p r
-{-       
+      -- print $ A.parseOnly p r
+
       case A.parseOnly (many (timetag <* A.skipSpace)) r of
         Left err -> print err
         Right xs -> do 
           TIO.putStrLn txt
           putStrLn "==========================================================="
           mapM_ (TIO.putStrLn . format) xs
--}
+

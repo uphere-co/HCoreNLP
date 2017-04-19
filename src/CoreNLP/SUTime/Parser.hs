@@ -28,6 +28,7 @@ module CoreNLP.SUTime.Parser
 
 import           Control.Applicative
 import           Control.Lens
+import           Control.Monad              (replicateM_)
 import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.State 
 import           Data.Attoparsec.Combinator (lookAhead)
@@ -36,7 +37,8 @@ import           Data.Default
 import           Data.Text                 (Text)
 import qualified Data.Text            as T
 import           Data.Text.Read       as TR
-
+--
+import           Debug.Trace
 
 -- | data type for time tagging from SUText
 data TimeTag = TimeTag { _tt_text :: Text
@@ -90,52 +92,51 @@ conv = T.pack
 
 getText = conv <$> manyTill' anyChar next
 
-getKeyText k = string k >> getText
+getKeyText k = (string k <?> T.unpack k) >> getText
 
-getKeyInt k  = string k >> (either fail (return . fst) . TR.decimal =<< getText )
+getKeyInt k  = (string k <?> T.unpack k) >> (either fail (return . fst) . TR.decimal =<< getText )
 
-getKeyList k = string k >> (either fail return . parseOnly list =<< getText)
+getKeyList k = (string k <?> T.unpack k) >> (either fail return . parseOnly list =<< getText)
 
 setvalue l p = lift p >>= \v -> modify (l .~ v)
 
+setvalue' l p = lift p >>= \v -> modify (l .~ Just v)
 
-optpart = do
-    setvalue numcomptyp (optional (getKeyText " NumericCompositeType="))
-    setvalue net        (optional (getKeyText " NamedEntityTag="))
-    setvalue numcompval (optional (getKeyText " NumericCompositeValue="))
-    setvalue normnet    (optional (getKeyText " NormalizedNamedEntityTag="))
-    setvalue numtokens  (optional (getKeyList " NumerizedTokens="))
+
+
+permuted = do
+  choice
+    [ setvalue tkend      (getKeyInt " TokenEnd=")
+    , setvalue tkns       (getKeyList " Tokens=")
+    , setvalue coffend    (getKeyInt " CharacterOffsetEnd=")
+    , setvalue bef        (getKeyText " Before=")
+    , setvalue coffbeg    (getKeyInt " CharacterOffsetBegin=")
+    , setvalue aft        (getKeyText " After=")
+    , setvalue tkbeg      (getKeyInt " TokenBegin=")
+    , setvalue chld       (getKeyList " Children=")
+    , setvalue timex      (getKeyText " Timex=")
+    , setvalue' numcomptyp (getKeyText " NumericCompositeType=")
+    , setvalue' net        (getKeyText " NamedEntityTag=")
+    , setvalue' numcompval (getKeyText " NumericCompositeValue=")
+    , setvalue' normnet    (getKeyText " NormalizedNamedEntityTag=")
+    , setvalue' numtokens  (getKeyList " NumerizedTokens=")
+    ] 
+
+psentidx = do
+  lift $ string " SentenceIndex="  
+  setvalue sentidx    (either fail (return . fst) . TR.decimal . conv =<< manyTill' anyChar (string "]"))
 
 -- | parser for TimeTag from short notation output from SUTime TimeAnnotator.    
 timetag :: Parser TimeTag
 timetag = do
   flip execStateT def $ do
     setvalue text       (getKeyText "[Text=")
-    optpart
-    -- setvalue numcomptyp (optional (getKeyText " NumericCompositeType="))
-    setvalue tkend      (getKeyInt " TokenEnd=")
-    optpart
-    setvalue tkns       (getKeyList " Tokens=")
-    optpart
-    -- setvalue net        (optional (getKeyText " NamedEntityTag="))
-    setvalue coffend    (getKeyInt " CharacterOffsetEnd=")
-    optpart
-    setvalue bef        (getKeyText " Before=")
-    optpart
-    setvalue coffbeg    (getKeyInt " CharacterOffsetBegin=")
-    optpart
-    setvalue aft        (getKeyText " After=")
-    optpart
-    -- setvalue numcompval (optional (getKeyText " NumericCompositeValue="))
-    -- setvalue normnet    (optional (getKeyText " NormalizedNamedEntityTag="))
-    -- setvalue numtokens  (optional (getKeyList " NumerizedTokens="))
-    setvalue tkbeg      (getKeyInt " TokenBegin=")
-    optpart
-    setvalue chld       (getKeyList " Children=")
-    optpart
-    setvalue timex      (getKeyText " Timex=")
-    optpart
-    lift $ string " SentenceIndex="  
-    setvalue sentidx    (either fail (return . fst) . TR.decimal . conv =<< manyTill' anyChar (string "]"))
-  
+    replicateM_ 9 permuted
+    ((replicateM_ 5 permuted >> psentidx)
+     <|> (replicateM_ 4 permuted >> psentidx)
+     <|> (replicateM_ 3 permuted >> psentidx)
+     <|> (replicateM_ 2 permuted >> psentidx)
+     <|> (permuted >> psentidx)
+     <|> psentidx)
+    
     
