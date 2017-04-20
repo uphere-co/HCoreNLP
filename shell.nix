@@ -1,6 +1,7 @@
 { pkgs ? import <nixpkgs> {}
 , autoencode
 , symbolic
+, textview
 , uphere-nix-overlay
 }:
 
@@ -18,6 +19,7 @@ let
     self: super: {
       "autoencode" = haskell.lib.dontHaddock (self.callPackage (import autoencode) {});
       "symbolic" = self.callPackage (import symbolic) {};
+      "textview" = self.callPackage (import textview) {};
        
       "inline-java" = self.callPackage
         ({ mkDerivation, base, binary, bytestring, Cabal, containers
@@ -95,11 +97,13 @@ let
   hsenv = myhaskellpkgs.ghcWithPackages (p: with p; [
             inline-java
             aeson
+            attoparsec
             data-default
             haskeline
             lens
             monad-loops
             p.autoencode
+            p.textview            
           ]);
 
 in

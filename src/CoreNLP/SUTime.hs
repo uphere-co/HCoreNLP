@@ -18,7 +18,7 @@ import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
 import qualified Language.Java                (reflect,reify)
 
-
+-- | preparing AnnotationPipeline with SUTime TimeAnnotator
 prepare :: IO (J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline"))
 prepare = do
     [java|{
@@ -32,7 +32,13 @@ prepare = do
           }
     |]
 
-annotateTime :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -> Text -> Text -> IO Text 
+
+-- | With prepared AnnotationPipeline, it takes text and document time as arguments
+--   and then answers time annotation in shorter string format. 
+annotateTime :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -- ^ annotation pipeline object
+             -> Text                                                      -- ^ document
+             -> Text                                                      -- ^ time set to the document, such as "2017-04-17"
+             -> IO Text                                                   -- ^ result short string
 annotateTime pipeline otxt otimetxt = do
   txt <- Language.Java.reflect otxt
   timetxt <- Language.Java.reflect otimetxt
@@ -47,19 +53,8 @@ annotateTime pipeline otxt otimetxt = do
 
             for (edu.stanford.nlp.util.CoreMap cm : timexAnnsAll) {
               java.util.List<edu.stanford.nlp.ling.CoreLabel> tokens = cm.get(edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation.class);
-              //System.out.println(cm + " [from char offset " +
-              //  tokens.get(0).get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetBeginAnnotation.class) +
-              //  " to " + tokens.get(tokens.size() - 1).get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetEndAnnotation.class) + ']' +
-              //  " --> " + cm.get(edu.stanford.nlp.time.TimeExpression.Annotation.class).getTemporal());
-              stringBuilder.append(cm);
-              stringBuilder.append(",");
-              stringBuilder.append(tokens.get(0).get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetBeginAnnotation.class));
-              stringBuilder.append(",");            
-              stringBuilder.append(tokens.get(tokens.size() - 1).get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetEndAnnotation.class));
-              stringBuilder.append(",");
-              stringBuilder.append(cm.get(edu.stanford.nlp.time.TimeExpression.Annotation.class).getTemporal());
+              stringBuilder.append(cm.toShorterString());
               stringBuilder.append("\n");
-
             }
             String finalString = stringBuilder.toString();
             return finalString;
