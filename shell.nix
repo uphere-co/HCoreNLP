@@ -13,6 +13,18 @@ let
     rev = "593cdf3a02a866c6822539c0e89adc8ed913a9ba";
     sha256 = "1xngx5i7gpg4h33w6iznrphd1ji0f8dmf5lb5awsnxp72kszvqi5";
   };
+  
+  corenlp = srcOnly {
+    name = "corenlp-20161031";
+    src = fetchzip {
+      url = "http://nlp.stanford.edu/software/stanford-corenlp-full-2016-10-31.zip";
+      sha256 = "0lm4rhvhfi54y01ad40g3v9qdw5qk5982fqfa465x2s9g7fxknmv";
+    };
+  };
+  corenlp_models = fetchurl {
+    url = "http://nlp.stanford.edu/software/stanford-english-corenlp-2016-10-31-models.jar";
+    sha256 = "1jl86fgqcbrhmp000id705wx131j4zcmm70q7pprgj5zyjp32zxm";
+  };
 
   config1 = import (uphere-nix-overlay + "/nix/haskell-modules/configuration-ghc-8.0.x.nix") { inherit pkgs; };
   config2 =
@@ -112,7 +124,7 @@ stdenv.mkDerivation {
   name = "corenlp-dev";
   buildInputs = [ hsenv jdk ];
   shellHook = ''
-    CLASSPATH=/home/wavewave/repo/workspace/corenlp/stanford-english-corenlp-2016-10-31-models.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/stanford-corenlp-3.7.0.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/protobuf.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/joda-time.jar:/home/wavewave/repo/workspace/corenlp/stanford-corenlp-full-2016-10-31/jollyday.jar
+    CLASSPATH="${corenlp_models}:${corenlp}/stanford-corenlp-3.7.0.jar:${corenlp}/protobuf.jar:${corenlp}/joda-time.jar:${corenlp}/jollyday.jar";
   '';
 }
 
