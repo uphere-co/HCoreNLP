@@ -104,7 +104,32 @@ let
           description = "Protocol buffer compiler for the proto-lens library";
           license = stdenv.lib.licenses.bsd3;
         }) {};
-      
+
+      "haskell-src-exts" = self.callPackage
+        ({ mkDerivation, array, base, containers, cpphs, directory, filepath
+          , ghc-prim, happy, mtl, pretty, pretty-show, smallcheck, stdenv
+          , syb, tasty, tasty-golden, tasty-smallcheck
+          }:
+          mkDerivation {
+            pname = "haskell-src-exts";
+            version = "1.17.1";
+            #src = ./.;
+            libraryHaskellDepends = [ array base cpphs ghc-prim pretty ];
+            libraryToolDepends = [ happy ];
+            testHaskellDepends = [
+              base containers directory filepath mtl pretty-show smallcheck syb
+              tasty tasty-golden tasty-smallcheck
+            ];
+            homepage = "https://github.com/haskell-suite/haskell-src-exts";
+            description = "Manipulating Haskell source: abstract syntax, lexer, parser, and pretty-printer";
+            license = stdenv.lib.licenses.bsd3;
+            doCheck = false;
+          }) {};
+  
+      hlint = haskell.lib.overrideCabal super.hlint (drv: {
+        version = "1.9.35";
+        sha256 = "12ksgnlp14c9xkz6zzwnkivzs4ch0lv93h1fw4p8d83pvkd8jqjy";
+      });
       "inline-java" = self.callPackage
         ({ mkDerivation, base, binary, bytestring, Cabal, containers
          , directory, distributed-closure, filepath, ghc-heap-view, hspec
@@ -184,10 +209,12 @@ let
             attoparsec
             data-default
             haskeline
+            hprotoc
             lens
             monad-loops
             proto-lens
             proto-lens-protoc
+            protocol-buffers
             p.autoencode
             p.textview            
           ]);
