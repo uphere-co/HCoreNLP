@@ -32,7 +32,79 @@ let
       "autoencode" = haskell.lib.dontHaddock (self.callPackage (import autoencode) {});
       "symbolic" = self.callPackage (import symbolic) {};
       "textview" = self.callPackage (import textview) {};
-       
+
+      "lens-labels" = self.callPackage
+        ({ mkDerivation, base, ghc-prim, stdenv }:
+          mkDerivation {
+            pname = "lens-labels";
+            version = "0.1.0.1";
+            #src = ./.;
+            libraryHaskellDepends = [ base ghc-prim ];
+            homepage = "https://github.com/google/proto-lens";
+            description = "Integration of lenses with OverloadedLabels";
+            license = stdenv.lib.licenses.bsd3;
+          }) {};
+          
+      "proto-lens" = self.callPackage
+        ({ mkDerivation, attoparsec, base, bytestring, containers
+          , data-default-class, lens-family, parsec, pretty, stdenv, text
+          , transformers, void
+          }:
+          mkDerivation {
+            pname = "proto-lens";
+            version = "0.2.0.1";
+            #src = ./.;
+            libraryHaskellDepends = [
+              attoparsec base bytestring containers data-default-class
+              lens-family parsec pretty text transformers void
+            ];
+            homepage = "https://github.com/google/proto-lens";
+            description = "A lens-based implementation of protocol buffers in Haskell";
+            license = stdenv.lib.licenses.bsd3;
+          }) {};
+          
+      "proto-lens-descriptors" = self.callPackage
+        ({ mkDerivation, base, bytestring, containers, data-default-class
+          , lens-family, lens-labels, proto-lens, stdenv, text
+          }:
+          mkDerivation {
+            pname = "proto-lens-descriptors";
+            version = "0.2.0.1";
+            #src = ./.;
+            libraryHaskellDepends = [
+              base bytestring containers data-default-class lens-family
+              lens-labels proto-lens text
+            ];
+            description = "Protocol buffers for describing the definitions of messages";
+            license = stdenv.lib.licenses.bsd3;
+          }) {};
+
+
+      "proto-lens-protoc" = self.callPackage
+      ({ mkDerivation, base, bytestring, Cabal, containers
+       , data-default-class, directory, filepath, haskell-src-exts
+        , lens-family, lens-labels, process, proto-lens
+        , proto-lens-descriptors, stdenv, text
+        }:
+        mkDerivation {
+          pname = "proto-lens-protoc";
+          version = "0.2.0.1";
+          #src = ;
+          isLibrary = true;
+          isExecutable = true;
+          libraryHaskellDepends = [
+            base bytestring Cabal containers data-default-class directory
+            filepath haskell-src-exts lens-family lens-labels process
+            proto-lens proto-lens-descriptors text
+          ];
+          executableHaskellDepends = [
+            base bytestring containers data-default-class filepath
+            haskell-src-exts lens-family proto-lens proto-lens-descriptors text
+          ];
+          description = "Protocol buffer compiler for the proto-lens library";
+          license = stdenv.lib.licenses.bsd3;
+        }) {};
+      
       "inline-java" = self.callPackage
         ({ mkDerivation, base, binary, bytestring, Cabal, containers
          , directory, distributed-closure, filepath, ghc-heap-view, hspec
@@ -114,6 +186,8 @@ let
             haskeline
             lens
             monad-loops
+            proto-lens
+            proto-lens-protoc
             p.autoencode
             p.textview            
           ]);
