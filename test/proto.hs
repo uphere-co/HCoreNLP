@@ -8,40 +8,18 @@
 
 module Main where
 
-import           Control.Applicative
 import           Control.Lens
-import           Control.Monad                    ((>=>),join,void)
-import           Control.Monad.IO.Class           (liftIO)
-import           Control.Monad.Loops              (whileJust_)
-import           Control.Monad.Trans.Class        (lift)
-import           Control.Monad.Trans.Either
-import           Data.Aeson
-import           Data.Aeson.Types
-import qualified Data.Attoparsec.Text       as A
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
-import           Data.Maybe                       (isJust)
-import           Data.Monoid
-import           Data.Text                        (Text)
-import qualified Data.Text                  as T
+import qualified Data.Foldable              as F  (toList)
 import qualified Data.Text.IO               as TIO
-import           GHC.Generics
 import           Language.Java         as J
-import           System.Console.Haskeline
 import           System.Environment               (getEnv,getArgs)
-import           Text.Printf
 import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
-import           NLP.SyntaxTree.Parser
-import           NLP.SyntaxTree.Printer
-import           Type
-import           Util.Doc
-import           View
---
-import           CoreNLP
 import           CoreNLP.Simple
-import           CoreNLP.Type
-import qualified CoreNLPProtos.Document
+import qualified CoreNLPProtos.Document as D
+import qualified CoreNLPProtos.Sentence as S
 
   
 main :: IO ()
@@ -55,7 +33,10 @@ main = do
       ann <- annotate pp txt
       bstr <- serialize ann
       let lbstr = BL.fromStrict bstr
-      print (messageGet lbstr :: Either String (CoreNLPProtos.Document.Document,BL.ByteString))
+      case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
+        Left err -> print err
+        Right (doc,_) -> do
+          mapM_ print . zip ([1..] :: [Int]) . F.toList . fmap (^. S.token) $ (doc ^. D.sentence)
       return ()
 
     
