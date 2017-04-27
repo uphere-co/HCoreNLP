@@ -32,6 +32,7 @@ library
                        transformers
   Exposed-modules:
                        CoreNLP
+                       CoreNLP.Simple
                        CoreNLP.SUTime
                        CoreNLP.SUTime.Parser
                        CoreNLP.Type

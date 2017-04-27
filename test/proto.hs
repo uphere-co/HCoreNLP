@@ -39,8 +39,7 @@ import           Util.Doc
 import           View
 --
 import           CoreNLP
-import           CoreNLP.SUTime
-import           CoreNLP.SUTime.Parser
+import           CoreNLP.Simple
 import           CoreNLP.Type
 import qualified CoreNLPProtos.Document
 
