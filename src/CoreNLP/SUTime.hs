@@ -47,15 +47,26 @@ annotate pipeline otxt = do
   |]
   
 serialize :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
-          -> IO Int32
+          -> IO B.ByteString
 serialize annotation = do
-  [java|{
-          edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
-          edu.stanford.nlp.pipeline.CoreNLPProtos.Document doc = ser.toProto($annotation);
-          System.out.println(doc);
-          return 0;
-        }
-  |]
+  r <-
+    [java|{
+            try {
+              java.io.ByteArrayOutputStream arrayOutputStream = new java.io.ByteArrayOutputStream();
+              java.io.BufferedWriter bufferedWriter = new java.io.BufferedWriter(
+                new java.io.OutputStreamWriter(arrayOutputStream)
+              );
+              edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
+              edu.stanford.nlp.pipeline.CoreNLPProtos.Document doc = ser.toProto($annotation);
+              System.out.println(doc);
+              doc.writeTo(arrayOutputStream); 
+              return arrayOutputStream.toByteArray();
+            } catch( java.io.IOException e ) {
+              return null;
+            }
+          }
+    |]
+  Language.Java.reify r
 
 
   

@@ -58,7 +58,8 @@ main = do
     J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
       pp <- prepare
       ann <- annotate pp txt
-      serialize ann
+      bstr <- serialize ann
+      print bstr
       return ()
 
 {-       
