@@ -11,10 +11,19 @@ author:              UpHere, Inc.
 maintainer:          Ian-Woo Kim <ianwookim@gmail.com>
 -- copyright:
 category:            Development
-build-type:          Simple
+build-type:          Custom
 -- extra-source-files:
-cabal-version:       >=1.10
+cabal-version:       >=1.18
 
+extra-source-files:
+                     javasrc/ai/uphere/HCoreNLP/HCoreNLPProto.java
+
+
+                     
+custom-setup        
+  setup-depends: Cabal>=1.18, base<5, directory, filepath, process
+
+                       
 library
   hs-source-dirs:      src
   build-depends:       base > 4.9,
