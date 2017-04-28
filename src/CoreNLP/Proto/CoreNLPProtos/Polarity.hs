@@ -1,22 +1,28 @@
-{-# LANGUAGE BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell, BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
 {-# OPTIONS_GHC  -fno-warn-unused-imports #-}
-module CoreNLP.Proto.CoreNLPProtos.Polarity (Polarity(..)) where
+module CoreNLP.Proto.CoreNLPProtos.Polarity
+       (Polarity(..), projectEquivalence, projectForwardEntailment, projectReverseEntailment, projectNegation, projectAlternation,
+        projectCover, projectIndependence)
+       where
 import Prelude ((+), (/))
 import qualified Prelude as Prelude'
 import qualified Data.Typeable as Prelude'
 import qualified GHC.Generics as Prelude'
 import qualified Data.Data as Prelude'
 import qualified Text.ProtocolBuffers.Header as P'
+import qualified Control.Lens.TH
 import qualified CoreNLP.Proto.CoreNLPProtos.NaturalLogicRelation as CoreNLPProtos (NaturalLogicRelation)
 
-data Polarity = Polarity{projectEquivalence :: !(CoreNLPProtos.NaturalLogicRelation),
-                         projectForwardEntailment :: !(CoreNLPProtos.NaturalLogicRelation),
-                         projectReverseEntailment :: !(CoreNLPProtos.NaturalLogicRelation),
-                         projectNegation :: !(CoreNLPProtos.NaturalLogicRelation),
-                         projectAlternation :: !(CoreNLPProtos.NaturalLogicRelation),
-                         projectCover :: !(CoreNLPProtos.NaturalLogicRelation),
-                         projectIndependence :: !(CoreNLPProtos.NaturalLogicRelation)}
+data Polarity = Polarity{_projectEquivalence :: !(CoreNLPProtos.NaturalLogicRelation),
+                         _projectForwardEntailment :: !(CoreNLPProtos.NaturalLogicRelation),
+                         _projectReverseEntailment :: !(CoreNLPProtos.NaturalLogicRelation),
+                         _projectNegation :: !(CoreNLPProtos.NaturalLogicRelation),
+                         _projectAlternation :: !(CoreNLPProtos.NaturalLogicRelation),
+                         _projectCover :: !(CoreNLPProtos.NaturalLogicRelation),
+                         _projectIndependence :: !(CoreNLPProtos.NaturalLogicRelation)}
               deriving (Prelude'.Show, Prelude'.Eq, Prelude'.Ord, Prelude'.Typeable, Prelude'.Data, Prelude'.Generic)
+
+Control.Lens.TH.makeLenses ''Polarity
 
 instance P'.Mergeable Polarity where
   mergeAppend (Polarity x'1 x'2 x'3 x'4 x'5 x'6 x'7) (Polarity y'1 y'2 y'3 y'4 y'5 y'6 y'7)
@@ -66,13 +72,13 @@ instance P'.Wire Polarity where
     where
         update'Self wire'Tag old'Self
          = case wire'Tag of
-             8 -> Prelude'.fmap (\ !new'Field -> old'Self{projectEquivalence = new'Field}) (P'.wireGet 14)
-             16 -> Prelude'.fmap (\ !new'Field -> old'Self{projectForwardEntailment = new'Field}) (P'.wireGet 14)
-             24 -> Prelude'.fmap (\ !new'Field -> old'Self{projectReverseEntailment = new'Field}) (P'.wireGet 14)
-             32 -> Prelude'.fmap (\ !new'Field -> old'Self{projectNegation = new'Field}) (P'.wireGet 14)
-             40 -> Prelude'.fmap (\ !new'Field -> old'Self{projectAlternation = new'Field}) (P'.wireGet 14)
-             48 -> Prelude'.fmap (\ !new'Field -> old'Self{projectCover = new'Field}) (P'.wireGet 14)
-             56 -> Prelude'.fmap (\ !new'Field -> old'Self{projectIndependence = new'Field}) (P'.wireGet 14)
+             8 -> Prelude'.fmap (\ !new'Field -> old'Self{_projectEquivalence = new'Field}) (P'.wireGet 14)
+             16 -> Prelude'.fmap (\ !new'Field -> old'Self{_projectForwardEntailment = new'Field}) (P'.wireGet 14)
+             24 -> Prelude'.fmap (\ !new'Field -> old'Self{_projectReverseEntailment = new'Field}) (P'.wireGet 14)
+             32 -> Prelude'.fmap (\ !new'Field -> old'Self{_projectNegation = new'Field}) (P'.wireGet 14)
+             40 -> Prelude'.fmap (\ !new'Field -> old'Self{_projectAlternation = new'Field}) (P'.wireGet 14)
+             48 -> Prelude'.fmap (\ !new'Field -> old'Self{_projectCover = new'Field}) (P'.wireGet 14)
+             56 -> Prelude'.fmap (\ !new'Field -> old'Self{_projectIndependence = new'Field}) (P'.wireGet 14)
              _ -> let (field'Number, wire'Type) = P'.splitWireTag wire'Tag in P'.unknown field'Number wire'Type old'Self
 
 instance P'.MessageAPI msg' (msg' -> Polarity) Polarity where
@@ -85,7 +91,7 @@ instance P'.ReflectDescriptor Polarity where
    = P'.GetMessageInfo (P'.fromDistinctAscList [8, 16, 24, 32, 40, 48, 56]) (P'.fromDistinctAscList [8, 16, 24, 32, 40, 48, 56])
   reflectDescriptorInfo _
    = Prelude'.read
-      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.Polarity\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"Polarity\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"Polarity.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectEquivalence\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectEquivalence\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 8}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectForwardEntailment\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectForwardEntailment\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectReverseEntailment\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectReverseEntailment\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectNegation\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectNegation\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 4}, wireTag = WireTag {getWireTag = 32}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectAlternation\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectAlternation\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 5}, wireTag = WireTag {getWireTag = 40}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectCover\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectCover\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 6}, wireTag = WireTag {getWireTag = 48}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectIndependence\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectIndependence\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 7}, wireTag = WireTag {getWireTag = 56}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = False}"
+      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.Polarity\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"Polarity\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"Polarity.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectEquivalence\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectEquivalence\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 8}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectForwardEntailment\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectForwardEntailment\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectReverseEntailment\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectReverseEntailment\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectNegation\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectNegation\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 4}, wireTag = WireTag {getWireTag = 32}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectAlternation\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectAlternation\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 5}, wireTag = WireTag {getWireTag = 40}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectCover\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectCover\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 6}, wireTag = WireTag {getWireTag = 48}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.Polarity.projectIndependence\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"Polarity\"], baseName' = FName \"projectIndependence\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 7}, wireTag = WireTag {getWireTag = 56}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 14}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NaturalLogicRelation\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NaturalLogicRelation\"}), hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
 
 instance P'.TextType Polarity where
   tellT = P'.tellSubMessage
@@ -94,54 +100,54 @@ instance P'.TextType Polarity where
 instance P'.TextMsg Polarity where
   textPut msg
    = do
-       P'.tellT "projectEquivalence" (projectEquivalence msg)
-       P'.tellT "projectForwardEntailment" (projectForwardEntailment msg)
-       P'.tellT "projectReverseEntailment" (projectReverseEntailment msg)
-       P'.tellT "projectNegation" (projectNegation msg)
-       P'.tellT "projectAlternation" (projectAlternation msg)
-       P'.tellT "projectCover" (projectCover msg)
-       P'.tellT "projectIndependence" (projectIndependence msg)
+       P'.tellT "projectEquivalence" (_projectEquivalence msg)
+       P'.tellT "projectForwardEntailment" (_projectForwardEntailment msg)
+       P'.tellT "projectReverseEntailment" (_projectReverseEntailment msg)
+       P'.tellT "projectNegation" (_projectNegation msg)
+       P'.tellT "projectAlternation" (_projectAlternation msg)
+       P'.tellT "projectCover" (_projectCover msg)
+       P'.tellT "projectIndependence" (_projectIndependence msg)
   textGet
    = do
        mods <- P'.sepEndBy
                 (P'.choice
-                  [parse'projectEquivalence, parse'projectForwardEntailment, parse'projectReverseEntailment, parse'projectNegation,
-                   parse'projectAlternation, parse'projectCover, parse'projectIndependence])
+                  [parse'_projectEquivalence, parse'_projectForwardEntailment, parse'_projectReverseEntailment,
+                   parse'_projectNegation, parse'_projectAlternation, parse'_projectCover, parse'_projectIndependence])
                 P'.spaces
        Prelude'.return (Prelude'.foldl (\ v f -> f v) P'.defaultValue mods)
     where
-        parse'projectEquivalence
+        parse'_projectEquivalence
          = P'.try
             (do
                v <- P'.getT "projectEquivalence"
-               Prelude'.return (\ o -> o{projectEquivalence = v}))
-        parse'projectForwardEntailment
+               Prelude'.return (\ o -> o{_projectEquivalence = v}))
+        parse'_projectForwardEntailment
          = P'.try
             (do
                v <- P'.getT "projectForwardEntailment"
-               Prelude'.return (\ o -> o{projectForwardEntailment = v}))
-        parse'projectReverseEntailment
+               Prelude'.return (\ o -> o{_projectForwardEntailment = v}))
+        parse'_projectReverseEntailment
          = P'.try
             (do
                v <- P'.getT "projectReverseEntailment"
-               Prelude'.return (\ o -> o{projectReverseEntailment = v}))
-        parse'projectNegation
+               Prelude'.return (\ o -> o{_projectReverseEntailment = v}))
+        parse'_projectNegation
          = P'.try
             (do
                v <- P'.getT "projectNegation"
-               Prelude'.return (\ o -> o{projectNegation = v}))
-        parse'projectAlternation
+               Prelude'.return (\ o -> o{_projectNegation = v}))
+        parse'_projectAlternation
          = P'.try
             (do
                v <- P'.getT "projectAlternation"
-               Prelude'.return (\ o -> o{projectAlternation = v}))
-        parse'projectCover
+               Prelude'.return (\ o -> o{_projectAlternation = v}))
+        parse'_projectCover
          = P'.try
             (do
                v <- P'.getT "projectCover"
-               Prelude'.return (\ o -> o{projectCover = v}))
-        parse'projectIndependence
+               Prelude'.return (\ o -> o{_projectCover = v}))
+        parse'_projectIndependence
          = P'.try
             (do
                v <- P'.getT "projectIndependence"
-               Prelude'.return (\ o -> o{projectIndependence = v}))
+               Prelude'.return (\ o -> o{_projectIndependence = v}))

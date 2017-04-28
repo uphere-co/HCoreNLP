@@ -1,17 +1,20 @@
-{-# LANGUAGE BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell, BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
 {-# OPTIONS_GHC  -fno-warn-unused-imports #-}
-module CoreNLP.Proto.CoreNLPProtos.CorefChain (CorefChain(..)) where
+module CoreNLP.Proto.CoreNLPProtos.CorefChain (CorefChain(..), chainID, mention, representative) where
 import Prelude ((+), (/))
 import qualified Prelude as Prelude'
 import qualified Data.Typeable as Prelude'
 import qualified GHC.Generics as Prelude'
 import qualified Data.Data as Prelude'
 import qualified Text.ProtocolBuffers.Header as P'
+import qualified Control.Lens.TH
 import qualified CoreNLP.Proto.CoreNLPProtos.CorefChain.CorefMention as CoreNLPProtos.CorefChain (CorefMention)
 
-data CorefChain = CorefChain{chainID :: !(P'.Int32), mention :: !(P'.Seq CoreNLPProtos.CorefChain.CorefMention),
-                             representative :: !(P'.Word32)}
+data CorefChain = CorefChain{_chainID :: !(P'.Int32), _mention :: !(P'.Seq CoreNLPProtos.CorefChain.CorefMention),
+                             _representative :: !(P'.Word32)}
                 deriving (Prelude'.Show, Prelude'.Eq, Prelude'.Ord, Prelude'.Typeable, Prelude'.Data, Prelude'.Generic)
+
+Control.Lens.TH.makeLenses ''CorefChain
 
 instance P'.Mergeable CorefChain where
   mergeAppend (CorefChain x'1 x'2 x'3) (CorefChain y'1 y'2 y'3)
@@ -49,9 +52,9 @@ instance P'.Wire CorefChain where
     where
         update'Self wire'Tag old'Self
          = case wire'Tag of
-             8 -> Prelude'.fmap (\ !new'Field -> old'Self{chainID = new'Field}) (P'.wireGet 5)
-             18 -> Prelude'.fmap (\ !new'Field -> old'Self{mention = P'.append (mention old'Self) new'Field}) (P'.wireGet 11)
-             24 -> Prelude'.fmap (\ !new'Field -> old'Self{representative = new'Field}) (P'.wireGet 13)
+             8 -> Prelude'.fmap (\ !new'Field -> old'Self{_chainID = new'Field}) (P'.wireGet 5)
+             18 -> Prelude'.fmap (\ !new'Field -> old'Self{_mention = P'.append (_mention old'Self) new'Field}) (P'.wireGet 11)
+             24 -> Prelude'.fmap (\ !new'Field -> old'Self{_representative = new'Field}) (P'.wireGet 13)
              _ -> let (field'Number, wire'Type) = P'.splitWireTag wire'Tag in P'.unknown field'Number wire'Type old'Self
 
 instance P'.MessageAPI msg' (msg' -> CorefChain) CorefChain where
@@ -63,7 +66,7 @@ instance P'.ReflectDescriptor CorefChain where
   getMessageInfo _ = P'.GetMessageInfo (P'.fromDistinctAscList [8, 24]) (P'.fromDistinctAscList [8, 18, 24])
   reflectDescriptorInfo _
    = Prelude'.read
-      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.CorefChain\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"CorefChain\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"CorefChain.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.CorefChain.chainID\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"CorefChain\"], baseName' = FName \"chainID\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 8}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.CorefChain.mention\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"CorefChain\"], baseName' = FName \"mention\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 18}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = True, mightPack = False, typeCode = FieldType {getFieldType = 11}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.CorefChain.CorefMention\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\",MName \"CorefChain\"], baseName = MName \"CorefMention\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.CorefChain.representative\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"CorefChain\"], baseName' = FName \"representative\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = False}"
+      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.CorefChain\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"CorefChain\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"CorefChain.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.CorefChain.chainID\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"CorefChain\"], baseName' = FName \"chainID\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 8}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.CorefChain.mention\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"CorefChain\"], baseName' = FName \"mention\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 18}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = True, mightPack = False, typeCode = FieldType {getFieldType = 11}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.CorefChain.CorefMention\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\",MName \"CorefChain\"], baseName = MName \"CorefMention\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.CorefChain.representative\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"CorefChain\"], baseName' = FName \"representative\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
 
 instance P'.TextType CorefChain where
   tellT = P'.tellSubMessage
@@ -72,26 +75,26 @@ instance P'.TextType CorefChain where
 instance P'.TextMsg CorefChain where
   textPut msg
    = do
-       P'.tellT "chainID" (chainID msg)
-       P'.tellT "mention" (mention msg)
-       P'.tellT "representative" (representative msg)
+       P'.tellT "chainID" (_chainID msg)
+       P'.tellT "mention" (_mention msg)
+       P'.tellT "representative" (_representative msg)
   textGet
    = do
-       mods <- P'.sepEndBy (P'.choice [parse'chainID, parse'mention, parse'representative]) P'.spaces
+       mods <- P'.sepEndBy (P'.choice [parse'_chainID, parse'_mention, parse'_representative]) P'.spaces
        Prelude'.return (Prelude'.foldl (\ v f -> f v) P'.defaultValue mods)
     where
-        parse'chainID
+        parse'_chainID
          = P'.try
             (do
                v <- P'.getT "chainID"
-               Prelude'.return (\ o -> o{chainID = v}))
-        parse'mention
+               Prelude'.return (\ o -> o{_chainID = v}))
+        parse'_mention
          = P'.try
             (do
                v <- P'.getT "mention"
-               Prelude'.return (\ o -> o{mention = P'.append (mention o) v}))
-        parse'representative
+               Prelude'.return (\ o -> o{_mention = P'.append (_mention o) v}))
+        parse'_representative
          = P'.try
             (do
                v <- P'.getT "representative"
-               Prelude'.return (\ o -> o{representative = v}))
+               Prelude'.return (\ o -> o{_representative = v}))

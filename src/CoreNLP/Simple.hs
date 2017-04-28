@@ -99,19 +99,21 @@ serializeTimex annotation = do
               edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
               java.util.List<edu.stanford.nlp.util.CoreMap> timexAnnsAll = $annotation.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotations.class);
 
-              ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex timexes =
-                ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex
-                  .newBuilder()
-                  .build();
-   
+              ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.Builder listTimexBuilder =
+                ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.newBuilder();
+
               for (edu.stanford.nlp.util.CoreMap cm : timexAnnsAll) {
+                //edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder timexBuilder = newBuilder();
+
                 System.out.println(cm);
                 System.out.println("---------");
                 edu.stanford.nlp.time.Timex timex = cm.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotation.class);
                 edu.stanford.nlp.pipeline.CoreNLPProtos.Timex tmx = ser.toProto(timex);
-                System.out.println(tmx);
-                tmx.writeTo(arrayOutputStream);
+                //System.out.println(tmx);
+                listTimexBuilder.addTimexes(tmx);
+                // tmx.writeTo(arrayOutputStream);
               }
+              listTimexBuilder.build().writeTo(arrayOutputStream);;
               return arrayOutputStream.toByteArray();
             } catch( java.io.IOException e ) {
               return null;

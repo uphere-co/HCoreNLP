@@ -1,19 +1,25 @@
-{-# LANGUAGE BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell, BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
 {-# OPTIONS_GHC  -fno-warn-unused-imports #-}
-module CoreNLP.Proto.CoreNLPProtos.NERMention (NERMention(..)) where
+module CoreNLP.Proto.CoreNLPProtos.NERMention
+       (NERMention(..), sentenceIndex, tokenStartInSentenceInclusive, tokenEndInSentenceExclusive, ner, normalizedNER, entityType,
+        timex, wikipediaEntity)
+       where
 import Prelude ((+), (/))
 import qualified Prelude as Prelude'
 import qualified Data.Typeable as Prelude'
 import qualified GHC.Generics as Prelude'
 import qualified Data.Data as Prelude'
 import qualified Text.ProtocolBuffers.Header as P'
+import qualified Control.Lens.TH
 import qualified CoreNLP.Proto.CoreNLPProtos.Timex as CoreNLPProtos (Timex)
 
-data NERMention = NERMention{sentenceIndex :: !(P'.Maybe P'.Word32), tokenStartInSentenceInclusive :: !(P'.Word32),
-                             tokenEndInSentenceExclusive :: !(P'.Word32), ner :: !(P'.Utf8), normalizedNER :: !(P'.Maybe P'.Utf8),
-                             entityType :: !(P'.Maybe P'.Utf8), timex :: !(P'.Maybe CoreNLPProtos.Timex),
-                             wikipediaEntity :: !(P'.Maybe P'.Utf8)}
+data NERMention = NERMention{_sentenceIndex :: !(P'.Maybe P'.Word32), _tokenStartInSentenceInclusive :: !(P'.Word32),
+                             _tokenEndInSentenceExclusive :: !(P'.Word32), _ner :: !(P'.Utf8),
+                             _normalizedNER :: !(P'.Maybe P'.Utf8), _entityType :: !(P'.Maybe P'.Utf8),
+                             _timex :: !(P'.Maybe CoreNLPProtos.Timex), _wikipediaEntity :: !(P'.Maybe P'.Utf8)}
                 deriving (Prelude'.Show, Prelude'.Eq, Prelude'.Ord, Prelude'.Typeable, Prelude'.Data, Prelude'.Generic)
+
+Control.Lens.TH.makeLenses ''NERMention
 
 instance P'.Mergeable NERMention where
   mergeAppend (NERMention x'1 x'2 x'3 x'4 x'5 x'6 x'7 x'8) (NERMention y'1 y'2 y'3 y'4 y'5 y'6 y'7 y'8)
@@ -67,15 +73,15 @@ instance P'.Wire NERMention where
     where
         update'Self wire'Tag old'Self
          = case wire'Tag of
-             8 -> Prelude'.fmap (\ !new'Field -> old'Self{sentenceIndex = Prelude'.Just new'Field}) (P'.wireGet 13)
-             16 -> Prelude'.fmap (\ !new'Field -> old'Self{tokenStartInSentenceInclusive = new'Field}) (P'.wireGet 13)
-             24 -> Prelude'.fmap (\ !new'Field -> old'Self{tokenEndInSentenceExclusive = new'Field}) (P'.wireGet 13)
-             34 -> Prelude'.fmap (\ !new'Field -> old'Self{ner = new'Field}) (P'.wireGet 9)
-             42 -> Prelude'.fmap (\ !new'Field -> old'Self{normalizedNER = Prelude'.Just new'Field}) (P'.wireGet 9)
-             50 -> Prelude'.fmap (\ !new'Field -> old'Self{entityType = Prelude'.Just new'Field}) (P'.wireGet 9)
-             58 -> Prelude'.fmap (\ !new'Field -> old'Self{timex = P'.mergeAppend (timex old'Self) (Prelude'.Just new'Field)})
+             8 -> Prelude'.fmap (\ !new'Field -> old'Self{_sentenceIndex = Prelude'.Just new'Field}) (P'.wireGet 13)
+             16 -> Prelude'.fmap (\ !new'Field -> old'Self{_tokenStartInSentenceInclusive = new'Field}) (P'.wireGet 13)
+             24 -> Prelude'.fmap (\ !new'Field -> old'Self{_tokenEndInSentenceExclusive = new'Field}) (P'.wireGet 13)
+             34 -> Prelude'.fmap (\ !new'Field -> old'Self{_ner = new'Field}) (P'.wireGet 9)
+             42 -> Prelude'.fmap (\ !new'Field -> old'Self{_normalizedNER = Prelude'.Just new'Field}) (P'.wireGet 9)
+             50 -> Prelude'.fmap (\ !new'Field -> old'Self{_entityType = Prelude'.Just new'Field}) (P'.wireGet 9)
+             58 -> Prelude'.fmap (\ !new'Field -> old'Self{_timex = P'.mergeAppend (_timex old'Self) (Prelude'.Just new'Field)})
                     (P'.wireGet 11)
-             66 -> Prelude'.fmap (\ !new'Field -> old'Self{wikipediaEntity = Prelude'.Just new'Field}) (P'.wireGet 9)
+             66 -> Prelude'.fmap (\ !new'Field -> old'Self{_wikipediaEntity = Prelude'.Just new'Field}) (P'.wireGet 9)
              _ -> let (field'Number, wire'Type) = P'.splitWireTag wire'Tag in P'.unknown field'Number wire'Type old'Self
 
 instance P'.MessageAPI msg' (msg' -> NERMention) NERMention where
@@ -88,7 +94,7 @@ instance P'.ReflectDescriptor NERMention where
    = P'.GetMessageInfo (P'.fromDistinctAscList [16, 24, 34]) (P'.fromDistinctAscList [8, 16, 24, 34, 42, 50, 58, 66])
   reflectDescriptorInfo _
    = Prelude'.read
-      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NERMention\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NERMention\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"NERMention.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.sentenceIndex\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"sentenceIndex\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 8}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.tokenStartInSentenceInclusive\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"tokenStartInSentenceInclusive\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.tokenEndInSentenceExclusive\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"tokenEndInSentenceExclusive\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.ner\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"ner\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 4}, wireTag = WireTag {getWireTag = 34}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.normalizedNER\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"normalizedNER\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 5}, wireTag = WireTag {getWireTag = 42}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.entityType\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"entityType\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 6}, wireTag = WireTag {getWireTag = 50}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.timex\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"timex\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 7}, wireTag = WireTag {getWireTag = 58}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 11}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.Timex\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"Timex\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.wikipediaEntity\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"wikipediaEntity\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 8}, wireTag = WireTag {getWireTag = 66}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = False}"
+      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.NERMention\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"NERMention\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"NERMention.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.sentenceIndex\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"sentenceIndex\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 8}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.tokenStartInSentenceInclusive\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"tokenStartInSentenceInclusive\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.tokenEndInSentenceExclusive\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"tokenEndInSentenceExclusive\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.ner\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"ner\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 4}, wireTag = WireTag {getWireTag = 34}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.normalizedNER\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"normalizedNER\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 5}, wireTag = WireTag {getWireTag = 42}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.entityType\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"entityType\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 6}, wireTag = WireTag {getWireTag = 50}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.timex\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"timex\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 7}, wireTag = WireTag {getWireTag = 58}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 11}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.Timex\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"Timex\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.NERMention.wikipediaEntity\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"NERMention\"], baseName' = FName \"wikipediaEntity\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 8}, wireTag = WireTag {getWireTag = 66}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
 
 instance P'.TextType NERMention where
   tellT = P'.tellSubMessage
@@ -97,60 +103,60 @@ instance P'.TextType NERMention where
 instance P'.TextMsg NERMention where
   textPut msg
    = do
-       P'.tellT "sentenceIndex" (sentenceIndex msg)
-       P'.tellT "tokenStartInSentenceInclusive" (tokenStartInSentenceInclusive msg)
-       P'.tellT "tokenEndInSentenceExclusive" (tokenEndInSentenceExclusive msg)
-       P'.tellT "ner" (ner msg)
-       P'.tellT "normalizedNER" (normalizedNER msg)
-       P'.tellT "entityType" (entityType msg)
-       P'.tellT "timex" (timex msg)
-       P'.tellT "wikipediaEntity" (wikipediaEntity msg)
+       P'.tellT "sentenceIndex" (_sentenceIndex msg)
+       P'.tellT "tokenStartInSentenceInclusive" (_tokenStartInSentenceInclusive msg)
+       P'.tellT "tokenEndInSentenceExclusive" (_tokenEndInSentenceExclusive msg)
+       P'.tellT "ner" (_ner msg)
+       P'.tellT "normalizedNER" (_normalizedNER msg)
+       P'.tellT "entityType" (_entityType msg)
+       P'.tellT "timex" (_timex msg)
+       P'.tellT "wikipediaEntity" (_wikipediaEntity msg)
   textGet
    = do
        mods <- P'.sepEndBy
                 (P'.choice
-                  [parse'sentenceIndex, parse'tokenStartInSentenceInclusive, parse'tokenEndInSentenceExclusive, parse'ner,
-                   parse'normalizedNER, parse'entityType, parse'timex, parse'wikipediaEntity])
+                  [parse'_sentenceIndex, parse'_tokenStartInSentenceInclusive, parse'_tokenEndInSentenceExclusive, parse'_ner,
+                   parse'_normalizedNER, parse'_entityType, parse'_timex, parse'_wikipediaEntity])
                 P'.spaces
        Prelude'.return (Prelude'.foldl (\ v f -> f v) P'.defaultValue mods)
     where
-        parse'sentenceIndex
+        parse'_sentenceIndex
          = P'.try
             (do
                v <- P'.getT "sentenceIndex"
-               Prelude'.return (\ o -> o{sentenceIndex = v}))
-        parse'tokenStartInSentenceInclusive
+               Prelude'.return (\ o -> o{_sentenceIndex = v}))
+        parse'_tokenStartInSentenceInclusive
          = P'.try
             (do
                v <- P'.getT "tokenStartInSentenceInclusive"
-               Prelude'.return (\ o -> o{tokenStartInSentenceInclusive = v}))
-        parse'tokenEndInSentenceExclusive
+               Prelude'.return (\ o -> o{_tokenStartInSentenceInclusive = v}))
+        parse'_tokenEndInSentenceExclusive
          = P'.try
             (do
                v <- P'.getT "tokenEndInSentenceExclusive"
-               Prelude'.return (\ o -> o{tokenEndInSentenceExclusive = v}))
-        parse'ner
+               Prelude'.return (\ o -> o{_tokenEndInSentenceExclusive = v}))
+        parse'_ner
          = P'.try
             (do
                v <- P'.getT "ner"
-               Prelude'.return (\ o -> o{ner = v}))
-        parse'normalizedNER
+               Prelude'.return (\ o -> o{_ner = v}))
+        parse'_normalizedNER
          = P'.try
             (do
                v <- P'.getT "normalizedNER"
-               Prelude'.return (\ o -> o{normalizedNER = v}))
-        parse'entityType
+               Prelude'.return (\ o -> o{_normalizedNER = v}))
+        parse'_entityType
          = P'.try
             (do
                v <- P'.getT "entityType"
-               Prelude'.return (\ o -> o{entityType = v}))
-        parse'timex
+               Prelude'.return (\ o -> o{_entityType = v}))
+        parse'_timex
          = P'.try
             (do
                v <- P'.getT "timex"
-               Prelude'.return (\ o -> o{timex = v}))
-        parse'wikipediaEntity
+               Prelude'.return (\ o -> o{_timex = v}))
+        parse'_wikipediaEntity
          = P'.try
             (do
                v <- P'.getT "wikipediaEntity"
-               Prelude'.return (\ o -> o{wikipediaEntity = v}))
+               Prelude'.return (\ o -> o{_wikipediaEntity = v}))

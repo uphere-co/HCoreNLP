@@ -18,9 +18,9 @@ import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
 import           CoreNLP.Simple
-import qualified CoreNLPProtos.Document as D
-import qualified CoreNLPProtos.Sentence as S
-import qualified CoreNLPProtos.Timex    as T
+-- import qualified CoreNLPProtos.Document as D
+-- import qualified CoreNLPProtos.Sentence as S
+import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
 
   
 main :: IO ()
@@ -44,14 +44,10 @@ main = do
       -}
       bstr <- serializeTimex ann
       let lbstr = BL.fromStrict bstr
-      case (messageGet lbstr :: Either String (T.Timex,BL.ByteString)) of
+      case (messageGet lbstr :: Either String (T.ListTimex,BL.ByteString)) of
         Left err -> print err
         Right (tmx,lbstr') -> do
-          print tmx
-          case (messageGet lbstr' :: Either String (T.Timex,BL.ByteString)) of
-            Left err' -> print err'
-            Right (tmx',lbstr'') -> print tmx'
-          -- mapM_ print . zip ([1..] :: [Int]) . F.toList . fmap (^. S.token) $ (doc ^. D.sentence)
+          mapM_ print (tmx ^. T.timexes)
       return ()
       
     

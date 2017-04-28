@@ -1,15 +1,18 @@
-{-# LANGUAGE BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell, BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
 {-# OPTIONS_GHC  -fno-warn-unused-imports #-}
-module CoreNLP.Proto.CoreNLPProtos.SpeakerInfo (SpeakerInfo(..)) where
+module CoreNLP.Proto.CoreNLPProtos.SpeakerInfo (SpeakerInfo(..), speakerName, mentions) where
 import Prelude ((+), (/))
 import qualified Prelude as Prelude'
 import qualified Data.Typeable as Prelude'
 import qualified GHC.Generics as Prelude'
 import qualified Data.Data as Prelude'
 import qualified Text.ProtocolBuffers.Header as P'
+import qualified Control.Lens.TH
 
-data SpeakerInfo = SpeakerInfo{speakerName :: !(P'.Maybe P'.Utf8), mentions :: !(P'.Seq P'.Int32)}
+data SpeakerInfo = SpeakerInfo{_speakerName :: !(P'.Maybe P'.Utf8), _mentions :: !(P'.Seq P'.Int32)}
                  deriving (Prelude'.Show, Prelude'.Eq, Prelude'.Ord, Prelude'.Typeable, Prelude'.Data, Prelude'.Generic)
+
+Control.Lens.TH.makeLenses ''SpeakerInfo
 
 instance P'.Mergeable SpeakerInfo where
   mergeAppend (SpeakerInfo x'1 x'2) (SpeakerInfo y'1 y'2) = SpeakerInfo (P'.mergeAppend x'1 y'1) (P'.mergeAppend x'2 y'2)
@@ -45,9 +48,9 @@ instance P'.Wire SpeakerInfo where
     where
         update'Self wire'Tag old'Self
          = case wire'Tag of
-             10 -> Prelude'.fmap (\ !new'Field -> old'Self{speakerName = Prelude'.Just new'Field}) (P'.wireGet 9)
-             16 -> Prelude'.fmap (\ !new'Field -> old'Self{mentions = P'.append (mentions old'Self) new'Field}) (P'.wireGet 5)
-             18 -> Prelude'.fmap (\ !new'Field -> old'Self{mentions = P'.mergeAppend (mentions old'Self) new'Field})
+             10 -> Prelude'.fmap (\ !new'Field -> old'Self{_speakerName = Prelude'.Just new'Field}) (P'.wireGet 9)
+             16 -> Prelude'.fmap (\ !new'Field -> old'Self{_mentions = P'.append (_mentions old'Self) new'Field}) (P'.wireGet 5)
+             18 -> Prelude'.fmap (\ !new'Field -> old'Self{_mentions = P'.mergeAppend (_mentions old'Self) new'Field})
                     (P'.wireGetPacked 5)
              _ -> let (field'Number, wire'Type) = P'.splitWireTag wire'Tag in P'.unknown field'Number wire'Type old'Self
 
@@ -60,7 +63,7 @@ instance P'.ReflectDescriptor SpeakerInfo where
   getMessageInfo _ = P'.GetMessageInfo (P'.fromDistinctAscList []) (P'.fromDistinctAscList [10, 16, 18])
   reflectDescriptorInfo _
    = Prelude'.read
-      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.SpeakerInfo\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"SpeakerInfo\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"SpeakerInfo.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.SpeakerInfo.speakerName\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"SpeakerInfo\"], baseName' = FName \"speakerName\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 10}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.SpeakerInfo.mentions\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"SpeakerInfo\"], baseName' = FName \"mentions\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Just (WireTag {getWireTag = 16},WireTag {getWireTag = 18}), wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = True, mightPack = True, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = False}"
+      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.SpeakerInfo\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"SpeakerInfo\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"SpeakerInfo.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.SpeakerInfo.speakerName\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"SpeakerInfo\"], baseName' = FName \"speakerName\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 10}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 9}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.SpeakerInfo.mentions\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"SpeakerInfo\"], baseName' = FName \"mentions\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Just (WireTag {getWireTag = 16},WireTag {getWireTag = 18}), wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = True, mightPack = True, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
 
 instance P'.TextType SpeakerInfo where
   tellT = P'.tellSubMessage
@@ -69,20 +72,20 @@ instance P'.TextType SpeakerInfo where
 instance P'.TextMsg SpeakerInfo where
   textPut msg
    = do
-       P'.tellT "speakerName" (speakerName msg)
-       P'.tellT "mentions" (mentions msg)
+       P'.tellT "speakerName" (_speakerName msg)
+       P'.tellT "mentions" (_mentions msg)
   textGet
    = do
-       mods <- P'.sepEndBy (P'.choice [parse'speakerName, parse'mentions]) P'.spaces
+       mods <- P'.sepEndBy (P'.choice [parse'_speakerName, parse'_mentions]) P'.spaces
        Prelude'.return (Prelude'.foldl (\ v f -> f v) P'.defaultValue mods)
     where
-        parse'speakerName
+        parse'_speakerName
          = P'.try
             (do
                v <- P'.getT "speakerName"
-               Prelude'.return (\ o -> o{speakerName = v}))
-        parse'mentions
+               Prelude'.return (\ o -> o{_speakerName = v}))
+        parse'_mentions
          = P'.try
             (do
                v <- P'.getT "mentions"
-               Prelude'.return (\ o -> o{mentions = P'.append (mentions o) v}))
+               Prelude'.return (\ o -> o{_mentions = P'.append (_mentions o) v}))

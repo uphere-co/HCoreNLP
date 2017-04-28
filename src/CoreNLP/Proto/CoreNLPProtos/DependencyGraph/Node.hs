@@ -1,15 +1,18 @@
-{-# LANGUAGE BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell, BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
 {-# OPTIONS_GHC  -fno-warn-unused-imports #-}
-module CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node (Node(..)) where
+module CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node (Node(..), sentenceIndex, index, copyAnnotation) where
 import Prelude ((+), (/))
 import qualified Prelude as Prelude'
 import qualified Data.Typeable as Prelude'
 import qualified GHC.Generics as Prelude'
 import qualified Data.Data as Prelude'
 import qualified Text.ProtocolBuffers.Header as P'
+import qualified Control.Lens.TH
 
-data Node = Node{sentenceIndex :: !(P'.Word32), index :: !(P'.Word32), copyAnnotation :: !(P'.Maybe P'.Word32)}
+data Node = Node{_sentenceIndex :: !(P'.Word32), _index :: !(P'.Word32), _copyAnnotation :: !(P'.Maybe P'.Word32)}
           deriving (Prelude'.Show, Prelude'.Eq, Prelude'.Ord, Prelude'.Typeable, Prelude'.Data, Prelude'.Generic)
+
+Control.Lens.TH.makeLenses ''Node
 
 instance P'.Mergeable Node where
   mergeAppend (Node x'1 x'2 x'3) (Node y'1 y'2 y'3)
@@ -47,9 +50,9 @@ instance P'.Wire Node where
     where
         update'Self wire'Tag old'Self
          = case wire'Tag of
-             8 -> Prelude'.fmap (\ !new'Field -> old'Self{sentenceIndex = new'Field}) (P'.wireGet 13)
-             16 -> Prelude'.fmap (\ !new'Field -> old'Self{index = new'Field}) (P'.wireGet 13)
-             24 -> Prelude'.fmap (\ !new'Field -> old'Self{copyAnnotation = Prelude'.Just new'Field}) (P'.wireGet 13)
+             8 -> Prelude'.fmap (\ !new'Field -> old'Self{_sentenceIndex = new'Field}) (P'.wireGet 13)
+             16 -> Prelude'.fmap (\ !new'Field -> old'Self{_index = new'Field}) (P'.wireGet 13)
+             24 -> Prelude'.fmap (\ !new'Field -> old'Self{_copyAnnotation = Prelude'.Just new'Field}) (P'.wireGet 13)
              _ -> let (field'Number, wire'Type) = P'.splitWireTag wire'Tag in P'.unknown field'Number wire'Type old'Self
 
 instance P'.MessageAPI msg' (msg' -> Node) Node where
@@ -61,7 +64,7 @@ instance P'.ReflectDescriptor Node where
   getMessageInfo _ = P'.GetMessageInfo (P'.fromDistinctAscList [8, 16]) (P'.fromDistinctAscList [8, 16, 24])
   reflectDescriptorInfo _
    = Prelude'.read
-      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.DependencyGraph.Node\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\",MName \"DependencyGraph\"], baseName = MName \"Node\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"DependencyGraph\",\"Node.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.DependencyGraph.Node.sentenceIndex\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"DependencyGraph\",MName \"Node\"], baseName' = FName \"sentenceIndex\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 8}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.DependencyGraph.Node.index\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"DependencyGraph\",MName \"Node\"], baseName' = FName \"index\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.DependencyGraph.Node.copyAnnotation\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"DependencyGraph\",MName \"Node\"], baseName' = FName \"copyAnnotation\", baseNamePrefix' = \"\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = False}"
+      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.DependencyGraph.Node\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\",MName \"DependencyGraph\"], baseName = MName \"Node\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"CoreNLPProtos\",\"DependencyGraph\",\"Node.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.DependencyGraph.Node.sentenceIndex\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"DependencyGraph\",MName \"Node\"], baseName' = FName \"sentenceIndex\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 8}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.DependencyGraph.Node.index\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"DependencyGraph\",MName \"Node\"], baseName' = FName \"index\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".edu.stanford.nlp.pipeline.DependencyGraph.Node.copyAnnotation\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"CoreNLPProtos\",MName \"DependencyGraph\",MName \"Node\"], baseName' = FName \"copyAnnotation\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 13}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
 
 instance P'.TextType Node where
   tellT = P'.tellSubMessage
@@ -70,26 +73,26 @@ instance P'.TextType Node where
 instance P'.TextMsg Node where
   textPut msg
    = do
-       P'.tellT "sentenceIndex" (sentenceIndex msg)
-       P'.tellT "index" (index msg)
-       P'.tellT "copyAnnotation" (copyAnnotation msg)
+       P'.tellT "sentenceIndex" (_sentenceIndex msg)
+       P'.tellT "index" (_index msg)
+       P'.tellT "copyAnnotation" (_copyAnnotation msg)
   textGet
    = do
-       mods <- P'.sepEndBy (P'.choice [parse'sentenceIndex, parse'index, parse'copyAnnotation]) P'.spaces
+       mods <- P'.sepEndBy (P'.choice [parse'_sentenceIndex, parse'_index, parse'_copyAnnotation]) P'.spaces
        Prelude'.return (Prelude'.foldl (\ v f -> f v) P'.defaultValue mods)
     where
-        parse'sentenceIndex
+        parse'_sentenceIndex
          = P'.try
             (do
                v <- P'.getT "sentenceIndex"
-               Prelude'.return (\ o -> o{sentenceIndex = v}))
-        parse'index
+               Prelude'.return (\ o -> o{_sentenceIndex = v}))
+        parse'_index
          = P'.try
             (do
                v <- P'.getT "index"
-               Prelude'.return (\ o -> o{index = v}))
-        parse'copyAnnotation
+               Prelude'.return (\ o -> o{_index = v}))
+        parse'_copyAnnotation
          = P'.try
             (do
                v <- P'.getT "copyAnnotation"
-               Prelude'.return (\ o -> o{copyAnnotation = v}))
+               Prelude'.return (\ o -> o{_copyAnnotation = v}))
