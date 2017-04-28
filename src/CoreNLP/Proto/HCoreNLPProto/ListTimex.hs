@@ -8,9 +8,9 @@ import qualified GHC.Generics as Prelude'
 import qualified Data.Data as Prelude'
 import qualified Text.ProtocolBuffers.Header as P'
 import qualified Control.Lens.TH
-import qualified CoreNLP.Proto.CoreNLPProtos.Timex as CoreNLPProtos (Timex)
+import qualified CoreNLP.Proto.HCoreNLPProto.TimexWithOffset as HCoreNLPProto (TimexWithOffset)
 
-data ListTimex = ListTimex{_timexes :: !(P'.Seq CoreNLPProtos.Timex)}
+data ListTimex = ListTimex{_timexes :: !(P'.Seq HCoreNLPProto.TimexWithOffset)}
                deriving (Prelude'.Show, Prelude'.Eq, Prelude'.Ord, Prelude'.Typeable, Prelude'.Data, Prelude'.Generic)
 
 Control.Lens.TH.makeLenses ''ListTimex
@@ -60,7 +60,7 @@ instance P'.ReflectDescriptor ListTimex where
   getMessageInfo _ = P'.GetMessageInfo (P'.fromDistinctAscList []) (P'.fromDistinctAscList [10])
   reflectDescriptorInfo _
    = Prelude'.read
-      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".ai.uphere.HCoreNLP.ListTimex\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"HCoreNLPProto\"], baseName = MName \"ListTimex\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"HCoreNLPProto\",\"ListTimex.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.ListTimex.timexes\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"ListTimex\"], baseName' = FName \"timexes\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 10}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = True, mightPack = False, typeCode = FieldType {getFieldType = 11}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.Timex\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"Timex\"}), hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
+      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".ai.uphere.HCoreNLP.ListTimex\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"HCoreNLPProto\"], baseName = MName \"ListTimex\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"HCoreNLPProto\",\"ListTimex.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.ListTimex.timexes\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"ListTimex\"], baseName' = FName \"timexes\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 10}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = False, canRepeat = True, mightPack = False, typeCode = FieldType {getFieldType = 11}, typeName = Just (ProtoName {protobufName = FIName \".ai.uphere.HCoreNLP.TimexWithOffset\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"HCoreNLPProto\"], baseName = MName \"TimexWithOffset\"}), hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
 
 instance P'.TextType ListTimex where
   tellT = P'.tellSubMessage
