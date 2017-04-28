@@ -20,6 +20,7 @@ import           Text.ProtocolBuffers.WireMessage (messageGet)
 import           CoreNLP.Simple
 import qualified CoreNLPProtos.Document as D
 import qualified CoreNLPProtos.Sentence as S
+import qualified CoreNLPProtos.Timex    as T
 
   
 main :: IO ()
@@ -29,14 +30,28 @@ main = do
     txt <- TIO.readFile fp
     clspath <- getEnv "CLASSPATH"
     J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-      pp <- prepare
+      let pcfg = PPConfig True True True True
+      pp <- prepare pcfg
       ann <- annotate pp txt
-      bstr <- serialize ann
+      {- 
+      bstr <- serializeDoc ann
       let lbstr = BL.fromStrict bstr
       case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
         Left err -> print err
         Right (doc,_) -> do
           mapM_ print . zip ([1..] :: [Int]) . F.toList . fmap (^. S.token) $ (doc ^. D.sentence)
       return ()
-
+      -}
+      bstr <- serializeTimex ann
+      let lbstr = BL.fromStrict bstr
+      case (messageGet lbstr :: Either String (T.Timex,BL.ByteString)) of
+        Left err -> print err
+        Right (tmx,lbstr') -> do
+          print tmx
+          case (messageGet lbstr' :: Either String (T.Timex,BL.ByteString)) of
+            Left err' -> print err'
+            Right (tmx',lbstr'') -> print tmx'
+          -- mapM_ print . zip ([1..] :: [Int]) . F.toList . fmap (^. S.token) $ (doc ^. D.sentence)
+      return ()
+      
     
