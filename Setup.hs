@@ -24,11 +24,8 @@ hookfunction x@(gpdesc,hbi) cflags = do
   let pdesc = packageDescription gpdesc
   return binfo
 
-setClasspath bdir = do
+addClasspath jarpath = do
   mocpath <- lookupEnv "CLASSPATH"
-
-  let jarpath' = bdir </> "HCoreNLPProto.jar"
-  jarpath <- canonicalizePath jarpath'
   case mocpath of
     Nothing -> do
       setEnv "CLASSPATH" jarpath
@@ -40,27 +37,18 @@ setClasspath bdir = do
 
 myBuild pdesc lbi hooks bflags = do
   let bdir = buildDir lbi
-  -- -emp <- getTemporaryDirectory
-  -- print temp
-  -- print (dataDir (packageDescription gpdesc))
-  
+  let jarpath' = bdir </> "HCoreNLPProto.jar"
+  jarpath <- canonicalizePath jarpath'
   let javafiles = filter (\x->takeExtensions x == ".java") $ extraSrcFiles (localPkgDescr lbi)
-  -- print pdesc
   let p = proc "javac" javafiles
   putStrLn $ "compiling " ++ show javafiles
   (excode,sout,serr) <- readCreateProcessWithExitCode p ""
-  putStrLn "==========="
   print excode  
-  putStrLn "==========="
-  putStrLn sout
-  putStrLn "==========="
-  putStrLn serr
-  putStrLn "==========="
-  let p2 = proc "jar" ["cf", bdir </> "HCoreNLPProto.jar", "javasrc/ai"]
+  let p2 = proc "jar" ["cf", jarpath, "-C", "javasrc", "ai"]
   putStrLn "creating jar"
-  (excode',_,_) <- readCreateProcessWithExitCode p ""
+  (excode',_,_) <- readCreateProcessWithExitCode p2 ""
   print excode'
-  setClasspath bdir
+  addClasspath jarpath
   cnts <- getDirectoryContents bdir
   print cnts
   return()
