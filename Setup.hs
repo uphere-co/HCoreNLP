@@ -26,8 +26,9 @@ hookfunction x@(gpdesc,hbi) cflags = do
 
 setClasspath bdir = do
   mocpath <- lookupEnv "CLASSPATH"
-  -- cwd <- getCurrentDirectory
-  let jarpath = bdir </> "HCoreNLPProto.jar"
+
+  let jarpath' = bdir </> "HCoreNLPProto.jar"
+  jarpath <- canonicalizePath jarpath'
   case mocpath of
     Nothing -> do
       setEnv "CLASSPATH" jarpath

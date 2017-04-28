@@ -31,12 +31,14 @@ library
                        attoparsec,
                        bytestring,
                        data-default,
+                       directory,
                        inline-java,
                        jni,
                        jvm,
                        lens,
                        protocol-buffers,
-                       protocol-buffers-descriptor,                       
+                       protocol-buffers-descriptor,
+                       template-haskell,
                        text,
                        transformers
   Exposed-modules:
@@ -76,7 +78,8 @@ library
                        CoreNLP.SUTime
                        CoreNLP.SUTime.Parser
                        CoreNLP.Type
-
+  Other-modules:
+                       TemplateTest
 
   default-language:    Haskell2010
 
