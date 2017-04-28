@@ -19,7 +19,8 @@ import           Data.Text                    (Text)
 import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
 import qualified Language.Java                (reflect,reify)
-
+--
+import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex
 
 data PipelineConfig = PPConfig { _tokenizer       :: Bool
                                , _words2sentences :: Bool
@@ -98,6 +99,11 @@ serializeTimex annotation = do
               edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
               java.util.List<edu.stanford.nlp.util.CoreMap> timexAnnsAll = $annotation.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotations.class);
 
+              ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex timexes =
+                ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex
+                  .newBuilder()
+                  .build();
+   
               for (edu.stanford.nlp.util.CoreMap cm : timexAnnsAll) {
                 System.out.println(cm);
                 System.out.println("---------");

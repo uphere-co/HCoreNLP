@@ -1,0 +1,11 @@
+package ai.uphere.HCoreNLP;
+
+option java_outer_classname = "HCoreNLPProto";
+
+import "CoreNLP.proto";
+
+// List of Timex
+message ListTimex {
+  repeated edu.stanford.nlp.pipeline.Timex      timexes     = 1;
+}
+

@@ -223,7 +223,7 @@ in
 
 stdenv.mkDerivation {
   name = "corenlp-dev";
-  buildInputs = [ hsenv jdk ];
+  buildInputs = [ hsenv jdk protobuf];
   shellHook = ''
     CLASSPATH="${corenlp_models}:${corenlp}/stanford-corenlp-3.7.0.jar:${corenlp}/protobuf.jar:${corenlp}/joda-time.jar:${corenlp}/jollyday.jar";
   '';
