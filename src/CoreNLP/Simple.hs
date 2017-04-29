@@ -59,13 +59,17 @@ prepare p = do
 
 
 annotate :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -- ^ annotation pipeline object
-          -> Text                                                      -- ^ document
-          -> IO (J ('Class "edu.stanford.nlp.pipeline.Annotation")) -- ^ annotation object
-annotate pipeline otxt = do
+          -> Text                                                     -- ^ document
+          -> Text                                                     -- ^ time set to the document, such as "2017-04-17"
+          -> IO (J ('Class "edu.stanford.nlp.pipeline.Annotation"))   -- ^ annotation object
+annotate pipeline otxt otimetxt = do
   txt <- Language.Java.reflect otxt
+  timetxt <- Language.Java.reflect otimetxt
   [java|{
           String text = $txt;
           edu.stanford.nlp.pipeline.Annotation annotation = new edu.stanford.nlp.pipeline.Annotation(text);
+          annotation.set(edu.stanford.nlp.ling.CoreAnnotations.DocDateAnnotation.class, $timetxt);
+          
           $pipeline.annotate(annotation);
           return annotation;
         }

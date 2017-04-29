@@ -32,7 +32,7 @@ main = do
     J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
       let pcfg = PPConfig True True True True
       pp <- prepare pcfg
-      ann <- annotate pp txt
+      ann <- annotate pp txt "2017-04-17"
       {- 
       bstr <- serializeDoc ann
       let lbstr = BL.fromStrict bstr
