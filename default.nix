@@ -1,5 +1,6 @@
 { mkDerivation, aeson, attoparsec, base, bytestring, data-default
 , inline-java, jni, jvm, lens, stdenv, text, transformers
+, protocol-buffers, protocol-buffers-descriptor
 , jdk
 , corenlp, corenlp_models
 }:
@@ -13,7 +14,7 @@ mkDerivation {
   '';
   libraryHaskellDepends = [
     aeson attoparsec base bytestring data-default inline-java jni jvm
-    lens text transformers
+    lens text transformers protocol-buffers protocol-buffers-descriptor
   ];
   buildDepends = [ jdk ];
   license = "unknown";
