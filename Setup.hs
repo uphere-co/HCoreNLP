@@ -2,20 +2,27 @@ import Data.Monoid
 import Distribution.PackageDescription
 import Distribution.Simple
 import Distribution.Simple.Build
+import Distribution.Simple.Install
 import Distribution.Simple.LocalBuildInfo
+import Distribution.Simple.Setup          (CopyFlags(copyDest), fromFlag, toFlag, CopyDest( NoCopyDest))
 
 import System.Directory
 import System.Environment
 import System.FilePath
+import System.IO                (hPutStrLn, stderr)
 import System.Process
+
 
 
 main = defaultMainWithHooks myConfigHook
 
 myConfigHook = simpleUserHooks
                { confHook = hookfunction
-               -- , preBuild = myPrebuild <> preBuild simpleUserHooks
-               , buildHook = myBuild <> buildHook simpleUserHooks 
+               , buildHook = myBuild <> buildHook simpleUserHooks
+               -- , copyHook = myCopy <> copyHook simpleUserHooks
+               , postCopy = myPostCopy
+               -- , instHook = myInstall <> instHook simpleUserHooks
+               , postInst = myPostInst 
                }
 
 hookfunction x@(gpdesc,hbi) cflags = do
@@ -49,7 +56,27 @@ myBuild pdesc lbi hooks bflags = do
   (excode',_,_) <- readCreateProcessWithExitCode p2 ""
   print excode'
   addClasspath jarpath
-  cnts <- getDirectoryContents bdir
-  print cnts
+  -- cnts <- getDirectoryContents bdir
+  -- print cnts
   return()
+
+
+-- we may need both instHook and copyHook
+-- 
+-- https://github.com/haskell/cabal/issues/1805
+--
+copyJar pdesc lbi = do
+  let copydest = fromFlag (toFlag NoCopyDest)
+      installDirs = absoluteInstallDirs pdesc lbi copydest
+      ddir =  datadir installDirs
+      bdir = buildDir lbi
+  jarpath <- canonicalizePath (bdir </> "HCoreNLPProto.jar")
+  print jarpath
+  print ddir
+  createDirectoryIfMissing True ddir
+  copyFile jarpath (ddir </> "HCoreNLPProto.jar")
+
   
+myPostCopy _ _ pdesc lbi = copyJar pdesc lbi
+
+myPostInst _ _ pdesc lbi = copyJar pdesc lbi 
