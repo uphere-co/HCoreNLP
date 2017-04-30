@@ -32,39 +32,41 @@ library
                        transformers
   Exposed-modules:
                        CoreNLP
+                       CoreNLP.Proto.CoreNLPProtos
+                       CoreNLP.Proto.CoreNLPProtos.CorefChain
+                       CoreNLP.Proto.CoreNLPProtos.CorefChain.CorefMention
+                       CoreNLP.Proto.CoreNLPProtos.DependencyGraph
+                       CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Edge
+                       CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node
+                       CoreNLP.Proto.CoreNLPProtos.Document
+                       CoreNLP.Proto.CoreNLPProtos.Entity
+                       CoreNLP.Proto.CoreNLPProtos.IndexedWord
+                       CoreNLP.Proto.CoreNLPProtos.Language
+                       CoreNLP.Proto.CoreNLPProtos.MapIntString
+                       CoreNLP.Proto.CoreNLPProtos.MapStringString
+                       CoreNLP.Proto.CoreNLPProtos.Mention
+                       CoreNLP.Proto.CoreNLPProtos.NERMention
+                       CoreNLP.Proto.CoreNLPProtos.NaturalLogicRelation
+                       CoreNLP.Proto.CoreNLPProtos.Operator
+                       CoreNLP.Proto.CoreNLPProtos.ParseTree
+                       CoreNLP.Proto.CoreNLPProtos.Polarity
+                       CoreNLP.Proto.CoreNLPProtos.Quote
+                       CoreNLP.Proto.CoreNLPProtos.Relation
+                       CoreNLP.Proto.CoreNLPProtos.RelationTriple
+                       CoreNLP.Proto.CoreNLPProtos.Sentence
+                       CoreNLP.Proto.CoreNLPProtos.SentenceFragment
+                       CoreNLP.Proto.CoreNLPProtos.Sentiment
+                       CoreNLP.Proto.CoreNLPProtos.Span
+                       CoreNLP.Proto.CoreNLPProtos.SpeakerInfo
+                       CoreNLP.Proto.CoreNLPProtos.Timex
+                       CoreNLP.Proto.CoreNLPProtos.Token
+                       CoreNLP.Proto.CoreNLPProtos.TokenLocation
+                       CoreNLP.Proto.HCoreNLPProto
+                       CoreNLP.Proto.HCoreNLPProto.ListTimex
                        CoreNLP.Simple
                        CoreNLP.SUTime
                        CoreNLP.SUTime.Parser
                        CoreNLP.Type
-                       CoreNLPProtos
-                       CoreNLPProtos.CorefChain
-                       CoreNLPProtos.CorefChain.CorefMention
-                       CoreNLPProtos.DependencyGraph
-                       CoreNLPProtos.DependencyGraph.Edge
-                       CoreNLPProtos.DependencyGraph.Node
-                       CoreNLPProtos.Document
-                       CoreNLPProtos.Entity
-                       CoreNLPProtos.IndexedWord
-                       CoreNLPProtos.Language
-                       CoreNLPProtos.MapIntString
-                       CoreNLPProtos.MapStringString
-                       CoreNLPProtos.Mention
-                       CoreNLPProtos.NERMention
-                       CoreNLPProtos.NaturalLogicRelation
-                       CoreNLPProtos.Operator
-                       CoreNLPProtos.ParseTree
-                       CoreNLPProtos.Polarity
-                       CoreNLPProtos.Quote
-                       CoreNLPProtos.Relation
-                       CoreNLPProtos.RelationTriple
-                       CoreNLPProtos.Sentence
-                       CoreNLPProtos.SentenceFragment
-                       CoreNLPProtos.Sentiment
-                       CoreNLPProtos.Span
-                       CoreNLPProtos.SpeakerInfo
-                       CoreNLPProtos.Timex
-                       CoreNLPProtos.Token
-                       CoreNLPProtos.TokenLocation
 
 
   default-language:    Haskell2010
