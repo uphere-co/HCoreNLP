@@ -16,11 +16,16 @@ import           Control.Monad.Trans.Reader
 import           Data.Int
 import qualified Data.ByteString.Char8 as B
 import           Data.Text                    (Text)
+import           Language.Haskell.TH.Syntax
 import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
 import qualified Language.Java                (reflect,reify)
 --
 import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex
+
+import TemplateTest
+
+
 
 data PipelineConfig = PPConfig { _tokenizer       :: Bool
                                , _words2sentences :: Bool
@@ -33,6 +38,8 @@ makeLenses ''PipelineConfig
 -- | preparing AnnotationPipeline with SUTime TimeAnnotator
 prepare :: PipelineConfig -> IO (J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline"))
 prepare p = do
+    $(getCurrentDir >> getCompileEnv "CLASSPATH" >> return (AppE (VarE (mkName "return")) (ConE (mkName "()"))))
+  
     ptkn <- Language.Java.reflect (p^.tokenizer)
     pw2s <- Language.Java.reflect (p^.words2sentences)
     ppos <- Language.Java.reflect (p^.postagger)

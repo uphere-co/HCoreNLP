@@ -215,6 +215,7 @@ let
             proto-lens
             proto-lens-protoc
             protocol-buffers
+            template-haskell
             p.autoencode
             p.textview            
           ]);
