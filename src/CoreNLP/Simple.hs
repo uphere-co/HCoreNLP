@@ -55,7 +55,7 @@ annotate pipeline doc = do
           return annotation;
         }
   |]
-  
+
 serializeDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
           -> IO B.ByteString
 serializeDoc annotation = do
@@ -63,9 +63,6 @@ serializeDoc annotation = do
     [java|{
             try {
               java.io.ByteArrayOutputStream arrayOutputStream = new java.io.ByteArrayOutputStream();
-              java.io.BufferedWriter bufferedWriter = new java.io.BufferedWriter(
-                new java.io.OutputStreamWriter(arrayOutputStream)
-              );
               edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
               edu.stanford.nlp.pipeline.CoreNLPProtos.Document doc = ser.toProto($annotation);
               System.out.println(doc);
@@ -85,9 +82,6 @@ serializeTimex annotation = do
     [java|{
             try {
               java.io.ByteArrayOutputStream arrayOutputStream = new java.io.ByteArrayOutputStream();
-              java.io.BufferedWriter bufferedWriter = new java.io.BufferedWriter(
-                new java.io.OutputStreamWriter(arrayOutputStream)
-              );
               edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
               java.util.List<edu.stanford.nlp.util.CoreMap> timexAnnsAll = $annotation.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotations.class);
 
