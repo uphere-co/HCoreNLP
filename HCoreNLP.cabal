@@ -77,6 +77,7 @@ library
                        CoreNLP.Proto.HCoreNLPProto.ListTimex
                        CoreNLP.Proto.HCoreNLPProto.TimexWithOffset
                        CoreNLP.Simple
+                       CoreNLP.Simple.Type
                        CoreNLP.SUTime
                        CoreNLP.SUTime.Parser
                        CoreNLP.Type

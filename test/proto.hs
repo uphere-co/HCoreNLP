@@ -19,6 +19,7 @@ import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
 import           CoreNLP.Simple
+import           CoreNLP.Simple.Type
 -- import qualified CoreNLPProtos.Document as D
 -- import qualified CoreNLPProtos.Sentence as S
 import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T

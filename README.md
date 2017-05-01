@@ -11,6 +11,7 @@ We have the following examples in `test` directory:
 $ nix-shell shell.nix --argstr uphere-nix-overlay (uphere-nix-overlay) --argstr autoencode (autoencocde) --argstr symbolic (symbolic)
 $ cabal sandbox init
 $ cabal install
+$ export CLASSPATH+=":.cabal-sandbox/share/x86_64-linux-ghc-8.0.2/HCoreNLP-0.1.0.0/HCoreNLPProto.jar"
 $ cabal exec -- ghc test/callparser.hs
 $ ./test/callparser
 ```

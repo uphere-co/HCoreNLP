@@ -1,45 +1,21 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeApplications #-}
 
 module CoreNLP.Simple where
 
 import           Control.Lens
-import           Control.Monad.IO.Class
-import           Control.Monad.Trans.Class
-import           Control.Monad.Trans.Reader
 import qualified Data.ByteString.Char8 as B
-import           Data.Int
-import           Data.Text                    (Text)
 import qualified Data.Text             as T
-import           Data.Time.Calendar
+import           Data.Time.Calendar           (showGregorian)
 import           Language.Haskell.TH.Syntax
 import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
 import qualified Language.Java                (reflect,reify)
 --
-import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex
+import           CoreNLP.Simple.Type
+import           TemplateTest
 
-import TemplateTest
-
-data PipelineConfig = PPConfig { _tokenizer       :: Bool
-                               , _words2sentences :: Bool
-                               , _postagger       :: Bool
-                               , _sutime          :: Bool
-                               } deriving (Show,Eq,Ord)
-
-makeLenses ''PipelineConfig
-
-data Document = Document { _doctext :: Text
-                         , _docdate :: Day
-                         } deriving (Show,Eq,Ord)
-
-makeLenses ''Document
 
 -- | preparing AnnotationPipeline with SUTime TimeAnnotator
 prepare :: PipelineConfig -> IO (J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline"))
