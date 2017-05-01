@@ -40,6 +40,7 @@ library
                        protocol-buffers-descriptor,
                        template-haskell,
                        text,
+                       time,
                        transformers
   Exposed-modules:
                        CoreNLP

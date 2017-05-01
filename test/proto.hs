@@ -13,6 +13,7 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import qualified Data.Foldable              as F  (toList)
 import qualified Data.Text.IO               as TIO
+import           Data.Time.Calendar               (fromGregorian)
 import           Language.Java         as J
 import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
@@ -32,16 +33,8 @@ main = do
     J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
       let pcfg = PPConfig True True True True
       pp <- prepare pcfg
-      ann <- annotate pp txt "2017-04-17"
-      {- 
-      bstr <- serializeDoc ann
-      let lbstr = BL.fromStrict bstr
-      case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
-        Left err -> print err
-        Right (doc,_) -> do
-          mapM_ print . zip ([1..] :: [Int]) . F.toList . fmap (^. S.token) $ (doc ^. D.sentence)
-      return ()
-      -}
+      let doc = Document txt (fromGregorian 2017 4 17) 
+      ann <- annotate pp doc
       bstr <- serializeTimex ann
       let lbstr = BL.fromStrict bstr
       case (messageGet lbstr :: Either String (T.ListTimex,BL.ByteString)) of

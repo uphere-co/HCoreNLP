@@ -13,9 +13,11 @@ import           Control.Lens
 import           Control.Monad.IO.Class
 import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Reader
-import           Data.Int
 import qualified Data.ByteString.Char8 as B
+import           Data.Int
 import           Data.Text                    (Text)
+import qualified Data.Text             as T
+import           Data.Time.Calendar
 import           Language.Haskell.TH.Syntax
 import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
@@ -25,8 +27,6 @@ import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex
 
 import TemplateTest
 
-
-
 data PipelineConfig = PPConfig { _tokenizer       :: Bool
                                , _words2sentences :: Bool
                                , _postagger       :: Bool
@@ -34,6 +34,12 @@ data PipelineConfig = PPConfig { _tokenizer       :: Bool
                                } deriving (Show,Eq,Ord)
 
 makeLenses ''PipelineConfig
+
+data Document = Document { _doctext :: Text
+                         , _docdate :: Day
+                         } deriving (Show,Eq,Ord)
+
+makeLenses ''Document
 
 -- | preparing AnnotationPipeline with SUTime TimeAnnotator
 prepare :: PipelineConfig -> IO (J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline"))
@@ -59,12 +65,11 @@ prepare p = do
 
 
 annotate :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -- ^ annotation pipeline object
-          -> Text                                                     -- ^ document
-          -> Text                                                     -- ^ time set to the document, such as "2017-04-17"
+          -> Document                                                 -- ^ document
           -> IO (J ('Class "edu.stanford.nlp.pipeline.Annotation"))   -- ^ annotation object
-annotate pipeline otxt otimetxt = do
-  txt <- Language.Java.reflect otxt
-  timetxt <- Language.Java.reflect otimetxt
+annotate pipeline doc = do
+  txt <- Language.Java.reflect (doc^.doctext)
+  timetxt <- Language.Java.reflect (T.pack (showGregorian (doc^.docdate)))
   [java|{
           String text = $txt;
           edu.stanford.nlp.pipeline.Annotation annotation = new edu.stanford.nlp.pipeline.Annotation(text);
