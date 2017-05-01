@@ -56,58 +56,61 @@ annotate pipeline doc = do
         }
   |]
 
-serializeDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
-          -> IO B.ByteString
-serializeDoc annotation = do
-  r <-
-    [java|{
+serialize :: J ('Class "com.google.protobuf.MessageLite") -> IO B.ByteString
+serialize obj = do
+  Language.Java.reify =<<
+    [java|{ 
             try {
               java.io.ByteArrayOutputStream arrayOutputStream = new java.io.ByteArrayOutputStream();
-              edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
-              edu.stanford.nlp.pipeline.CoreNLPProtos.Document doc = ser.toProto($annotation);
-              System.out.println(doc);
-              doc.writeTo(arrayOutputStream); 
+              $obj.writeTo(arrayOutputStream); 
               return arrayOutputStream.toByteArray();
             } catch( java.io.IOException e ) {
               return null;
             }
           }
     |]
-  Language.Java.reify r
+
+
+serializeDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
+          -> IO B.ByteString
+serializeDoc annotation = do
+  r <-
+    [java|{
+            edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
+            edu.stanford.nlp.pipeline.CoreNLPProtos.Document doc = ser.toProto($annotation);
+            return doc; 
+          }
+    |]
+  serialize r  
+
 
 serializeTimex :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
           -> IO B.ByteString
 serializeTimex annotation = do
   r <-
     [java|{
-            try {
-              java.io.ByteArrayOutputStream arrayOutputStream = new java.io.ByteArrayOutputStream();
-              edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
-              java.util.List<edu.stanford.nlp.util.CoreMap> timexAnnsAll = $annotation.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotations.class);
+            edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
+            java.util.List<edu.stanford.nlp.util.CoreMap> timexAnnsAll = $annotation.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotations.class);
 
-              ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.Builder listTimexBuilder =
-                ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.newBuilder();
+            ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.Builder listTimexBuilder =
+              ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.newBuilder();
 
-              for (edu.stanford.nlp.util.CoreMap cm : timexAnnsAll) {
-                ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder tmxoffset =
-                  ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.newBuilder();
-                edu.stanford.nlp.time.Timex timex = cm.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotation.class);
-                edu.stanford.nlp.pipeline.CoreNLPProtos.Timex tmx = ser.toProto(timex);
-                int b = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetBeginAnnotation.class);
-                int e = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetEndAnnotation.class);
-                tmxoffset
-                  .setTimex(tmx)
-                  .setCharacterOffsetBegin(b)
-                  .setCharacterOffsetEnd(e);
-                listTimexBuilder.addTimexes(tmxoffset.build());
+            for (edu.stanford.nlp.util.CoreMap cm : timexAnnsAll) {
+              ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder tmxoffset =
+                ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.newBuilder();
+              edu.stanford.nlp.time.Timex timex = cm.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotation.class);
+              edu.stanford.nlp.pipeline.CoreNLPProtos.Timex tmx = ser.toProto(timex);
+              int b = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetBeginAnnotation.class);
+              int e = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetEndAnnotation.class);
+              tmxoffset
+                .setTimex(tmx)
+                .setCharacterOffsetBegin(b)
+                .setCharacterOffsetEnd(e);
+              listTimexBuilder.addTimexes(tmxoffset.build());
 
-              }
-              listTimexBuilder.build().writeTo(arrayOutputStream);;
-              return arrayOutputStream.toByteArray();
-            } catch( java.io.IOException e ) {
-              return null;
             }
+            return (listTimexBuilder.build());
           }
     |]
-  Language.Java.reify r
+  serialize r  
 
