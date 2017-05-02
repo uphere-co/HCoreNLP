@@ -1,39 +1,21 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeApplications #-}
 
 module CoreNLP.Simple where
 
 import           Control.Lens
-import           Control.Monad.IO.Class
-import           Control.Monad.Trans.Class
-import           Control.Monad.Trans.Reader
-import           Data.Int
 import qualified Data.ByteString.Char8 as B
-import           Data.Text                    (Text)
+import qualified Data.Text             as T
+import           Data.Time.Calendar           (showGregorian)
 import           Language.Haskell.TH.Syntax
 import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
 import qualified Language.Java                (reflect,reify)
 --
-import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex
+import           CoreNLP.Simple.Type
+import           TemplateTest
 
-import TemplateTest
-
-
-
-data PipelineConfig = PPConfig { _tokenizer       :: Bool
-                               , _words2sentences :: Bool
-                               , _postagger       :: Bool
-                               , _sutime          :: Bool
-                               } deriving (Show,Eq,Ord)
-
-makeLenses ''PipelineConfig
 
 -- | preparing AnnotationPipeline with SUTime TimeAnnotator
 prepare :: PipelineConfig -> IO (J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline"))
@@ -59,12 +41,11 @@ prepare p = do
 
 
 annotate :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -- ^ annotation pipeline object
-          -> Text                                                     -- ^ document
-          -> Text                                                     -- ^ time set to the document, such as "2017-04-17"
+          -> Document                                                 -- ^ document
           -> IO (J ('Class "edu.stanford.nlp.pipeline.Annotation"))   -- ^ annotation object
-annotate pipeline otxt otimetxt = do
-  txt <- Language.Java.reflect otxt
-  timetxt <- Language.Java.reflect otimetxt
+annotate pipeline doc = do
+  txt <- Language.Java.reflect (doc^.doctext)
+  timetxt <- Language.Java.reflect (T.pack (showGregorian (doc^.docdate)))
   [java|{
           String text = $txt;
           edu.stanford.nlp.pipeline.Annotation annotation = new edu.stanford.nlp.pipeline.Annotation(text);
@@ -74,65 +55,62 @@ annotate pipeline otxt otimetxt = do
           return annotation;
         }
   |]
-  
-serializeDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
-          -> IO B.ByteString
-serializeDoc annotation = do
-  r <-
-    [java|{
+
+serialize :: J ('Class "com.google.protobuf.MessageLite") -> IO B.ByteString
+serialize obj = do
+  Language.Java.reify =<<
+    [java|{ 
             try {
               java.io.ByteArrayOutputStream arrayOutputStream = new java.io.ByteArrayOutputStream();
-              java.io.BufferedWriter bufferedWriter = new java.io.BufferedWriter(
-                new java.io.OutputStreamWriter(arrayOutputStream)
-              );
-              edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
-              edu.stanford.nlp.pipeline.CoreNLPProtos.Document doc = ser.toProto($annotation);
-              System.out.println(doc);
-              doc.writeTo(arrayOutputStream); 
+              $obj.writeTo(arrayOutputStream); 
               return arrayOutputStream.toByteArray();
             } catch( java.io.IOException e ) {
               return null;
             }
           }
     |]
-  Language.Java.reify r
+
+
+serializeDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
+          -> IO B.ByteString
+serializeDoc annotation = do
+  r <-
+    [java|{
+            edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
+            edu.stanford.nlp.pipeline.CoreNLPProtos.Document doc = ser.toProto($annotation);
+            return doc; 
+          }
+    |]
+  serialize r  
+
 
 serializeTimex :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
           -> IO B.ByteString
 serializeTimex annotation = do
   r <-
     [java|{
-            try {
-              java.io.ByteArrayOutputStream arrayOutputStream = new java.io.ByteArrayOutputStream();
-              java.io.BufferedWriter bufferedWriter = new java.io.BufferedWriter(
-                new java.io.OutputStreamWriter(arrayOutputStream)
-              );
-              edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
-              java.util.List<edu.stanford.nlp.util.CoreMap> timexAnnsAll = $annotation.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotations.class);
+            edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer ser = new edu.stanford.nlp.pipeline.ProtobufAnnotationSerializer(false);
+            java.util.List<edu.stanford.nlp.util.CoreMap> timexAnnsAll = $annotation.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotations.class);
 
-              ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.Builder listTimexBuilder =
-                ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.newBuilder();
+            ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.Builder listTimexBuilder =
+              ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.newBuilder();
 
-              for (edu.stanford.nlp.util.CoreMap cm : timexAnnsAll) {
-                ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder tmxoffset =
-                  ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.newBuilder();
-                edu.stanford.nlp.time.Timex timex = cm.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotation.class);
-                edu.stanford.nlp.pipeline.CoreNLPProtos.Timex tmx = ser.toProto(timex);
-                int b = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetBeginAnnotation.class);
-                int e = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetEndAnnotation.class);
-                tmxoffset
-                  .setTimex(tmx)
-                  .setCharacterOffsetBegin(b)
-                  .setCharacterOffsetEnd(e);
-                listTimexBuilder.addTimexes(tmxoffset.build());
+            for (edu.stanford.nlp.util.CoreMap cm : timexAnnsAll) {
+              ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder tmxoffset =
+                ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.newBuilder();
+              edu.stanford.nlp.time.Timex timex = cm.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotation.class);
+              edu.stanford.nlp.pipeline.CoreNLPProtos.Timex tmx = ser.toProto(timex);
+              int b = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetBeginAnnotation.class);
+              int e = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetEndAnnotation.class);
+              tmxoffset
+                .setTimex(tmx)
+                .setCharacterOffsetBegin(b)
+                .setCharacterOffsetEnd(e);
+              listTimexBuilder.addTimexes(tmxoffset.build());
 
-              }
-              listTimexBuilder.build().writeTo(arrayOutputStream);;
-              return arrayOutputStream.toByteArray();
-            } catch( java.io.IOException e ) {
-              return null;
             }
+            return (listTimexBuilder.build());
           }
     |]
-  Language.Java.reify r
+  serialize r  
 
