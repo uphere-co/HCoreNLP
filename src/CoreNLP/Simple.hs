@@ -59,13 +59,17 @@ prepare p = do
 
 
 annotate :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -- ^ annotation pipeline object
-          -> Text                                                      -- ^ document
-          -> IO (J ('Class "edu.stanford.nlp.pipeline.Annotation")) -- ^ annotation object
-annotate pipeline otxt = do
+          -> Text                                                     -- ^ document
+          -> Text                                                     -- ^ time set to the document, such as "2017-04-17"
+          -> IO (J ('Class "edu.stanford.nlp.pipeline.Annotation"))   -- ^ annotation object
+annotate pipeline otxt otimetxt = do
   txt <- Language.Java.reflect otxt
+  timetxt <- Language.Java.reflect otimetxt
   [java|{
           String text = $txt;
           edu.stanford.nlp.pipeline.Annotation annotation = new edu.stanford.nlp.pipeline.Annotation(text);
+          annotation.set(edu.stanford.nlp.ling.CoreAnnotations.DocDateAnnotation.class, $timetxt);
+          
           $pipeline.annotate(annotation);
           return annotation;
         }
@@ -110,15 +114,18 @@ serializeTimex annotation = do
                 ai.uphere.HCoreNLP.HCoreNLPProto.ListTimex.newBuilder();
 
               for (edu.stanford.nlp.util.CoreMap cm : timexAnnsAll) {
-                //edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder timexBuilder = newBuilder();
-
-                System.out.println(cm);
-                System.out.println("---------");
+                ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder tmxoffset =
+                  ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.newBuilder();
                 edu.stanford.nlp.time.Timex timex = cm.get(edu.stanford.nlp.time.TimeAnnotations.TimexAnnotation.class);
                 edu.stanford.nlp.pipeline.CoreNLPProtos.Timex tmx = ser.toProto(timex);
-                //System.out.println(tmx);
-                listTimexBuilder.addTimexes(tmx);
-                // tmx.writeTo(arrayOutputStream);
+                int b = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetBeginAnnotation.class);
+                int e = cm.get(edu.stanford.nlp.ling.CoreAnnotations.CharacterOffsetEndAnnotation.class);
+                tmxoffset
+                  .setTimex(tmx)
+                  .setCharacterOffsetBegin(b)
+                  .setCharacterOffsetEnd(e);
+                listTimexBuilder.addTimexes(tmxoffset.build());
+
               }
               listTimexBuilder.build().writeTo(arrayOutputStream);;
               return arrayOutputStream.toByteArray();

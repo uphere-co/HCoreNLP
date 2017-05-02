@@ -8,32 +8,720 @@ public final class HCoreNLPProto {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public interface TimexWithOffsetOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:ai.uphere.HCoreNLP.TimexWithOffset)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+     */
+    boolean hasTimex();
+    /**
+     * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+     */
+    edu.stanford.nlp.pipeline.CoreNLPProtos.Timex getTimex();
+    /**
+     * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+     */
+    edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder getTimexOrBuilder();
+
+    /**
+     * <code>required int32 characterOffsetBegin = 2;</code>
+     */
+    boolean hasCharacterOffsetBegin();
+    /**
+     * <code>required int32 characterOffsetBegin = 2;</code>
+     */
+    int getCharacterOffsetBegin();
+
+    /**
+     * <code>required int32 characterOffsetEnd = 3;</code>
+     */
+    boolean hasCharacterOffsetEnd();
+    /**
+     * <code>required int32 characterOffsetEnd = 3;</code>
+     */
+    int getCharacterOffsetEnd();
+  }
+  /**
+   * Protobuf type {@code ai.uphere.HCoreNLP.TimexWithOffset}
+   */
+  public static final class TimexWithOffset extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:ai.uphere.HCoreNLP.TimexWithOffset)
+      TimexWithOffsetOrBuilder {
+    // Use TimexWithOffset.newBuilder() to construct.
+    private TimexWithOffset(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private TimexWithOffset(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final TimexWithOffset defaultInstance;
+    public static TimexWithOffset getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public TimexWithOffset getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TimexWithOffset(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = timex_.toBuilder();
+              }
+              timex_ = input.readMessage(edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(timex_);
+                timex_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              characterOffsetBegin_ = input.readInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              characterOffsetEnd_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ai.uphere.HCoreNLP.HCoreNLPProto.internal_static_ai_uphere_HCoreNLP_TimexWithOffset_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ai.uphere.HCoreNLP.HCoreNLPProto.internal_static_ai_uphere_HCoreNLP_TimexWithOffset_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.class, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<TimexWithOffset> PARSER =
+        new com.google.protobuf.AbstractParser<TimexWithOffset>() {
+      public TimexWithOffset parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TimexWithOffset(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TimexWithOffset> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int TIMEX_FIELD_NUMBER = 1;
+    private edu.stanford.nlp.pipeline.CoreNLPProtos.Timex timex_;
+    /**
+     * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+     */
+    public boolean hasTimex() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+     */
+    public edu.stanford.nlp.pipeline.CoreNLPProtos.Timex getTimex() {
+      return timex_;
+    }
+    /**
+     * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+     */
+    public edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder getTimexOrBuilder() {
+      return timex_;
+    }
+
+    public static final int CHARACTEROFFSETBEGIN_FIELD_NUMBER = 2;
+    private int characterOffsetBegin_;
+    /**
+     * <code>required int32 characterOffsetBegin = 2;</code>
+     */
+    public boolean hasCharacterOffsetBegin() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int32 characterOffsetBegin = 2;</code>
+     */
+    public int getCharacterOffsetBegin() {
+      return characterOffsetBegin_;
+    }
+
+    public static final int CHARACTEROFFSETEND_FIELD_NUMBER = 3;
+    private int characterOffsetEnd_;
+    /**
+     * <code>required int32 characterOffsetEnd = 3;</code>
+     */
+    public boolean hasCharacterOffsetEnd() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required int32 characterOffsetEnd = 3;</code>
+     */
+    public int getCharacterOffsetEnd() {
+      return characterOffsetEnd_;
+    }
+
+    private void initFields() {
+      timex_ = edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.getDefaultInstance();
+      characterOffsetBegin_ = 0;
+      characterOffsetEnd_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasTimex()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasCharacterOffsetBegin()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasCharacterOffsetEnd()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, timex_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, characterOffsetBegin_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, characterOffsetEnd_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, timex_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, characterOffsetBegin_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, characterOffsetEnd_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code ai.uphere.HCoreNLP.TimexWithOffset}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:ai.uphere.HCoreNLP.TimexWithOffset)
+        ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ai.uphere.HCoreNLP.HCoreNLPProto.internal_static_ai_uphere_HCoreNLP_TimexWithOffset_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ai.uphere.HCoreNLP.HCoreNLPProto.internal_static_ai_uphere_HCoreNLP_TimexWithOffset_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.class, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder.class);
+      }
+
+      // Construct using ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getTimexFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        if (timexBuilder_ == null) {
+          timex_ = edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.getDefaultInstance();
+        } else {
+          timexBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        characterOffsetBegin_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        characterOffsetEnd_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ai.uphere.HCoreNLP.HCoreNLPProto.internal_static_ai_uphere_HCoreNLP_TimexWithOffset_descriptor;
+      }
+
+      public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset getDefaultInstanceForType() {
+        return ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.getDefaultInstance();
+      }
+
+      public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset build() {
+        ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset buildPartial() {
+        ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset result = new ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (timexBuilder_ == null) {
+          result.timex_ = timex_;
+        } else {
+          result.timex_ = timexBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.characterOffsetBegin_ = characterOffsetBegin_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.characterOffsetEnd_ = characterOffsetEnd_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset) {
+          return mergeFrom((ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset other) {
+        if (other == ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.getDefaultInstance()) return this;
+        if (other.hasTimex()) {
+          mergeTimex(other.getTimex());
+        }
+        if (other.hasCharacterOffsetBegin()) {
+          setCharacterOffsetBegin(other.getCharacterOffsetBegin());
+        }
+        if (other.hasCharacterOffsetEnd()) {
+          setCharacterOffsetEnd(other.getCharacterOffsetEnd());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasTimex()) {
+          
+          return false;
+        }
+        if (!hasCharacterOffsetBegin()) {
+          
+          return false;
+        }
+        if (!hasCharacterOffsetEnd()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private edu.stanford.nlp.pipeline.CoreNLPProtos.Timex timex_ = edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          edu.stanford.nlp.pipeline.CoreNLPProtos.Timex, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder, edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder> timexBuilder_;
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      public boolean hasTimex() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      public edu.stanford.nlp.pipeline.CoreNLPProtos.Timex getTimex() {
+        if (timexBuilder_ == null) {
+          return timex_;
+        } else {
+          return timexBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      public Builder setTimex(edu.stanford.nlp.pipeline.CoreNLPProtos.Timex value) {
+        if (timexBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          timex_ = value;
+          onChanged();
+        } else {
+          timexBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      public Builder setTimex(
+          edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder builderForValue) {
+        if (timexBuilder_ == null) {
+          timex_ = builderForValue.build();
+          onChanged();
+        } else {
+          timexBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      public Builder mergeTimex(edu.stanford.nlp.pipeline.CoreNLPProtos.Timex value) {
+        if (timexBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              timex_ != edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.getDefaultInstance()) {
+            timex_ =
+              edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.newBuilder(timex_).mergeFrom(value).buildPartial();
+          } else {
+            timex_ = value;
+          }
+          onChanged();
+        } else {
+          timexBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      public Builder clearTimex() {
+        if (timexBuilder_ == null) {
+          timex_ = edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.getDefaultInstance();
+          onChanged();
+        } else {
+          timexBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      public edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder getTimexBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getTimexFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      public edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder getTimexOrBuilder() {
+        if (timexBuilder_ != null) {
+          return timexBuilder_.getMessageOrBuilder();
+        } else {
+          return timex_;
+        }
+      }
+      /**
+       * <code>required .edu.stanford.nlp.pipeline.Timex timex = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          edu.stanford.nlp.pipeline.CoreNLPProtos.Timex, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder, edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder> 
+          getTimexFieldBuilder() {
+        if (timexBuilder_ == null) {
+          timexBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              edu.stanford.nlp.pipeline.CoreNLPProtos.Timex, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder, edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder>(
+                  getTimex(),
+                  getParentForChildren(),
+                  isClean());
+          timex_ = null;
+        }
+        return timexBuilder_;
+      }
+
+      private int characterOffsetBegin_ ;
+      /**
+       * <code>required int32 characterOffsetBegin = 2;</code>
+       */
+      public boolean hasCharacterOffsetBegin() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required int32 characterOffsetBegin = 2;</code>
+       */
+      public int getCharacterOffsetBegin() {
+        return characterOffsetBegin_;
+      }
+      /**
+       * <code>required int32 characterOffsetBegin = 2;</code>
+       */
+      public Builder setCharacterOffsetBegin(int value) {
+        bitField0_ |= 0x00000002;
+        characterOffsetBegin_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 characterOffsetBegin = 2;</code>
+       */
+      public Builder clearCharacterOffsetBegin() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        characterOffsetBegin_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int characterOffsetEnd_ ;
+      /**
+       * <code>required int32 characterOffsetEnd = 3;</code>
+       */
+      public boolean hasCharacterOffsetEnd() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required int32 characterOffsetEnd = 3;</code>
+       */
+      public int getCharacterOffsetEnd() {
+        return characterOffsetEnd_;
+      }
+      /**
+       * <code>required int32 characterOffsetEnd = 3;</code>
+       */
+      public Builder setCharacterOffsetEnd(int value) {
+        bitField0_ |= 0x00000004;
+        characterOffsetEnd_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 characterOffsetEnd = 3;</code>
+       */
+      public Builder clearCharacterOffsetEnd() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        characterOffsetEnd_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:ai.uphere.HCoreNLP.TimexWithOffset)
+    }
+
+    static {
+      defaultInstance = new TimexWithOffset(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:ai.uphere.HCoreNLP.TimexWithOffset)
+  }
+
   public interface ListTimexOrBuilder extends
       // @@protoc_insertion_point(interface_extends:ai.uphere.HCoreNLP.ListTimex)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
-    java.util.List<edu.stanford.nlp.pipeline.CoreNLPProtos.Timex> 
+    java.util.List<ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset> 
         getTimexesList();
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
-    edu.stanford.nlp.pipeline.CoreNLPProtos.Timex getTimexes(int index);
+    ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset getTimexes(int index);
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
     int getTimexesCount();
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
-    java.util.List<? extends edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder> 
+    java.util.List<? extends ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder> 
         getTimexesOrBuilderList();
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
-    edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder getTimexesOrBuilder(
+    ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder getTimexesOrBuilder(
         int index);
   }
   /**
@@ -94,10 +782,10 @@ public final class HCoreNLPProto {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                timexes_ = new java.util.ArrayList<edu.stanford.nlp.pipeline.CoreNLPProtos.Timex>();
+                timexes_ = new java.util.ArrayList<ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              timexes_.add(input.readMessage(edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.PARSER, extensionRegistry));
+              timexes_.add(input.readMessage(ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.PARSER, extensionRegistry));
               break;
             }
           }
@@ -143,36 +831,36 @@ public final class HCoreNLPProto {
     }
 
     public static final int TIMEXES_FIELD_NUMBER = 1;
-    private java.util.List<edu.stanford.nlp.pipeline.CoreNLPProtos.Timex> timexes_;
+    private java.util.List<ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset> timexes_;
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
-    public java.util.List<edu.stanford.nlp.pipeline.CoreNLPProtos.Timex> getTimexesList() {
+    public java.util.List<ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset> getTimexesList() {
       return timexes_;
     }
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
-    public java.util.List<? extends edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder> 
+    public java.util.List<? extends ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder> 
         getTimexesOrBuilderList() {
       return timexes_;
     }
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
     public int getTimexesCount() {
       return timexes_.size();
     }
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
-    public edu.stanford.nlp.pipeline.CoreNLPProtos.Timex getTimexes(int index) {
+    public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset getTimexes(int index) {
       return timexes_.get(index);
     }
     /**
-     * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+     * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
      */
-    public edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder getTimexesOrBuilder(
+    public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder getTimexesOrBuilder(
         int index) {
       return timexes_.get(index);
     }
@@ -186,6 +874,12 @@ public final class HCoreNLPProto {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
+      for (int i = 0; i < getTimexesCount(); i++) {
+        if (!getTimexes(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -419,6 +1113,12 @@ public final class HCoreNLPProto {
       }
 
       public final boolean isInitialized() {
+        for (int i = 0; i < getTimexesCount(); i++) {
+          if (!getTimexes(i).isInitialized()) {
+            
+            return false;
+          }
+        }
         return true;
       }
 
@@ -441,22 +1141,22 @@ public final class HCoreNLPProto {
       }
       private int bitField0_;
 
-      private java.util.List<edu.stanford.nlp.pipeline.CoreNLPProtos.Timex> timexes_ =
+      private java.util.List<ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset> timexes_ =
         java.util.Collections.emptyList();
       private void ensureTimexesIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          timexes_ = new java.util.ArrayList<edu.stanford.nlp.pipeline.CoreNLPProtos.Timex>(timexes_);
+          timexes_ = new java.util.ArrayList<ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset>(timexes_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          edu.stanford.nlp.pipeline.CoreNLPProtos.Timex, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder, edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder> timexesBuilder_;
+          ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder> timexesBuilder_;
 
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public java.util.List<edu.stanford.nlp.pipeline.CoreNLPProtos.Timex> getTimexesList() {
+      public java.util.List<ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset> getTimexesList() {
         if (timexesBuilder_ == null) {
           return java.util.Collections.unmodifiableList(timexes_);
         } else {
@@ -464,7 +1164,7 @@ public final class HCoreNLPProto {
         }
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public int getTimexesCount() {
         if (timexesBuilder_ == null) {
@@ -474,9 +1174,9 @@ public final class HCoreNLPProto {
         }
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public edu.stanford.nlp.pipeline.CoreNLPProtos.Timex getTimexes(int index) {
+      public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset getTimexes(int index) {
         if (timexesBuilder_ == null) {
           return timexes_.get(index);
         } else {
@@ -484,10 +1184,10 @@ public final class HCoreNLPProto {
         }
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public Builder setTimexes(
-          int index, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex value) {
+          int index, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset value) {
         if (timexesBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -501,10 +1201,10 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public Builder setTimexes(
-          int index, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder builderForValue) {
+          int index, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder builderForValue) {
         if (timexesBuilder_ == null) {
           ensureTimexesIsMutable();
           timexes_.set(index, builderForValue.build());
@@ -515,9 +1215,9 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public Builder addTimexes(edu.stanford.nlp.pipeline.CoreNLPProtos.Timex value) {
+      public Builder addTimexes(ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset value) {
         if (timexesBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -531,10 +1231,10 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public Builder addTimexes(
-          int index, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex value) {
+          int index, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset value) {
         if (timexesBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -548,10 +1248,10 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public Builder addTimexes(
-          edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder builderForValue) {
+          ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder builderForValue) {
         if (timexesBuilder_ == null) {
           ensureTimexesIsMutable();
           timexes_.add(builderForValue.build());
@@ -562,10 +1262,10 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public Builder addTimexes(
-          int index, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder builderForValue) {
+          int index, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder builderForValue) {
         if (timexesBuilder_ == null) {
           ensureTimexesIsMutable();
           timexes_.add(index, builderForValue.build());
@@ -576,10 +1276,10 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public Builder addAllTimexes(
-          java.lang.Iterable<? extends edu.stanford.nlp.pipeline.CoreNLPProtos.Timex> values) {
+          java.lang.Iterable<? extends ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset> values) {
         if (timexesBuilder_ == null) {
           ensureTimexesIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -591,7 +1291,7 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public Builder clearTimexes() {
         if (timexesBuilder_ == null) {
@@ -604,7 +1304,7 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
       public Builder removeTimexes(int index) {
         if (timexesBuilder_ == null) {
@@ -617,16 +1317,16 @@ public final class HCoreNLPProto {
         return this;
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder getTimexesBuilder(
+      public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder getTimexesBuilder(
           int index) {
         return getTimexesFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder getTimexesOrBuilder(
+      public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder getTimexesOrBuilder(
           int index) {
         if (timexesBuilder_ == null) {
           return timexes_.get(index);  } else {
@@ -634,9 +1334,9 @@ public final class HCoreNLPProto {
         }
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public java.util.List<? extends edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder> 
+      public java.util.List<? extends ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder> 
            getTimexesOrBuilderList() {
         if (timexesBuilder_ != null) {
           return timexesBuilder_.getMessageOrBuilderList();
@@ -645,33 +1345,33 @@ public final class HCoreNLPProto {
         }
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder addTimexesBuilder() {
+      public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder addTimexesBuilder() {
         return getTimexesFieldBuilder().addBuilder(
-            edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.getDefaultInstance());
+            ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.getDefaultInstance());
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder addTimexesBuilder(
+      public ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder addTimexesBuilder(
           int index) {
         return getTimexesFieldBuilder().addBuilder(
-            index, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.getDefaultInstance());
+            index, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.getDefaultInstance());
       }
       /**
-       * <code>repeated .edu.stanford.nlp.pipeline.Timex timexes = 1;</code>
+       * <code>repeated .ai.uphere.HCoreNLP.TimexWithOffset timexes = 1;</code>
        */
-      public java.util.List<edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder> 
+      public java.util.List<ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder> 
            getTimexesBuilderList() {
         return getTimexesFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          edu.stanford.nlp.pipeline.CoreNLPProtos.Timex, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder, edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder> 
+          ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder> 
           getTimexesFieldBuilder() {
         if (timexesBuilder_ == null) {
           timexesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              edu.stanford.nlp.pipeline.CoreNLPProtos.Timex, edu.stanford.nlp.pipeline.CoreNLPProtos.Timex.Builder, edu.stanford.nlp.pipeline.CoreNLPProtos.TimexOrBuilder>(
+              ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffset.Builder, ai.uphere.HCoreNLP.HCoreNLPProto.TimexWithOffsetOrBuilder>(
                   timexes_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -693,6 +1393,11 @@ public final class HCoreNLPProto {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ai_uphere_HCoreNLP_TimexWithOffset_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_ai_uphere_HCoreNLP_TimexWithOffset_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_ai_uphere_HCoreNLP_ListTimex_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -707,9 +1412,12 @@ public final class HCoreNLPProto {
   static {
     java.lang.String[] descriptorData = {
       "\n\016HCoreNLP.proto\022\022ai.uphere.HCoreNLP\032\rCo" +
-      "reNLP.proto\">\n\tListTimex\0221\n\007timexes\030\001 \003(" +
-      "\0132 .edu.stanford.nlp.pipeline.TimexB\017B\rH" +
-      "CoreNLPProto"
+      "reNLP.proto\"|\n\017TimexWithOffset\022/\n\005timex\030" +
+      "\001 \002(\0132 .edu.stanford.nlp.pipeline.Timex\022" +
+      "\034\n\024characterOffsetBegin\030\002 \002(\005\022\032\n\022charact" +
+      "erOffsetEnd\030\003 \002(\005\"A\n\tListTimex\0224\n\007timexe" +
+      "s\030\001 \003(\0132#.ai.uphere.HCoreNLP.TimexWithOf" +
+      "fsetB\017B\rHCoreNLPProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -724,8 +1432,14 @@ public final class HCoreNLPProto {
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           edu.stanford.nlp.pipeline.CoreNLPProtos.getDescriptor(),
         }, assigner);
-    internal_static_ai_uphere_HCoreNLP_ListTimex_descriptor =
+    internal_static_ai_uphere_HCoreNLP_TimexWithOffset_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_ai_uphere_HCoreNLP_TimexWithOffset_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_ai_uphere_HCoreNLP_TimexWithOffset_descriptor,
+        new java.lang.String[] { "Timex", "CharacterOffsetBegin", "CharacterOffsetEnd", });
+    internal_static_ai_uphere_HCoreNLP_ListTimex_descriptor =
+      getDescriptor().getMessageTypes().get(1);
     internal_static_ai_uphere_HCoreNLP_ListTimex_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_ai_uphere_HCoreNLP_ListTimex_descriptor,

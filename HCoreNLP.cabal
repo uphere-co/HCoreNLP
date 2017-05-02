@@ -74,6 +74,7 @@ library
                        CoreNLP.Proto.CoreNLPProtos.TokenLocation
                        CoreNLP.Proto.HCoreNLPProto
                        CoreNLP.Proto.HCoreNLPProto.ListTimex
+                       CoreNLP.Proto.HCoreNLPProto.TimexWithOffset
                        CoreNLP.Simple
                        CoreNLP.SUTime
                        CoreNLP.SUTime.Parser
