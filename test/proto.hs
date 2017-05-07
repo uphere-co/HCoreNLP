@@ -42,7 +42,7 @@ main = do
     txt <- TIO.readFile fp
     clspath <- getEnv "CLASSPATH"
     J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-      let pcfg = PPConfig True True True True
+      let pcfg = PPConfig True True True True True
       pp <- prepare pcfg
       let doc = Document txt (fromGregorian 2017 4 17) 
       ann <- annotate pp doc
@@ -68,6 +68,7 @@ processDoc ann = do
     Left err -> print err
     Right (doc,lbstr') -> do
       let sents = toListOf (D.sentence . traverse) doc
+      print sents
       putStrLn "show number of tokens per each sentence:"
       print $ map (lengthOf (S.token . traverse)) sents 
       putStrLn "show each token"
