@@ -3,6 +3,7 @@
 , protocol-buffers, protocol-buffers-descriptor
 , jdk
 , corenlp, corenlp_models
+, autoencode
 }:
 mkDerivation {
   pname = "HCoreNLP";
@@ -13,7 +14,7 @@ mkDerivation {
     echo $CLASSPATH
   '';
   libraryHaskellDepends = [
-    aeson attoparsec base bytestring data-default inline-java jni jvm
+    aeson attoparsec autoencode base bytestring data-default inline-java jni jvm
     lens text transformers protocol-buffers protocol-buffers-descriptor
   ];
   buildDepends = [ jdk ];
