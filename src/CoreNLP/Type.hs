@@ -78,7 +78,6 @@ instance FromJSON Sentence where
   parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 6 } 
 
 
-
 data CoreNLPResult = CoreNLPResult { _result_sentences :: [Sentence]
                                    , _result_corefs :: Value }
                    deriving (Show, Eq, Generic)
@@ -88,3 +87,15 @@ makeLensesWith underscoreFields ''CoreNLPResult
 instance FromJSON CoreNLPResult where
   parseJSON = genericParseJSON defaultOptions { fieldLabelModifier = drop 8 } 
 
+
+instance ToJSON Sentence where
+  toJSON = genericToJSON defaultOptions
+
+instance ToJSON Dependency where
+  toJSON = genericToJSON defaultOptions
+
+instance ToJSON Relation where
+  toJSON = genericToJSON defaultOptions
+
+instance ToJSON Token where
+  toJSON = genericToJSON defaultOptions

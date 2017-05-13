@@ -83,7 +83,7 @@ library
                        CoreNLP.Simple.Type.Simplified
                        CoreNLP.SUTime
                        CoreNLP.SUTime.Parser
-                       CoreNLP.Type
+                       -- CoreNLP.Type
   Other-modules:
                        TemplateTest
 

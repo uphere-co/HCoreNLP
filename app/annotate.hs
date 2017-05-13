@@ -23,7 +23,7 @@ import qualified Data.Text.Lazy             as TL
 import qualified Data.Text.Lazy.Encoding    as TLE
 import           Data.Time.Calendar               (fromGregorian)
 import           Data.Yaml
-import           GHC.Generic
+import           GHC.Generics
 import           Language.Java         as J
 import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
@@ -72,19 +72,20 @@ convertToken t = do
   l <- cutf8 <$> (t^.TK.lemma)
   return (Token (b,e) w p l)
 
-
+processDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -> IO ([Sentence], [Token])
 processDoc ann = do
   bstr <- serializeDoc ann
   let lbstr = BL.fromStrict bstr
   case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
-    Left err -> print err
+    Left err -> print err >> return ([],[])
     Right (doc,lbstr') -> do
       let sents = toListOf (D.sentence . traverse) doc
           Just newsents = mapM (convertSentence doc) sents
       mapM_ print newsents
       let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
       
-      mapM_ print toklst
+      -- mapM_ print toklst
+      return (newsents,toklst)
 {- 
       print sents
       putStrLn "show number of tokens per each sentence:"
@@ -108,6 +109,44 @@ processDoc ann = do
       -- print (traverse (D.sentence . S.token) doc)
 -}
 
+data TestData = TestData { test :: [TestData2]
+                         } deriving (Show, Generic)
+
+data TestData2 = TestData2 { test2 :: String
+                           } deriving (Show, Generic)
+
+instance FromJSON TestData
+instance FromJSON TestData2
+
+
+
+{-
+data ESOEvent = ESOEvent { NAF :: NafStructure
+                         } deriving (Show, Generic)
+
+data NafStructure = NafStructure { nafHeader :: Header
+                                 , raw :: Text
+                                 , text :: Text
+                                 , terms :: [Term]
+                                 , markables :: [Marks]
+                                 , deps :: [Dep]
+                                 , entities :: [Entity]
+                                 , coreferences :: [Cor]
+                                 , timeExpressions :: [A]
+                                 , srl :: [Srl]
+                                 , constituency :: [Con]
+                                 , temporalRelations :: [Temp]
+                                 , topics :: [Topic]
+                                 , factualities :: [Frac]
+                                 , xml :: Text
+                                 , version :: Text
+                                 } deriving (Show, Generic)
+  
+
+instance FromJSON ESOEvent
+-}
+
+
 main :: IO ()
 main = do
     args <- getArgs
@@ -119,6 +158,12 @@ main = do
       pp <- prepare pcfg
       let doc = Document txt (fromGregorian 2017 4 17) 
       ann <- annotate pp doc
-      processDoc ann 
+      (r1, r2) <- processDoc ann 
+      let jr1 = encode r1
+          jr2 = encode r2
+      print jr1
+      print jr2
+      -- mapM_ print (r1,r2)
 
-    
+    testfile <- decodeFile "test.yml" :: IO (Maybe TestData)
+    print testfile
