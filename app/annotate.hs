@@ -22,6 +22,8 @@ import qualified Data.Text.IO               as TIO
 import qualified Data.Text.Lazy             as TL
 import qualified Data.Text.Lazy.Encoding    as TLE
 import           Data.Time.Calendar               (fromGregorian)
+import           Data.Yaml
+import           GHC.Generic
 import           Language.Java         as J
 import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
