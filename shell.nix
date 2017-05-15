@@ -207,6 +207,7 @@ let
             inline-java
             aeson
             attoparsec
+            cabal-install
             data-default
             haskeline
             hprotoc
@@ -217,7 +218,8 @@ let
             protocol-buffers
             template-haskell
             p.autoencode
-            p.textview            
+            p.textview
+            yaml      
           ]);
 
 in

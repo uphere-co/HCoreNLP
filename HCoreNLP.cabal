@@ -42,7 +42,8 @@ library
                        template-haskell,
                        text,
                        time,
-                       transformers
+                       transformers,
+                       yaml
   Exposed-modules:
                        CoreNLP
                        CoreNLP.Proto.CoreNLPProtos
@@ -82,7 +83,7 @@ library
                        CoreNLP.Simple.Type.Simplified
                        CoreNLP.SUTime
                        CoreNLP.SUTime.Parser
-                       CoreNLP.Type
+                       -- CoreNLP.Type
   Other-modules:
                        TemplateTest
 
