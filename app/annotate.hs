@@ -38,16 +38,6 @@ import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
 import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
-    
-{- 
-processTimex ann = do
-  bstr <- serializeTimex ann
-  let lbstr = BL.fromStrict bstr
-  case (messageGet lbstr :: Either String (T.ListTimex,BL.ByteString)) of
-    Left err -> print err
-    Right (tmx,lbstr') -> do
-      mapM_ print (tmx ^. T.timexes)
--}
 
 cutf8 :: Utf8 -> Text
 cutf8 = TL.toStrict . TLE.decodeUtf8 . utf8 
