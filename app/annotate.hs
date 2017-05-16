@@ -44,8 +44,6 @@ instance MakeYaml Sentence where
                          , ("charRange" , makeYaml n (s^.sent_charRange))
                          , ("tokenRange", makeYaml n (s^.sent_tokenRange)) ]
                  
-
-
 instance MakeYaml Text where
   makeYaml _ txt = YPrim (YString Plain (TL.fromStrict txt))
 
@@ -58,6 +56,12 @@ instance MakeYaml Token where
 
 instance MakeYaml a => MakeYaml [a] where
   makeYaml n xs = YIArray (map (makeYaml n) xs)
+
+data SentenceTokens = SentenceTokens [Sentence] [Token]
+
+instance MakeYaml SentenceTokens where
+  makeYaml n (SentenceTokens ss ts) = YObject [ ("sentences", makeYaml n ss)
+                                              , ("tokens", makeYaml n ts) ]
 
 
 cutf8 :: Utf8 -> Text
@@ -104,6 +108,7 @@ main = do
       pp <- prepare pcfg
       let doc = Document txt (fromGregorian 2017 4 17) 
       ann <- annotate pp doc
-      (r1, r2) <- processDoc ann 
-      TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 r1))
-      TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 r2))
+      (r1, r2) <- processDoc ann
+      let result = SentenceTokens r1 r2 
+      TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
+      -- TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 r2))
