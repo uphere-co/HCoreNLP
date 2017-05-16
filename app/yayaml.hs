@@ -95,5 +95,26 @@ main = do
     let doc = Document txt (fromGregorian 2017 4 17) 
     ann <- annotate pp doc
     (r1, r2) <- processDoc ann
-    print $ zip (map _token_lemma r2) (map _token_pos r2)
+    print $ filter (\(_,y) -> y /= "U") $ zip (map _token_lemma r2) (map simpleMap $ map _token_pos r2)
   putStrLn "Program is finished!"
+
+simpleMap :: POSTag -> Text
+simpleMap p = case p of
+  NN   -> "N"
+  NNS  -> "N"
+  NNP  -> "N"
+  NNPS -> "N"
+  VB   -> "V"  
+  VBZ  -> "V"
+  VBP  -> "V"
+  VBD  -> "V"
+  VBN  -> "V"
+  VBG  -> "V"
+  JJ   -> "A"
+  JJR  -> "A"
+  JJS  -> "A"
+  RB   -> "R"
+  RBR  -> "R"
+  RBS  -> "R"
+  RP   -> "R"
+  _    -> "U"
