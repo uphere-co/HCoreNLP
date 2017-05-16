@@ -29,7 +29,7 @@ import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
-import           NLP.SyntaxTree.Type.PennTreebankII
+import           NLP.Type.PennTreebankII
 --
 import           CoreNLP.Simple
 import           CoreNLP.Simple.Type
