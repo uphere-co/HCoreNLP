@@ -43,7 +43,6 @@ import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
 --
 import           YAML.Builder
 
-
 cutf8 :: Utf8 -> Text
 cutf8 = TL.toStrict . TLE.decodeUtf8 . utf8 
 
@@ -77,77 +76,24 @@ processDoc ann = do
       let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
       return (newsents,toklst)
 
-main :: IO ()
-main = do
-  
-  -- args <- getArgs
-  -- let fp = args !! 0
-  -- txt <- TIO.readFile fp
-  
-  clspath <- getEnv "CLASSPATH"
-  J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-    let pcfg = PPConfig True True True True True
-    pp <- prepare pcfg
-
-
-    ret <- runInputT defaultSettings myaction
-    let txt = T.pack (fromJust ret)
-    let doc = Document txt (fromGregorian 2017 4 17) 
-    ann <- annotate pp doc
-    (r1, r2) <- processDoc ann
-    print $ zip (map _token_lemma r2) (map _token_pos r2)
-    -- print r2
-    {-
-    let jr1 = encode r1
-        jr2 = encode r2
-    putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr1))
-    putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr2))
-    -}
-
-  putStrLn "Program is finished!"
-
-
 myaction :: InputT IO (Maybe String)
 myaction = do
   str <- getInputLine "Input Sentence : "
   lift (print str)
   return str
 
-{-
-data POSTag = CC    --  Coordinating conjunction
-            | CD    --  Cardinal number
-            | DT    --  Determiner
-            | EX    --  Existential there
-            | FW    --  Foreign word
-            | IN    --  Preposition or subordinating conjunction
-            | JJ    --  Adjective
-            | JJR   --  Adjective, comparative
-            | JJS   --  Adjective, superlative
-            | LS    --  List item marker
-            | MD    --  Modal
-            | NN    --  Noun, singular or mass
-            | NNS   --  Noun, plural
-            | NNP   --  Proper noun, singular
-            | NNPS  --  Proper noun, plural
-            | PDT   --  Predeterminer
-            | POS   --  Possessive ending
-            | PRP   --  Personal pronoun
-            | PRP'  --  Possessive pronoun
-            | RB    --  Adverb
-            | RBR   --  Adverb, comparative
-            | RBS   --  Adverb, superlative
-            | RP    --  Particle
-            | SYM   --  Symbol
-            | TO    --  to
-            | UH    --  Interjection
-            | VB    --  Verb, base form
-            | VBD   --  Verb, past tense
-            | VBG   --  Verb, gerund or present participle
-            | VBN   --  Verb, past participle
-            | VBP   --  Verb, non-3rd person singular present
-            | VBZ   --  Verb, 3rd person singular present
-            | WDT   --  Wh-determiner
-            | WP    --  Wh-pronoun
-            | WP'   --  Possessive wh-pronoun
-            | WRB   --  Wh-adverb
--}
+
+
+main :: IO ()
+main = do  
+  clspath <- getEnv "CLASSPATH"
+  J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
+    let pcfg = PPConfig True True True True True
+    pp <- prepare pcfg
+    ret <- runInputT defaultSettings myaction
+    let txt = T.pack (fromJust ret)
+    let doc = Document txt (fromGregorian 2017 4 17) 
+    ann <- annotate pp doc
+    (r1, r2) <- processDoc ann
+    print $ zip (map _token_lemma r2) (map _token_pos r2)
+  putStrLn "Program is finished!"
