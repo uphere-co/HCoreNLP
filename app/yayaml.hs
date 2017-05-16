@@ -12,6 +12,7 @@ module Main where
 import           Control.Arrow                    ((&&&))
 import           Control.Lens
 import           Control.Monad                    (join)
+import           Control.Monad.Trans.Class        (lift)
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import qualified Data.Foldable              as F  (toList)
@@ -24,7 +25,8 @@ import qualified Data.Text.Lazy.Encoding    as TLE
 import           Data.Time.Calendar               (fromGregorian)
 import           Data.Yaml
 import           GHC.Generics
-import           Language.Java         as J
+import           Language.Java              as J
+import           System.Console.Haskeline
 import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
@@ -38,6 +40,8 @@ import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
 import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
+--
+import           YAML.Builder
 
 cutf8 :: Utf8 -> Text
 cutf8 = TL.toStrict . TLE.decodeUtf8 . utf8 
@@ -72,19 +76,24 @@ processDoc ann = do
       let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
       return (newsents,toklst)
 
+myaction :: InputT IO (Maybe String)
+myaction = do
+  str <- getInputLine "Input Sentence : "
+  lift (print str)
+  return str
+
+
+
 main :: IO ()
-main = do
-    args <- getArgs
-    let fp = args !! 0
-    txt <- TIO.readFile fp
-    clspath <- getEnv "CLASSPATH"
-    J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-      let pcfg = PPConfig True True True True True
-      pp <- prepare pcfg
-      let doc = Document txt (fromGregorian 2017 4 17) 
-      ann <- annotate pp doc
-      (r1, r2) <- processDoc ann 
-      let jr1 = encode r1
-          jr2 = encode r2
-      putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr1))
-      putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr2))
+main = do  
+  clspath <- getEnv "CLASSPATH"
+  J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
+    let pcfg = PPConfig True True True True True
+    pp <- prepare pcfg
+    ret <- runInputT defaultSettings myaction
+    let txt = T.pack (fromJust ret)
+    let doc = Document txt (fromGregorian 2017 4 17) 
+    ann <- annotate pp doc
+    (r1, r2) <- processDoc ann
+    print $ zip (map _token_lemma r2) (map _token_pos r2)
+  putStrLn "Program is finished!"

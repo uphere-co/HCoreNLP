@@ -8,7 +8,7 @@ We have the following examples in `test` directory:
 
 
 ```
-$ nix-shell shell.nix --argstr uphere-nix-overlay (uphere-nix-overlay) --argstr autoencode (autoencocde) --argstr symbolic (symbolic)
+$ nix-shell shell.nix --argstr uphere-nix-overlay (uphere-nix-overlay) --argstr textview (textview) --argstr nlp-types (nlp-types)
 $ cabal sandbox init
 $ cabal install
 $ export CLASSPATH+=":.cabal-sandbox/share/x86_64-linux-ghc-8.0.2/HCoreNLP-0.1.0.0/HCoreNLPProto.jar"
@@ -16,7 +16,7 @@ $ cabal exec -- ghc test/callparser.hs
 $ ./test/callparser
 ```
 
-`(uphere-nix-overlay)`, `(autoencode)` and `(symbolic)` mean the corresponding source directories.
+`(uphere-nix-overlay)`, `(textview)` and `(nlp-types)` mean the corresponding source directories.
 
 `sutime` and `proto` can be built in the same way.
 

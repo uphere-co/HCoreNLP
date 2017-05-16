@@ -9,7 +9,7 @@ import           Data.Aeson.Types
 import           Data.Text        (Text)
 import           GHC.Generics
 --
-import           NLP.SyntaxTree.Type.PennTreebankII
+import           NLP.Type.PennTreebankII
 
 data Sentence = Sentence { _sent_index      :: Int
                          , _sent_charRange  :: (Int,Int)
