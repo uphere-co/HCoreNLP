@@ -1,5 +1,4 @@
 { pkgs ? import <nixpkgs> {}
-, autoencode
 , nlp-types
 , symbolic
 , textview
@@ -30,7 +29,6 @@ let
   config1 = import (uphere-nix-overlay + "/nix/haskell-modules/configuration-ghc-8.0.x.nix") { inherit pkgs; };
   config2 =
     self: super: {
-      "autoencode" = haskell.lib.dontHaddock (self.callPackage (import autoencode) {});
       "nlp-types" = self.callPackage (import nlp-types) {};
       "symbolic" = self.callPackage (import symbolic) {};
       "textview" = self.callPackage (import textview) {};
@@ -219,7 +217,6 @@ let
             proto-lens-protoc
             protocol-buffers
             template-haskell
-            p.autoencode
             p.nlp-types
             p.textview
             yaml
