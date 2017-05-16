@@ -1,6 +1,5 @@
 { pkgs ? import <nixpkgs> {}
 , nlp-types
-, symbolic
 , textview
 , uphere-nix-overlay
 }:
@@ -30,7 +29,6 @@ let
   config2 =
     self: super: {
       "nlp-types" = self.callPackage (import nlp-types) {};
-      "symbolic" = self.callPackage (import symbolic) {};
       "textview" = self.callPackage (import textview) {};
 
       "lens-labels" = self.callPackage
