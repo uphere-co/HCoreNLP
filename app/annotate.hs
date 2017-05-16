@@ -51,14 +51,24 @@ instance MakeYaml (Int,Int) where
   makeYaml n (x,y) = YLArray Inline [ makeYaml n x, makeYaml n y ] 
 
 instance MakeYaml Sentence where
-  makeYaml n s = YObject [ ( "index" , makeYaml n (s^.sent_index))
-                         , ( "charRange" , makeYaml n (s^.sent_charRange))
-                         , ( "tokenRange" , makeYaml n (s^.sent_tokenRange)) ]
+  makeYaml n s = YObject [ ("index"     , makeYaml n (s^.sent_index))
+                         , ("charRange" , makeYaml n (s^.sent_charRange))
+                         , ("tokenRange", makeYaml n (s^.sent_tokenRange)) ]
                  
 
-instance MakeYaml [Sentence] where
-  makeYaml n xs = YIArray (map (makeYaml n) xs)
 
+instance MakeYaml Text where
+  makeYaml n txt = YPrim (YString Plain (TL.fromStrict txt))
+
+instance MakeYaml Token where
+  makeYaml n t = YObject [ ("range", makeYaml n (t^.token_range))
+                         , ("text" , makeYaml n (t^.token_text))
+                         , ("pos"  , makeYaml n (T.pack (show (t^.token_pos))))
+                         , ("lemma", makeYaml n (t^.token_lemma))
+                         ]
+
+instance MakeYaml a => MakeYaml [a] where
+  makeYaml n xs = YIArray (map (makeYaml n) xs)
 
 
 cutf8 :: Utf8 -> Text
@@ -111,4 +121,5 @@ main = do
       -- putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr1))
       -- putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr2))
       TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 r1))
+      TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 r2))
       -- print (makeYaml 0 r2)
