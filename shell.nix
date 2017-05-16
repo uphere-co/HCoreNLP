@@ -219,7 +219,8 @@ let
             template-haskell
             p.autoencode
             p.textview
-            yaml      
+            yaml
+            yayaml
           ]);
 
 in

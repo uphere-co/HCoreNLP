@@ -1,11 +1,13 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 
 module Main where
 
@@ -20,9 +22,11 @@ import           Data.Text                        (Text)
 import qualified Data.Text                  as T
 import qualified Data.Text.IO               as TIO
 import qualified Data.Text.Lazy             as TL
+import qualified Data.Text.Lazy.Builder     as TLB (toLazyText)
 import qualified Data.Text.Lazy.Encoding    as TLE
+import qualified Data.Text.Lazy.IO          as TLIO
 import           Data.Time.Calendar               (fromGregorian)
-import           Data.Yaml
+-- import           Data.Yaml
 import           GHC.Generics
 import           Language.Java         as J
 import           System.Environment               (getEnv,getArgs)
@@ -30,6 +34,7 @@ import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
 import           NLP.SyntaxTree.Type.PennTreebankII
+import           YAML.Builder
 --
 import           CoreNLP.Simple
 import           CoreNLP.Simple.Type
@@ -38,6 +43,23 @@ import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
 import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
+
+instance MakeYaml Int where
+  makeYaml n x = YPrim (YInteger x)
+
+instance MakeYaml (Int,Int) where
+  makeYaml n (x,y) = YLArray Inline [ makeYaml n x, makeYaml n y ] 
+
+instance MakeYaml Sentence where
+  makeYaml n s = YObject [ ( "index" , makeYaml n (s^.sent_index))
+                         , ( "charRange" , makeYaml n (s^.sent_charRange))
+                         , ( "tokenRange" , makeYaml n (s^.sent_tokenRange)) ]
+                 
+
+instance MakeYaml [Sentence] where
+  makeYaml n xs = YIArray (map (makeYaml n) xs)
+
+
 
 cutf8 :: Utf8 -> Text
 cutf8 = TL.toStrict . TLE.decodeUtf8 . utf8 
@@ -84,7 +106,9 @@ main = do
       let doc = Document txt (fromGregorian 2017 4 17) 
       ann <- annotate pp doc
       (r1, r2) <- processDoc ann 
-      let jr1 = encode r1
-          jr2 = encode r2
-      putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr1))
-      putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr2))
+      -- let jr1 = encode r1
+      --     jr2 = encode r2
+      -- putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr1))
+      -- putStrLn (TL.unpack (TLE.decodeUtf8 $ BL.fromStrict jr2))
+      TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 r1))
+      -- print (makeYaml 0 r2)
