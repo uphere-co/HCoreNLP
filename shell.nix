@@ -1,4 +1,5 @@
 { pkgs ? import <nixpkgs> {}
+, fetchfin
 , nlp-types
 , textview
 , uphere-nix-overlay
@@ -30,7 +31,8 @@ let
     self: super: {
       "nlp-types" = self.callPackage (import nlp-types) {};
       "textview" = self.callPackage (import textview) {};
-
+      "intrinio" = self.callPackage (import (fetchfin+ "/intrinio")) {};
+      
       "lens-labels" = self.callPackage
         ({ mkDerivation, base, ghc-prim, stdenv }:
           mkDerivation {
@@ -207,6 +209,8 @@ let
             attoparsec
             cabal-install
             data-default
+            directory
+            directory-tree
             haskeline
             hprotoc
             lens
@@ -215,6 +219,7 @@ let
             proto-lens-protoc
             protocol-buffers
             template-haskell
+            p.intrinio
             p.nlp-types
             p.textview
             yaml
