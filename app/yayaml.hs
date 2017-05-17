@@ -9,7 +9,6 @@
 
 module Main where
 
-import           Control.Arrow                    ((&&&))
 import           Control.Lens
 import           Control.Monad                    (forM_,join)
 import           Control.Monad.Trans.Class        (lift)
@@ -18,18 +17,15 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import qualified Data.Foldable              as F  (toList)
 import           Data.List                        (sort)
-import           Data.Maybe                       (catMaybes, fromJust, maybe)
+import           Data.Maybe                       (fromJust,maybe)
 import           Data.Text                        (Text)
 import qualified Data.Text                  as T
-import qualified Data.Text.IO               as TIO
 import qualified Data.Text.Lazy             as TL
 import qualified Data.Text.Lazy.Encoding    as TLE
 import           Data.Time.Calendar               (fromGregorian)
-import           Data.Yaml
-import           GHC.Generics
 import           Language.Java              as J
 import           System.Console.Haskeline
-import           System.Environment               (getEnv,getArgs)
+import           System.Environment               (getEnv)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
@@ -41,13 +37,10 @@ import           CoreNLP.Simple.Type.Simplified
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
-import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
 --
 import           Intrinio.Type
 --
-import           YAML.Builder
---
-import           System.Directory.Tree
+import           System.Directory.Tree hiding (err)
 
 
 cutf8 :: Utf8 -> Text
@@ -103,7 +96,7 @@ main' = do
     print $ filter (\(_,y) -> y /= "U") $ zip (map _token_lemma r2) (map simpleMap $ map _token_pos r2)
   putStrLn "Program is finished!"
 
-
+getDescription :: FilePath -> IO Text
 getDescription f = do
   bstr <- B.readFile f -- "/data/groups/uphere/intrinio/Articles/bloomberg/ffe077729d0ff0ec02fd2b7af537bcf37015171698f99689d96482b2c791c21c"
   let ea = eitherDecodeStrict bstr :: Either String SourceArticles
@@ -130,28 +123,6 @@ main = do
       print $ filter (\(_,y) -> y /= "U") $ zip (map _token_lemma r2) (map simpleMap $ map _token_pos r2)
     
   putStrLn "Program is finished!"
-
-  {-
-  case ea of
-    Left err -> print err
-    Right a  -> case (_description a) of
-      Nothing -> print "nothing"
-      Just txt -> do
-        print txt -}
-        {-
-        clspath <- getEnv "CLASSPATH"
-        J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-          let pcfg = PPConfig True True True True True
-          pp <- prepare pcfg
-          processTxt pp [] txt (fromGregorian 2017 5 11)
-        -}
-
-
-
-
-
-
-
 
 simpleMap :: POSTag -> Text
 simpleMap p = case p of

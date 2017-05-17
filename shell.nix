@@ -1,8 +1,8 @@
 { pkgs ? import <nixpkgs> {}
-, fetchfin
-, nlp-types
-, textview
-, uphere-nix-overlay
+, fetchfin ? <fetchfin>
+, nlp-types ? <nlp-types>
+, textview ? <textview>
+, uphere-nix-overlay ? <uphere-nix-overlay>
 }:
 
 with pkgs;
