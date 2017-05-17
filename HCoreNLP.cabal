@@ -32,9 +32,7 @@ library
                        bytestring,
                        data-default,
                        directory,
-                       directory-tree,
                        inline-java,
-                       intrinio,
                        jni,
                        jvm,
                        lens,
@@ -44,8 +42,7 @@ library
                        template-haskell,
                        text,
                        time,
-                       transformers,
-                       yaml
+                       transformers
   Exposed-modules:
                        CoreNLP
                        CoreNLP.Proto.CoreNLPProtos
