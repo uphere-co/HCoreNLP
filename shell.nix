@@ -218,7 +218,7 @@ let
             p.nlp-types
             p.textview
             yaml
-            yayaml            
+            yayaml
           ]);
 
 in
