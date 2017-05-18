@@ -42,8 +42,7 @@ library
                        template-haskell,
                        text,
                        time,
-                       transformers,
-                       yaml
+                       transformers
   Exposed-modules:
                        CoreNLP
                        CoreNLP.Proto.CoreNLPProtos

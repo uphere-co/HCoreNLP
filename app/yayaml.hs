@@ -9,25 +9,23 @@
 
 module Main where
 
-import           Control.Arrow                    ((&&&))
 import           Control.Lens
-import           Control.Monad                    (join)
+import           Control.Monad                    (forM_,join)
 import           Control.Monad.Trans.Class        (lift)
+import           Data.Aeson                       (eitherDecodeStrict)
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import qualified Data.Foldable              as F  (toList)
-import           Data.Maybe                       (catMaybes, fromJust)
+import           Data.List                        (sort)
+import           Data.Maybe                       (fromJust,maybe)
 import           Data.Text                        (Text)
 import qualified Data.Text                  as T
-import qualified Data.Text.IO               as TIO
 import qualified Data.Text.Lazy             as TL
 import qualified Data.Text.Lazy.Encoding    as TLE
 import           Data.Time.Calendar               (fromGregorian)
-import           Data.Yaml
-import           GHC.Generics
 import           Language.Java              as J
 import           System.Console.Haskeline
-import           System.Environment               (getEnv,getArgs)
+import           System.Environment               (getEnv)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
@@ -39,9 +37,11 @@ import           CoreNLP.Simple.Type.Simplified
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
-import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
 --
-import           YAML.Builder
+import           Intrinio.Type
+--
+import           System.Directory.Tree hiding (err)
+
 
 cutf8 :: Utf8 -> Text
 cutf8 = TL.toStrict . TLE.decodeUtf8 . utf8 
@@ -82,10 +82,8 @@ myaction = do
   lift (print str)
   return str
 
-
-
-main :: IO ()
-main = do  
+main' :: IO ()
+main' = do  
   clspath <- getEnv "CLASSPATH"
   J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
     let pcfg = PPConfig True True True True True
@@ -95,5 +93,54 @@ main = do
     let doc = Document txt (fromGregorian 2017 4 17) 
     ann <- annotate pp doc
     (r1, r2) <- processDoc ann
-    print $ zip (map _token_lemma r2) (map _token_pos r2)
+    print $ filter (\(_,y) -> y /= "U") $ zip (map _token_lemma r2) (map simpleMap $ map _token_pos r2)
   putStrLn "Program is finished!"
+
+getDescription :: FilePath -> IO Text
+getDescription f = do
+  bstr <- B.readFile f -- "/data/groups/uphere/intrinio/Articles/bloomberg/ffe077729d0ff0ec02fd2b7af537bcf37015171698f99689d96482b2c791c21c"
+  let ea = eitherDecodeStrict bstr :: Either String SourceArticles
+  case ea of
+    Left  _ -> return ""
+    Right a -> return (maybe "" id (_description a)) 
+
+main :: IO ()
+main = do
+  list' <- readDirectoryWith return "/data/groups/uphere/intrinio/Articles/bloomberg"
+  let filelist = sort . F.toList $ dirTree list'
+  print filelist
+  
+  clspath <- getEnv "CLASSPATH"
+  J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
+    let pcfg = PPConfig True True True True True
+    pp <- prepare pcfg
+
+    forM_ filelist $ \a' -> do
+      txt <- getDescription a'
+      let doc = Document txt (fromGregorian 2017 4 17) 
+      ann <- annotate pp doc
+      (r1, r2) <- processDoc ann
+      print $ filter (\(_,y) -> y /= "U") $ zip (map _token_lemma r2) (map simpleMap $ map _token_pos r2)
+    
+  putStrLn "Program is finished!"
+
+simpleMap :: POSTag -> Text
+simpleMap p = case p of
+  NN   -> "N"
+  NNS  -> "N"
+  NNP  -> "N"
+  NNPS -> "N"
+  VB   -> "V"  
+  VBZ  -> "V"
+  VBP  -> "V"
+  VBD  -> "V"
+  VBN  -> "V"
+  VBG  -> "V"
+  JJ   -> "A"
+  JJR  -> "A"
+  JJS  -> "A"
+  RB   -> "R"
+  RBR  -> "R"
+  RBS  -> "R"
+  RP   -> "R"
+  _    -> "U"
