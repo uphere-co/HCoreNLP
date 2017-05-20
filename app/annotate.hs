@@ -12,6 +12,7 @@ import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Foldable                      (toList)
 import qualified Data.IntMap                as IM
 import           Data.Maybe                         (catMaybes,fromMaybe,listToMaybe)
+import           Data.Monoid                        ((<>))
 import           Data.Text                          (Text)
 import qualified Data.Text                  as T
 import qualified Data.Text.IO               as TIO
@@ -22,6 +23,7 @@ import qualified Data.Text.Lazy.IO          as TLIO
 import           Data.Traversable                   (traverse)
 import           Data.Time.Calendar                 (fromGregorian)
 import           Language.Java         as J
+import           Options.Applicative
 import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
@@ -95,11 +97,14 @@ convertToken t = do
   l <- cutf8 <$> (t^.TK.lemma)
   return (Token (b,e) w p l)
 
-processDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -> IO (Either String D.Document) -- IO ([Sentence], [Token])
+processDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation")
+           -> IO (Either String D.Document) -- IO ([Sentence], [Token])
 processDoc ann = do
   bstr <- serializeDoc ann
   let lbstr = BL.fromStrict bstr
   return $ fmap fst (messageGet lbstr :: Either String (D.Document,BL.ByteString))
+
+  
   {- 
   case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
     Left err -> print err >> return ([],[])
@@ -110,30 +115,43 @@ processDoc ann = do
       let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
       return (newsents,toklst)
    -}
+
+
+
+data ProgOption = ProgOption { textFile :: FilePath
+                             } deriving Show
+
+pOptions :: Parser ProgOption
+pOptions = ProgOption <$> strOption (long "file" <> short 'f' <> help "Text File")
+
+progOption :: ParserInfo ProgOption 
+progOption = info pOptions (fullDesc <> progDesc "Annotate using CoreNLP")
+
+
 main :: IO ()
 main = do
-    args <- getArgs
-    let fp = args !! 0
-    txt <- TIO.readFile fp
-    clspath <- getEnv "CLASSPATH"
-    J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-      let pcfg = PPConfig True True True True True True
-      pp <- prepare pcfg
-      let doc = Document txt (fromGregorian 2017 4 17) 
-      ann <- annotate pp doc
-      d' <- processDoc ann
-      case d' of
-        Left e -> print e
-        Right d -> do
-          let sents = d ^. D.sentence
-          mapM_ (print . sentToDep) sents
-          -- let ds = catMaybes ( . traverse . S.basicDependencies)
-          -- print $ map convertDep ds
-      {- 
-      (r1, r2) <- processDoc ann
-      let result = SentenceTokens r1 r2 
-      TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
-      -}
+  opt <- execParser progOption
+  let fp = textFile opt
+  txt <- TIO.readFile fp
+  clspath <- getEnv "CLASSPATH"
+  J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
+    let pcfg = PPConfig True True True True True True
+    pp <- prepare pcfg
+    let doc = Document txt (fromGregorian 2017 4 17) 
+    ann <- annotate pp doc
+    d' <- processDoc ann
+    case d' of
+      Left e -> print e
+      Right d -> do
+        let sents = d ^. D.sentence
+        mapM_ (print . sentToDep) sents
+        -- let ds = catMaybes ( . traverse . S.basicDependencies)
+        -- print $ map convertDep ds
+    {- 
+    (r1, r2) <- processDoc ann
+    let result = SentenceTokens r1 r2 
+    TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
+    -}
 
 sentToDep :: S.Sentence -> Maybe Dependency
 sentToDep s = do
@@ -142,7 +160,7 @@ sentToDep s = do
       m = IM.fromList ts
   convertDep m d 
 
-      
+    
       
 convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Maybe Dependency
 convertDep m g = Dependency <$> mapM (convertN m) (toList (g^.DG.node))
@@ -156,6 +174,8 @@ convertN m n = do
   
 convertE :: IM.IntMap Text -> DE.Edge -> Maybe Edge
 convertE m e = do
-  dep <- parseDepRel =<< listToMaybe (T.split (== ':') (fromMaybe "" (fmap cutf8 (e^.DE.dep))))
+  let deptxt = fromMaybe "" (fmap cutf8 (e^.DE.dep))
+  dep <- parseDepRel =<< listToMaybe (T.split (== ':') deptxt)
+   -- dep = maybe (Left deptxt) Right mdep
   return ((fromIntegral (e^.DE.source),fromIntegral (e^.DE.target)), dep )
 
