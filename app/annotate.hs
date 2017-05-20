@@ -10,6 +10,7 @@ import           Control.Monad                      (join)
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Foldable                      (toList)
+import qualified Data.IntMap                as IM
 import           Data.Maybe                         (catMaybes,fromMaybe)
 import           Data.Text                          (Text)
 import qualified Data.Text                  as T
@@ -123,20 +124,35 @@ main = do
       case d' of
         Left e -> print e
         Right d -> do
-          let ds = catMaybes (d ^.. D.sentence . traverse . S.basicDependencies)
-          print $ map convertDep ds
+          let sents = d ^. D.sentence
+          mapM_ (print . sentToDep) sents
+          -- let ds = catMaybes ( . traverse . S.basicDependencies)
+          -- print $ map convertDep ds
       {- 
       (r1, r2) <- processDoc ann
       let result = SentenceTokens r1 r2 
       TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
       -}
-convertDep :: DG.DependencyGraph -> Dependency
-convertDep g = Dependency (map convertN (toList (g^.DG.node)))
-                          (map convertE (toList (g^.DG.edge)))
 
-convertN :: DN.Node -> Node
-convertN n = fromIntegral (n^.DN.index)
+sentToDep :: S.Sentence -> Maybe Dependency
+sentToDep s = do
+  d <- s ^. S.basicDependencies
+  let ts = zip [1..] (map (fromMaybe "" . fmap cutf8) (s ^.. S.token . traverse . TK.word))
+      m = IM.fromList ts
+  convertDep m d 
+
+      
+      
+convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Maybe Dependency
+convertDep m g = Dependency <$> mapM (convertN m) (toList (g^.DG.node))
+                            <*> pure (map (convertE m) (toList (g^.DG.edge)))
+
+convertN :: IM.IntMap Text -> DN.Node -> Maybe Node
+convertN m n = do
+  let k = fromIntegral (n^.DN.index)
+  w <- IM.lookup k m
+  return (k,w)
   
-convertE :: DE.Edge -> Edge
-convertE e = ( (fromIntegral (e^.DE.source),fromIntegral (e^.DE.target))
-             , fromMaybe "" (fmap cutf8 (e^.DE.dep)))
+convertE :: IM.IntMap Text -> DE.Edge -> Edge
+convertE m e = ( (fromIntegral (e^.DE.source),fromIntegral (e^.DE.target))
+               , fromMaybe "" (fmap cutf8 (e^.DE.dep)))

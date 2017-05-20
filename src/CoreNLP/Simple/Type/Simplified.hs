@@ -34,7 +34,7 @@ instance ToJSON Token where
   toJSON = genericToJSON defaultOptions
 
 
-type Node = Int
+type Node = (Int,Text)
 
 type Edge = ((Int,Int),Text)
 
