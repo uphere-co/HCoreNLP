@@ -11,7 +11,7 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Foldable                      (toList)
 import qualified Data.IntMap                as IM
-import           Data.Maybe                         (catMaybes,fromMaybe)
+import           Data.Maybe                         (catMaybes,fromMaybe,listToMaybe)
 import           Data.Text                          (Text)
 import qualified Data.Text                  as T
 import qualified Data.Text.IO               as TIO
@@ -27,6 +27,7 @@ import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
 import           NLP.Type.PennTreebankII
+import           NLP.Type.UniversalDependencies2.Syntax
 import           YAML.Builder
 --
 import           CoreNLP.Simple
@@ -145,7 +146,7 @@ sentToDep s = do
       
 convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Maybe Dependency
 convertDep m g = Dependency <$> mapM (convertN m) (toList (g^.DG.node))
-                            <*> pure (map (convertE m) (toList (g^.DG.edge)))
+                            <*> mapM (convertE m) (toList (g^.DG.edge))
 
 convertN :: IM.IntMap Text -> DN.Node -> Maybe Node
 convertN m n = do
@@ -153,6 +154,8 @@ convertN m n = do
   w <- IM.lookup k m
   return (k,w)
   
-convertE :: IM.IntMap Text -> DE.Edge -> Edge
-convertE m e = ( (fromIntegral (e^.DE.source),fromIntegral (e^.DE.target))
-               , fromMaybe "" (fmap cutf8 (e^.DE.dep)))
+convertE :: IM.IntMap Text -> DE.Edge -> Maybe Edge
+convertE m e = do
+  dep <- parseDepRel =<< listToMaybe (T.split (== ':') (fromMaybe "" (fmap cutf8 (e^.DE.dep))))
+  return ((fromIntegral (e^.DE.source),fromIntegral (e^.DE.target)), dep )
+

@@ -10,6 +10,7 @@ import           Data.Text        (Text)
 import           GHC.Generics
 --
 import           NLP.Type.PennTreebankII
+import           NLP.Type.UniversalDependencies2.Syntax
 
 data Sentence = Sentence { _sent_index      :: Int
                          , _sent_charRange  :: (Int,Int)
@@ -36,7 +37,7 @@ instance ToJSON Token where
 
 type Node = (Int,Text)
 
-type Edge = ((Int,Int),Text)
+type Edge = ((Int,Int),DependencyRelation)
 
 
 data Dependency = Dependency [Node] [Edge]
