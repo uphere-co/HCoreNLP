@@ -6,7 +6,7 @@
 module Main where
 
 import           Control.Lens
-import           Control.Monad                      (join)
+import           Control.Monad                      (join,when)
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Foldable                      (toList)
@@ -109,20 +109,17 @@ processDoc ann = do
   case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
     Left err -> print err >> return ([],[])
     Right (doc,_lbstr') -> do
-      let sents = toListOf (D.sentence . traverse) doc
-          Just newsents = mapM (convertSentence doc) sents
-      mapM_ print newsents
-      let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
-      return (newsents,toklst)
    -}
 
 
 
 data ProgOption = ProgOption { textFile :: FilePath
+                             , showDependency :: Bool
                              } deriving Show
 
 pOptions :: Parser ProgOption
 pOptions = ProgOption <$> strOption (long "file" <> short 'f' <> help "Text File")
+                      <*> switch (long "dependency" <> short 'd' <> help "Whether to show dependency")
 
 progOption :: ParserInfo ProgOption 
 progOption = info pOptions (fullDesc <> progDesc "Annotate using CoreNLP")
@@ -135,23 +132,23 @@ main = do
   txt <- TIO.readFile fp
   clspath <- getEnv "CLASSPATH"
   J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-    let pcfg = PPConfig True True True True True True
+    let pcfg = PPConfig True True True True True (showDependency opt)
     pp <- prepare pcfg
     let doc = Document txt (fromGregorian 2017 4 17) 
     ann <- annotate pp doc
-    d' <- processDoc ann
-    case d' of
+    rdoc <- processDoc ann
+    case rdoc of
       Left e -> print e
       Right d -> do
-        let sents = d ^. D.sentence
-        mapM_ (print . sentToDep) sents
-        -- let ds = catMaybes ( . traverse . S.basicDependencies)
-        -- print $ map convertDep ds
-    {- 
-    (r1, r2) <- processDoc ann
-    let result = SentenceTokens r1 r2 
-    TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
-    -}
+        let sents = toListOf (D.sentence . traverse) d
+            Just newsents = mapM (convertSentence d) sents
+        mapM_ print newsents
+        let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
+            result = SentenceTokens newsents toklst 
+        TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
+        when (showDependency opt) $ do
+          let sents = d ^. D.sentence
+          mapM_ (print . sentToDep) sents
 
 sentToDep :: S.Sentence -> Maybe Dependency
 sentToDep s = do
