@@ -6,17 +6,20 @@
 module Main where
 
 import           Control.Lens
-import           Control.Monad                    (join)
+import           Control.Monad                      (join)
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
-import           Data.Text                        (Text)
+import           Data.Foldable                      (toList)
+import           Data.Maybe                         (catMaybes,fromMaybe)
+import           Data.Text                          (Text)
 import qualified Data.Text                  as T
 import qualified Data.Text.IO               as TIO
 import qualified Data.Text.Lazy             as TL
-import qualified Data.Text.Lazy.Builder     as TLB (toLazyText)
+import qualified Data.Text.Lazy.Builder     as TLB  (toLazyText)
 import qualified Data.Text.Lazy.Encoding    as TLE
 import qualified Data.Text.Lazy.IO          as TLIO
-import           Data.Time.Calendar               (fromGregorian)
+import           Data.Traversable                   (traverse)
+import           Data.Time.Calendar                 (fromGregorian)
 import           Language.Java         as J
 import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
@@ -32,6 +35,12 @@ import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
 -- import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
+import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph       as DG
+import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node  as DN
+import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Edge  as DE
+
+
+
 
 instance MakeYaml Int where
   makeYaml _ x = YPrim (YInteger x)
@@ -84,10 +93,12 @@ convertToken t = do
   l <- cutf8 <$> (t^.TK.lemma)
   return (Token (b,e) w p l)
 
-processDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -> IO ([Sentence], [Token])
+processDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -> IO (Either String D.Document) -- IO ([Sentence], [Token])
 processDoc ann = do
   bstr <- serializeDoc ann
   let lbstr = BL.fromStrict bstr
+  return $ fmap fst (messageGet lbstr :: Either String (D.Document,BL.ByteString))
+  {- 
   case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
     Left err -> print err >> return ([],[])
     Right (doc,_lbstr') -> do
@@ -96,7 +107,7 @@ processDoc ann = do
       mapM_ print newsents
       let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
       return (newsents,toklst)
-
+   -}
 main :: IO ()
 main = do
     args <- getArgs
@@ -104,11 +115,28 @@ main = do
     txt <- TIO.readFile fp
     clspath <- getEnv "CLASSPATH"
     J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-      let pcfg = PPConfig True True True True True
+      let pcfg = PPConfig True True True True True True
       pp <- prepare pcfg
       let doc = Document txt (fromGregorian 2017 4 17) 
       ann <- annotate pp doc
+      d' <- processDoc ann
+      case d' of
+        Left e -> print e
+        Right d -> do
+          let ds = catMaybes (d ^.. D.sentence . traverse . S.basicDependencies)
+          print $ map convertDep ds
+      {- 
       (r1, r2) <- processDoc ann
       let result = SentenceTokens r1 r2 
       TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
-      -- TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 r2))
+      -}
+convertDep :: DG.DependencyGraph -> Dependency
+convertDep g = Dependency (map convertN (toList (g^.DG.node)))
+                          (map convertE (toList (g^.DG.edge)))
+
+convertN :: DN.Node -> Node
+convertN n = fromIntegral (n^.DN.index)
+  
+convertE :: DE.Edge -> Edge
+convertE e = ( (fromIntegral (e^.DE.source),fromIntegral (e^.DE.target))
+             , fromMaybe "" (fmap cutf8 (e^.DE.dep)))

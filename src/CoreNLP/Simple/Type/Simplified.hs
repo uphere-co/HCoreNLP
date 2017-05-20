@@ -32,3 +32,12 @@ instance ToJSON Sentence where
   
 instance ToJSON Token where
   toJSON = genericToJSON defaultOptions
+
+
+type Node = Int
+
+type Edge = ((Int,Int),Text)
+
+
+data Dependency = Dependency [Node] [Edge]
+                deriving (Show,Eq,Ord)

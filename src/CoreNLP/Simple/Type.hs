@@ -11,6 +11,7 @@ data PipelineConfig = PPConfig { _tokenizer       :: Bool
                                , _postagger       :: Bool
                                , _lemma           :: Bool
                                , _sutime          :: Bool
+                               , _depparse        :: Bool
                                } deriving (Show,Eq,Ord)
 
 makeLenses ''PipelineConfig
