@@ -5,7 +5,6 @@ module CoreNLP.Simple.Type.Simplified where
 
 import           Control.Lens
 import           Data.Aeson
-import           Data.Aeson.Types
 import           Data.Text        (Text)
 import           GHC.Generics
 --
@@ -42,3 +41,6 @@ type Edge = ((Int,Int),DependencyRelation)
 
 data Dependency = Dependency [Node] [Edge]
                 deriving (Show,Eq,Ord)
+
+
+-- data NamedEntity

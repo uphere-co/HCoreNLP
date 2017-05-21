@@ -9,6 +9,7 @@ import           Control.Lens
 import           Control.Monad                      (join,when)
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
+import           Data.Default
 import           Data.Foldable                      (toList)
 import qualified Data.IntMap                as IM
 import           Data.Maybe                         (catMaybes,fromMaybe,listToMaybe)
@@ -98,19 +99,11 @@ convertToken t = do
   return (Token (b,e) w p l)
 
 processDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation")
-           -> IO (Either String D.Document) -- IO ([Sentence], [Token])
+           -> IO (Either String D.Document) 
 processDoc ann = do
   bstr <- serializeDoc ann
   let lbstr = BL.fromStrict bstr
   return $ fmap fst (messageGet lbstr :: Either String (D.Document,BL.ByteString))
-
-  
-  {- 
-  case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
-    Left err -> print err >> return ([],[])
-    Right (doc,_lbstr') -> do
-   -}
-
 
 
 data ProgOption = ProgOption { textFile :: FilePath
@@ -132,7 +125,12 @@ main = do
   txt <- TIO.readFile fp
   clspath <- getEnv "CLASSPATH"
   J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
-    let pcfg = PPConfig True True True True True (showDependency opt)
+    let pcfg = def & ( tokenizer .~ True )
+                   . ( words2sentences .~ True )
+                   . ( postagger .~ True )
+                   . ( lemma .~ True )
+                   . ( sutime .~ True )
+                   . ( depparse .~ showDependency opt )
     pp <- prepare pcfg
     let doc = Document txt (fromGregorian 2017 4 17) 
     ann <- annotate pp doc
