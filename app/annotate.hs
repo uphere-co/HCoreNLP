@@ -123,13 +123,16 @@ main = do
     case rdoc of
       Left e -> print e
       Right d -> do
-        let sents = toListOf (D.sentence . traverse) d
+        let sents = d ^.. D.sentence . traverse
+        
+        -- let sents = toListOf (D.sentence . traverse) d
             Just newsents = mapM (convertSentence d) sents
         mapM_ print newsents
         let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
             result = SentenceTokens newsents toklst 
         TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
-        when (showDependency opt) $ do
-          let sents = d ^. D.sentence
+        when (showDependency opt) $ 
           mapM_ (print . sentToDep) sents
+        when (tagNER opt) $
+          mapM_ (print . sentToNER) sents
 

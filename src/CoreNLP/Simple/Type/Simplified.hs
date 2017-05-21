@@ -44,4 +44,7 @@ data Dependency = Dependency [Node] [Edge]
                 deriving (Show,Eq,Ord)
 
 
-newtype NamedEntity = NamedEntity [(Text,NamedEntityClass)] 
+type NERToken = (Text,NamedEntityClass)
+
+newtype NERSentence = NERSentence [NERToken]
+                    deriving (Show,Eq)

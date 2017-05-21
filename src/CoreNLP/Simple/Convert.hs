@@ -13,6 +13,7 @@ import qualified Data.Text.Lazy          as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import           Text.ProtocolBuffers.Basic     (Utf8, utf8)
 --
+import           NLP.Type.NamedEntity
 import           NLP.Type.PennTreebankII
 import           NLP.Type.UniversalDependencies2.Syntax
 --
@@ -68,4 +69,11 @@ convertE m e = do
    -- dep = maybe (Left deptxt) Right mdep
   return ((fromIntegral (e^.DE.source),fromIntegral (e^.DE.target)), dep )
 
+
+sentToNER :: S.Sentence -> NERSentence
+sentToNER s =
+  let tks = toList (s ^. S.token)
+      cf = fromMaybe "" . fmap cutf8
+      cc x = (fromMaybe (error (show x)) . classify . cf) x
+  in NERSentence $ map (\x -> (cf (x^.TK.word),cc (x^.TK.ner))) tks
 
