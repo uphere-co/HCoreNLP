@@ -30,6 +30,7 @@ library
                        aeson,
                        attoparsec,
                        bytestring,
+                       containers,
                        data-default,
                        directory,
                        inline-java,
@@ -78,6 +79,7 @@ library
                        CoreNLP.Proto.HCoreNLPProto.ListTimex
                        CoreNLP.Proto.HCoreNLPProto.TimexWithOffset
                        CoreNLP.Simple
+                       CoreNLP.Simple.Convert
                        CoreNLP.Simple.Type
                        CoreNLP.Simple.Type.Simplified
                        CoreNLP.SUTime

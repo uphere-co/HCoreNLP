@@ -8,6 +8,7 @@ import           Data.Aeson
 import           Data.Text        (Text)
 import           GHC.Generics
 --
+import           NLP.Type.NamedEntity
 import           NLP.Type.PennTreebankII
 import           NLP.Type.UniversalDependencies2.Syntax
 
@@ -43,4 +44,4 @@ data Dependency = Dependency [Node] [Edge]
                 deriving (Show,Eq,Ord)
 
 
--- data NamedEntity
+newtype NamedEntity = NamedEntity [(Text,NamedEntityClass)] 
