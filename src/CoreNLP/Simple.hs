@@ -27,12 +27,16 @@ prepare p = do
     ppos <- Language.Java.reflect (p^.postagger)
     plemma <- Language.Java.reflect (p^.lemma)
     ptim <- Language.Java.reflect (p^.sutime)
+    pdepparse <- Language.Java.reflect (p^.depparse)
     [java|{
             edu.stanford.nlp.pipeline.AnnotationPipeline pipeline = new edu.stanford.nlp.pipeline.AnnotationPipeline();
             pipeline.addAnnotator(new edu.stanford.nlp.pipeline.TokenizerAnnotator($ptkn));
             pipeline.addAnnotator(new edu.stanford.nlp.pipeline.WordsToSentencesAnnotator($pw2s));
             pipeline.addAnnotator(new edu.stanford.nlp.pipeline.POSTaggerAnnotator($ppos));
             pipeline.addAnnotator(new edu.stanford.nlp.pipeline.MorphaAnnotator($plemma));
+            if($pdepparse) {
+              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.DependencyParseAnnotator());
+            }
             if($ptim) {
               java.util.Properties props = new java.util.Properties();
               pipeline.addAnnotator(new edu.stanford.nlp.time.TimeAnnotator("sutime", props));

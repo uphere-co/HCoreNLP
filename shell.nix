@@ -215,6 +215,7 @@ let
             hprotoc
             lens
             monad-loops
+            optparse-applicative
             proto-lens
             proto-lens-protoc
             protocol-buffers
