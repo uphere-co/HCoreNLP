@@ -5,10 +5,10 @@ module CoreNLP.Simple.Type.Simplified where
 
 import           Control.Lens
 import           Data.Aeson
-import           Data.Aeson.Types
 import           Data.Text        (Text)
 import           GHC.Generics
 --
+import           NLP.Type.NamedEntity
 import           NLP.Type.PennTreebankII
 import           NLP.Type.UniversalDependencies2.Syntax
 
@@ -42,3 +42,9 @@ type Edge = ((Int,Int),DependencyRelation)
 
 data Dependency = Dependency [Node] [Edge]
                 deriving (Show,Eq,Ord)
+
+
+type NERToken = (Text,NamedEntityClass)
+
+newtype NERSentence = NERSentence [NERToken]
+                    deriving (Show,Eq)

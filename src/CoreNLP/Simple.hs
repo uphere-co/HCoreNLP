@@ -28,6 +28,7 @@ prepare p = do
     plemma <- Language.Java.reflect (p^.lemma)
     ptim <- Language.Java.reflect (p^.sutime)
     pdepparse <- Language.Java.reflect (p^.depparse)
+    pner <- Language.Java.reflect (p^.ner)
     [java|{
             edu.stanford.nlp.pipeline.AnnotationPipeline pipeline = new edu.stanford.nlp.pipeline.AnnotationPipeline();
             pipeline.addAnnotator(new edu.stanford.nlp.pipeline.TokenizerAnnotator($ptkn));
@@ -36,6 +37,17 @@ prepare p = do
             pipeline.addAnnotator(new edu.stanford.nlp.pipeline.MorphaAnnotator($plemma));
             if($pdepparse) {
               pipeline.addAnnotator(new edu.stanford.nlp.pipeline.DependencyParseAnnotator());
+            }
+            if($pner) {
+              try { 
+                pipeline.addAnnotator(new edu.stanford.nlp.pipeline.NERCombinerAnnotator());
+              }
+              catch ( java.io.IOException ex ) {
+                System.out.println(ex.toString());
+              }
+              catch ( java.lang.ClassNotFoundException ex ) {
+                System.out.println(ex.toString());
+              } 
             }
             if($ptim) {
               java.util.Properties props = new java.util.Properties();
