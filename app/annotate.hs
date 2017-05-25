@@ -41,7 +41,7 @@ import           CoreNLP.Simple.Type.Simplified
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
-import qualified CoreNLP.Proto.CoreNLPProtos.ParseTree as PT
+-- import qualified CoreNLP.Proto.CoreNLPProtos.ParseTree as PT
 -- import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph       as DG
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node  as DN
@@ -105,16 +105,6 @@ pOptions = ProgOption <$> strOption (long "file" <> short 'f' <> help "Text File
 progOption :: ParserInfo ProgOption 
 progOption = info pOptions (fullDesc <> progDesc "Annotate using CoreNLP")
 
-convertC = fromMaybe "" . fmap cutf8
-
-mkConTree p =
-  case (Seq.viewl $ PT._child p) of
-    Seq.EmptyL   -> error "Error!"
-    p' Seq.:< sq -> case (Seq.viewl sq) of
-      Seq.EmptyL   -> case (Seq.viewl $ PT._child p') of
-        Seq.EmptyL    -> PL (convertC $ PT._value p) (convertC $ PT._value p')
-        sq'           -> PN (convertC $ PT._value p) (map mkConTree (toList (PT._child p)))
-      sq''         -> PN (convertC $ PT._value p) (map mkConTree (toList (PT._child p)))
 
 main :: IO ()
 main = do
@@ -142,7 +132,7 @@ main = do
         -- let sents = toListOf (D.sentence . traverse) d
             Just newsents = mapM (convertSentence d) sents
             cpt = mapMaybe S._parseTree sents
-            pt = map mkConTree cpt       
+            pt = map convertPennTree cpt       
         mapM_ print newsents
         let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
             result = SentenceTokens newsents toklst 
