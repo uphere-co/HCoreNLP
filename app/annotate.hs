@@ -12,8 +12,9 @@ import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Default
 import           Data.Foldable                      (toList)
 import qualified Data.IntMap                as IM
-import           Data.Maybe                         (catMaybes,fromMaybe,listToMaybe)
+import           Data.Maybe                         (catMaybes,fromMaybe,mapMaybe,listToMaybe)
 import           Data.Monoid                        ((<>))
+import qualified Data.Sequence              as Seq
 import           Data.Text                          (Text)
 import qualified Data.Text                  as T
 import qualified Data.Text.IO               as TIO
@@ -40,6 +41,7 @@ import           CoreNLP.Simple.Type.Simplified
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
+import qualified CoreNLP.Proto.CoreNLPProtos.ParseTree as PT
 -- import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph       as DG
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node  as DN
@@ -101,6 +103,16 @@ pOptions = ProgOption <$> strOption (long "file" <> short 'f' <> help "Text File
 progOption :: ParserInfo ProgOption 
 progOption = info pOptions (fullDesc <> progDesc "Annotate using CoreNLP")
 
+convertC = fromMaybe "" . fmap cutf8
+
+mkConTree p =
+  case (Seq.viewl $ PT._child p) of
+    Seq.EmptyL   -> error "Error!"
+    p' Seq.:< sq -> case (Seq.viewl sq) of
+      Seq.EmptyL   -> case (Seq.viewl $ PT._child p') of
+        Seq.EmptyL    -> PL (convertC $ PT._value p) (convertC $ PT._value p')
+        sq'           -> PN (convertC $ PT._value p) (map mkConTree (toList (PT._child p)))
+      sq''         -> PN (convertC $ PT._value p) (map mkConTree (toList (PT._child p)))
 
 main :: IO ()
 main = do
@@ -118,9 +130,18 @@ main = do
                    . ( constituency .~ True )
                    . ( ner .~ tagNER opt )
     pp <- prepare pcfg
-    let doc = Document txt (fromGregorian 2017 4 17) 
+    let doc = Document txt (fromGregorian 2017 4 17)
     ann <- annotate pp doc
     rdoc <- processDoc ann
+
+    case rdoc of
+      Left e -> print e
+      Right d -> do
+        let sents = d ^.. D.sentence . traverse
+        let cpt = mapMaybe S._parseTree sents
+        let pt = map mkConTree cpt
+        print pt
+    {-
     case rdoc of
       Left e -> print e
       Right d -> do
@@ -136,4 +157,4 @@ main = do
           mapM_ (print . sentToDep) sents
         when (tagNER opt) $
           mapM_ (print . sentToNER) sents
-
+-}
