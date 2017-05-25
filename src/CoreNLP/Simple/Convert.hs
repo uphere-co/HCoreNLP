@@ -7,6 +7,7 @@ import           Control.Monad                  (join)
 import           Data.Foldable                  (toList)
 import qualified Data.IntMap             as IM
 import           Data.Maybe                     (fromMaybe,listToMaybe)
+import qualified Data.Sequence           as Seq
 import           Data.Text                      (Text)
 import qualified Data.Text               as T
 import qualified Data.Text.Lazy          as TL
@@ -19,6 +20,7 @@ import           NLP.Type.UniversalDependencies2.Syntax
 --
 import           CoreNLP.Simple.Type.Simplified
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
+import qualified CoreNLP.Proto.CoreNLPProtos.ParseTree as PT
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph       as DG
@@ -77,3 +79,13 @@ sentToNER s =
       cc x = (fromMaybe (error (show x)) . classify . cf) x
   in NERSentence $ map (\x -> (cf (x^.TK.word),cc (x^.TK.ner))) tks
 
+convertPennTree :: PT.ParseTree -> PennTree
+convertPennTree p =
+    case Seq.viewl (p^.PT.child) of
+      Seq.EmptyL   -> error "Error!"
+      p' Seq.:< sq -> case Seq.viewl sq of
+        Seq.EmptyL   -> case Seq.viewl (PT._child p') of
+          Seq.EmptyL    -> PL (cf (p^.PT.value)) (cf (p'^.PT.value))
+          sq'           -> PN (cf (p^.PT.value)) (map convertPennTree (toList (p^.PT.child)))
+        sq''         -> PN (cf (p^.PT.value)) (map convertPennTree (toList (p^.PT.child)))
+  where cf = fromMaybe "" . fmap cutf8
