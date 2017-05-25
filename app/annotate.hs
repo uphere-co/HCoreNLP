@@ -115,6 +115,7 @@ main = do
                    . ( lemma .~ True )
                    . ( sutime .~ True )
                    . ( depparse .~ showDependency opt )
+                   . ( constituency .~ True )
                    . ( ner .~ tagNER opt )
     pp <- prepare pcfg
     let doc = Document txt (fromGregorian 2017 4 17) 
