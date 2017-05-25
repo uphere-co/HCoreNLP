@@ -28,15 +28,27 @@ prepare p = do
     plemma <- Language.Java.reflect (p^.lemma)
     ptim <- Language.Java.reflect (p^.sutime)
     pdepparse <- Language.Java.reflect (p^.depparse)
+    pconstituency <- Language.Java.reflect (p^.constituency)
     pner <- Language.Java.reflect (p^.ner)
     [java|{
             edu.stanford.nlp.pipeline.AnnotationPipeline pipeline = new edu.stanford.nlp.pipeline.AnnotationPipeline();
-            pipeline.addAnnotator(new edu.stanford.nlp.pipeline.TokenizerAnnotator($ptkn));
-            pipeline.addAnnotator(new edu.stanford.nlp.pipeline.WordsToSentencesAnnotator($pw2s));
-            pipeline.addAnnotator(new edu.stanford.nlp.pipeline.POSTaggerAnnotator($ppos));
-            pipeline.addAnnotator(new edu.stanford.nlp.pipeline.MorphaAnnotator($plemma));
+            if($ptkn) {
+              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.TokenizerAnnotator());
+            }
+            if($pw2s) {
+              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.WordsToSentencesAnnotator());
+            }
+            if($ppos) {
+              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.POSTaggerAnnotator());
+            }
+            if($plemma) {
+              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.MorphaAnnotator());
+            }
             if($pdepparse) {
               pipeline.addAnnotator(new edu.stanford.nlp.pipeline.DependencyParseAnnotator());
+            }
+            if($pconstituency) {
+              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.ParserAnnotator(true,500));
             }
             if($pner) {
               try { 
