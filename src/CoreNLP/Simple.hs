@@ -48,7 +48,7 @@ prepare p = do
               pipeline.addAnnotator(new edu.stanford.nlp.pipeline.DependencyParseAnnotator());
             }
             if($pconstituency) {
-              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.ParserAnnotator(true,100));
+              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.ParserAnnotator(true,500));
             }
             if($pner) {
               try { 

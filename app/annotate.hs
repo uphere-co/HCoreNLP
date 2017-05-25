@@ -92,12 +92,14 @@ processDoc ann = do
 
 data ProgOption = ProgOption { textFile :: FilePath
                              , showDependency :: Bool
+                             , showConstituency :: Bool
                              , tagNER :: Bool
                              } deriving Show
 
 pOptions :: Parser ProgOption
 pOptions = ProgOption <$> strOption (long "file" <> short 'f' <> help "Text File")
-                      <*> switch (long "dependency" <> short 'd' <> help "Whether to show dependency")
+                      <*> switch (long "dependency" <> short 'd' <> help "Whether to show dependency parsing result")
+                      <*> switch (long "constituency" <> short 'c' <> help "Whether to show constituency parsing result")
                       <*> switch (long "ner" <> short 'n' <> help "Whether to tag NER")
 
 progOption :: ParserInfo ProgOption 
@@ -127,34 +129,28 @@ main = do
                    . ( lemma .~ True )
                    . ( sutime .~ True )
                    . ( depparse .~ showDependency opt )
-                   . ( constituency .~ True )
+                   . ( constituency .~ showConstituency opt )
                    . ( ner .~ tagNER opt )
     pp <- prepare pcfg
     let doc = Document txt (fromGregorian 2017 4 17)
     ann <- annotate pp doc
     rdoc <- processDoc ann
-
     case rdoc of
       Left e -> print e
       Right d -> do
         let sents = d ^.. D.sentence . traverse
-        let cpt = mapMaybe S._parseTree sents
-        let pt = map mkConTree cpt
-        print pt
-    {-
-    case rdoc of
-      Left e -> print e
-      Right d -> do
-        let sents = d ^.. D.sentence . traverse
-        
         -- let sents = toListOf (D.sentence . traverse) d
             Just newsents = mapM (convertSentence d) sents
+            cpt = mapMaybe S._parseTree sents
+            pt = map mkConTree cpt       
         mapM_ print newsents
         let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
             result = SentenceTokens newsents toklst 
         TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
         when (showDependency opt) $ 
           mapM_ (print . sentToDep) sents
+        when (showConstituency opt) $
+          mapM_ print pt
         when (tagNER opt) $
           mapM_ (print . sentToNER) sents
--}
+
