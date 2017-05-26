@@ -6,13 +6,16 @@ module CoreNLP.Simple where
 
 import           Control.Lens
 import qualified Data.ByteString.Char8 as B
+import qualified Data.ByteString.Lazy  as BL
 import qualified Data.Text             as T
 import           Data.Time.Calendar           (showGregorian)
 import           Language.Haskell.TH.Syntax
 import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
 import qualified Language.Java                (reflect,reify)
+import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
+import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import           CoreNLP.Simple.Type
 import           TemplateTest
 
@@ -112,6 +115,13 @@ serializeDoc annotation = do
           }
     |]
   serialize r  
+
+protobufDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation")
+           -> IO (Either String D.Document) 
+protobufDoc ann  = do
+  bstr <- serializeDoc ann
+  let lbstr = BL.fromStrict bstr
+  return $ fmap fst (messageGet lbstr :: Either String (D.Document,BL.ByteString))
 
 
 serializeTimex :: J ('Class "edu.stanford.nlp.pipeline.Annotation") -- ^ annotation object
