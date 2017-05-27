@@ -28,7 +28,6 @@ import           Language.Java         as J
 import           Options.Applicative
 import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
-import           Text.ProtocolBuffers.WireMessage (messageGet)
 --
 import           NLP.Type.PennTreebankII
 import           NLP.Type.UniversalDependencies2.Syntax
@@ -81,14 +80,14 @@ instance MakeYaml SentenceTokens where
                                               , ("tokens", makeYaml n ts) ]
 
 
-
+{- 
 processDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation")
            -> IO (Either String D.Document) 
 processDoc ann = do
   bstr <- serializeDoc ann
   let lbstr = BL.fromStrict bstr
   return $ fmap fst (messageGet lbstr :: Either String (D.Document,BL.ByteString))
-
+-}
 
 data ProgOption = ProgOption { textFile :: FilePath
                              , showDependency :: Bool
@@ -124,7 +123,7 @@ main = do
     pp <- prepare pcfg
     let doc = Document txt (fromGregorian 2017 4 17)
     ann <- annotate pp doc
-    rdoc <- processDoc ann
+    rdoc <- protobufDoc ann
     case rdoc of
       Left e -> print e
       Right d -> do
