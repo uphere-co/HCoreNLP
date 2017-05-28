@@ -29,6 +29,7 @@ import           Options.Applicative
 import           System.Environment               (getEnv,getArgs)
 import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
 --
+import           NLP.Printer.PennTreebankII
 import           NLP.Type.PennTreebankII
 import           NLP.Type.UniversalDependencies2.Syntax
 import           YAML.Builder
@@ -80,14 +81,6 @@ instance MakeYaml SentenceTokens where
                                               , ("tokens", makeYaml n ts) ]
 
 
-{- 
-processDoc :: J ('Class "edu.stanford.nlp.pipeline.Annotation")
-           -> IO (Either String D.Document) 
-processDoc ann = do
-  bstr <- serializeDoc ann
-  let lbstr = BL.fromStrict bstr
-  return $ fmap fst (messageGet lbstr :: Either String (D.Document,BL.ByteString))
--}
 
 data ProgOption = ProgOption { textFile :: FilePath
                              , showDependency :: Bool
@@ -128,18 +121,19 @@ main = do
       Left e -> print e
       Right d -> do
         let sents = d ^.. D.sentence . traverse
-        -- let sents = toListOf (D.sentence . traverse) d
             Just newsents = mapM (convertSentence d) sents
             cpt = mapMaybe S._parseTree sents
-            pt = map convertPennTree cpt       
+            pt = map decodeToPennTree cpt       
         mapM_ print newsents
         let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
             result = SentenceTokens newsents toklst 
         TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
         when (showDependency opt) $ 
           mapM_ (print . sentToDep) sents
-        when (showConstituency opt) $
-          mapM_ print pt
+        when (showConstituency opt) $ do
+          mapM_ (TIO.putStrLn . prettyPrint 0) pt
+          mapM_ print cpt
+          mapM_ print (mapMaybe (^.S.annotatedParseTree) sents)
         when (tagNER opt) $
           mapM_ (print . sentToNER) sents
 
