@@ -16,7 +16,39 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     HCoreNLPProto, CoreNLPProtos, CoreNLPProtos.Sentence, CoreNLPProtos.Polarity, CoreNLPProtos.CorefChain, CoreNLPProtos.Document, CoreNLPProtos.Token, CoreNLPProtos.Quote, CoreNLPProtos.Sentiment, CoreNLPProtos.Entity, CoreNLPProtos.Relation, CoreNLPProtos.TokenLocation, CoreNLPProtos.Operator, CoreNLPProtos.MapIntString, CoreNLPProtos.NaturalLogicRelation, CoreNLPProtos.SpeakerInfo, CoreNLPProtos.SentenceFragment, CoreNLPProtos.DependencyGraph, CoreNLPProtos.NERMention, CoreNLPProtos.RelationTriple, CoreNLPProtos.ParseTree, CoreNLPProtos.Timex, CoreNLPProtos.Language, CoreNLPProtos.IndexedWord, CoreNLPProtos.Span, CoreNLPProtos.MapStringString, CoreNLPProtos.Mention, CoreNLPProtos.CorefChain.CorefMention, CoreNLPProtos.DependencyGraph.Edge, CoreNLPProtos.DependencyGraph.Node, HCoreNLPProto.ListTimex, HCoreNLPProto.TimexWithOffset
+  exposed-modules:
+                   CoreNLP.Proto.CoreNLPProtos
+                   CoreNLP.Proto.CoreNLPProtos.CorefChain
+                   CoreNLP.Proto.CoreNLPProtos.CorefChain.CorefMention
+                   CoreNLP.Proto.CoreNLPProtos.DependencyGraph
+                   CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Edge
+                   CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node
+                   CoreNLP.Proto.CoreNLPProtos.Document
+                   CoreNLP.Proto.CoreNLPProtos.Entity
+                   CoreNLP.Proto.CoreNLPProtos.IndexedWord
+                   CoreNLP.Proto.CoreNLPProtos.Language
+                   CoreNLP.Proto.CoreNLPProtos.MapIntString
+                   CoreNLP.Proto.CoreNLPProtos.MapStringString
+                   CoreNLP.Proto.CoreNLPProtos.Mention
+                   CoreNLP.Proto.CoreNLPProtos.NERMention
+                   CoreNLP.Proto.CoreNLPProtos.NaturalLogicRelation
+                   CoreNLP.Proto.CoreNLPProtos.Operator
+                   CoreNLP.Proto.CoreNLPProtos.ParseTree
+                   CoreNLP.Proto.CoreNLPProtos.Polarity
+                   CoreNLP.Proto.CoreNLPProtos.Quote
+                   CoreNLP.Proto.CoreNLPProtos.Relation
+                   CoreNLP.Proto.CoreNLPProtos.RelationTriple
+                   CoreNLP.Proto.CoreNLPProtos.Sentence
+                   CoreNLP.Proto.CoreNLPProtos.SentenceFragment
+                   CoreNLP.Proto.CoreNLPProtos.Sentiment
+                   CoreNLP.Proto.CoreNLPProtos.Span
+                   CoreNLP.Proto.CoreNLPProtos.SpeakerInfo
+                   CoreNLP.Proto.CoreNLPProtos.Timex
+                   CoreNLP.Proto.CoreNLPProtos.Token
+                   CoreNLP.Proto.CoreNLPProtos.TokenLocation
+                   CoreNLP.Proto.HCoreNLPProto
+                   CoreNLP.Proto.HCoreNLPProto.ListTimex
+                   CoreNLP.Proto.HCoreNLPProto.TimexWithOffset
   -- other-modules:       
   other-extensions:    BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses, TemplateHaskell
   build-depends:       base >=4.9 && <4.10, protocol-buffers >=2.4 && <2.5, protocol-buffers-descriptor >=2.4 && <2.5, lens >=4.15 && <4.16
