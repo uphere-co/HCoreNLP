@@ -33,6 +33,7 @@ library
                        containers,
                        data-default,
                        directory,
+                       extra,
                        inline-java,
                        jni,
                        jvm,
