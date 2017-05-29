@@ -48,7 +48,12 @@ prepare p = do
               pipeline.addAnnotator(new edu.stanford.nlp.pipeline.MorphaAnnotator());
             }
             if($pdepparse) {
-              pipeline.addAnnotator(new edu.stanford.nlp.pipeline.DependencyParseAnnotator());
+              java.util.Properties props = new java.util.Properties();
+              //props.setProperty("parse.keepPunct","true");
+            
+              edu.stanford.nlp.pipeline.DependencyParseAnnotator dpann =
+                new edu.stanford.nlp.pipeline.DependencyParseAnnotator(props);
+              pipeline.addAnnotator(dpann);
             }
             if($pconstituency) {
               pipeline.addAnnotator(new edu.stanford.nlp.pipeline.ParserAnnotator(true,500));

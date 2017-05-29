@@ -40,7 +40,7 @@ type Node = (Int,Text)
 type Edge = ((Int,Int),DependencyRelation)
 
 
-data Dependency = Dependency [Node] [Edge]
+data Dependency = Dependency Int [Node] [Edge]
                 deriving (Show,Eq,Ord)
 
 
