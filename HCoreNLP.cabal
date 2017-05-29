@@ -33,6 +33,7 @@ library
                        containers,
                        data-default,
                        directory,
+                       HCoreNLP-Proto,
                        inline-java,
                        jni,
                        jvm,
@@ -94,4 +95,5 @@ Executable annotate
                         nlp-types,
                         yayaml,
                         --
-                        HCoreNLP
+                        HCoreNLP,
+                        HCoreNLP-Proto
