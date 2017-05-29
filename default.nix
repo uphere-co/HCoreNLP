@@ -3,7 +3,7 @@
 , protocol-buffers, protocol-buffers-descriptor, yayaml
 , jdk
 , corenlp, corenlp_models
-, nlp-types
+, nlp-types, HCoreNLP-Proto
 }:
 mkDerivation {
   pname = "HCoreNLP";
@@ -17,11 +17,11 @@ mkDerivation {
   '';
   libraryHaskellDepends = [
     aeson attoparsec nlp-types base bytestring containers data-default inline-java jni jvm
-    lens text transformers protocol-buffers protocol-buffers-descriptor
+    lens text transformers protocol-buffers protocol-buffers-descriptor HCoreNLP-Proto
   ];
   executableHaskellDepends = [
     bytestring containers data-default jvm lens optparse-applicative protocol-buffers text time
-    nlp-types yayaml 
+    nlp-types yayaml HCoreNLP-Proto
   ];
   
   buildDepends = [ jdk ];

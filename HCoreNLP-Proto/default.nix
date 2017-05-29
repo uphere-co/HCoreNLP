@@ -8,5 +8,6 @@ mkDerivation {
   libraryHaskellDepends = [
     base lens protocol-buffers protocol-buffers-descriptor
   ];
+  doHaddock = false;
   license = stdenv.lib.licenses.unfree;
 }
