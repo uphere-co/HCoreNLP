@@ -57,7 +57,8 @@ sentToDep s = do
   convertDep m d     
       
 convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Either String Dependency
-convertDep m g = Dependency <$> mapM (convertN m) (toList (g^.DG.node))
+convertDep m g = Dependency <$> pure (fromIntegral (Seq.index (g^.DG.root) 0))
+                            <*> mapM (convertN m) (toList (g^.DG.node))
                             <*> mapM (convertE m) (toList (g^.DG.edge))
 
 convertN :: IM.IntMap Text -> DN.Node -> Either String Node
