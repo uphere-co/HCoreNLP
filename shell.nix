@@ -17,7 +17,7 @@ let
     self: super: {
       "nlp-types" = self.callPackage (import nlp-types) {};
       "textview" = self.callPackage (import textview) {};
-      #"intrinio" = self.callPackage (import (fetchfin+ "/intrinio")) {};
+      "HCoreNLP-Proto" = self.callPackage ./HCoreNLP-Proto {};
       
       "lens-labels" = self.callPackage
         ({ mkDerivation, base, ghc-prim, stdenv }:
@@ -140,9 +140,9 @@ let
             proto-lens-protoc
             protocol-buffers
             template-haskell
-            #p.intrinio
+            p.HCoreNLP-Proto
             p.nlp-types
-            p.textview
+            p.textview            
             yaml
             yayaml
           ]);
