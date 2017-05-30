@@ -130,6 +130,7 @@ let
             data-default
             directory
             directory-tree
+            extra
             haskeline
             hprotoc
             lens

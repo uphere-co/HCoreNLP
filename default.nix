@@ -1,4 +1,4 @@
-{ mkDerivation, aeson, attoparsec, base, bytestring, containers, data-default
+{ mkDerivation, aeson, attoparsec, base, bytestring, containers, data-default, extra
 , inline-java, jni, jvm, lens, optparse-applicative, stdenv, text, time, transformers
 , protocol-buffers, protocol-buffers-descriptor, yayaml
 , jdk
@@ -16,7 +16,7 @@ mkDerivation {
     echo $CLASSPATH
   '';
   libraryHaskellDepends = [
-    aeson attoparsec nlp-types base bytestring containers data-default inline-java jni jvm
+    aeson attoparsec nlp-types base bytestring containers data-default extra inline-java jni jvm
     lens text transformers protocol-buffers protocol-buffers-descriptor HCoreNLP-Proto
   ];
   executableHaskellDepends = [

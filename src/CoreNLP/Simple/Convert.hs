@@ -4,9 +4,11 @@ module CoreNLP.Simple.Convert where
 
 import           Control.Lens
 import           Control.Monad                  (join)
+import           Data.Either.Extra              (maybeToEither)
 import           Data.Foldable                  (toList)
 import qualified Data.IntMap             as IM
 import           Data.Maybe                     (fromMaybe,listToMaybe)
+import           Data.Monoid                    ((<>))
 import qualified Data.Sequence           as Seq
 import           Data.Text                      (Text)
 import qualified Data.Text               as T
@@ -47,28 +49,30 @@ convertToken t = do
   l <- cutf8 <$> (t^.TK.lemma)
   return (Token (b,e) w p l)
 
-sentToDep :: S.Sentence -> Maybe Dependency
+sentToDep :: S.Sentence -> Either String Dependency
 sentToDep s = do
-  d <- s ^. S.basicDependencies
+  d <- maybeToEither ("no basicDependencies") $ s ^. S.basicDependencies
   let ts = zip [1..] (map (fromMaybe "" . fmap cutf8) (s ^.. S.token . traverse . TK.word))
       m = IM.fromList ts
   convertDep m d     
       
-convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Maybe Dependency
-convertDep m g = Dependency <$> mapM (convertN m) (toList (g^.DG.node))
+convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Either String Dependency
+convertDep m g = Dependency <$> pure (fromIntegral (Seq.index (g^.DG.root) 0))
+                            <*> mapM (convertN m) (toList (g^.DG.node))
                             <*> mapM (convertE m) (toList (g^.DG.edge))
 
-convertN :: IM.IntMap Text -> DN.Node -> Maybe Node
+convertN :: IM.IntMap Text -> DN.Node -> Either String Node
 convertN m n = do
   let k = fromIntegral (n^.DN.index)
-  w <- IM.lookup k m
+  w <- maybeToEither ("token " <> show k) $ IM.lookup k m
   return (k,w)
+
+-- parseDepRel' = Just
   
-convertE :: IM.IntMap Text -> DE.Edge -> Maybe Edge
+convertE :: IM.IntMap Text -> DE.Edge -> Either String Edge
 convertE m e = do
   let deptxt = fromMaybe "" (fmap cutf8 (e^.DE.dep))
-  dep <- parseDepRel =<< listToMaybe (T.split (== ':') deptxt)
-   -- dep = maybe (Left deptxt) Right mdep
+  dep <- parseDepRel =<< (case T.split (== ':') deptxt of [] -> Left "no deptxt" ; x:_ -> Right x)
   return ((fromIntegral (e^.DE.source),fromIntegral (e^.DE.target)), dep )
 
 
@@ -79,13 +83,13 @@ sentToNER s =
       cc x = (fromMaybe (error (show x)) . classify . cf) x
   in NERSentence $ map (\x -> (cf (x^.TK.word),cc (x^.TK.ner))) tks
 
-convertPennTree :: PT.ParseTree -> PennTree
-convertPennTree p =
+decodeToPennTree :: PT.ParseTree -> PennTree
+decodeToPennTree p =
     case Seq.viewl (p^.PT.child) of
       Seq.EmptyL   -> error "Error!"
       p' Seq.:< sq -> case Seq.viewl sq of
         Seq.EmptyL   -> case Seq.viewl (PT._child p') of
           Seq.EmptyL    -> PL (cf (p^.PT.value)) (cf (p'^.PT.value))
-          sq'           -> PN (cf (p^.PT.value)) (map convertPennTree (toList (p^.PT.child)))
-        sq''         -> PN (cf (p^.PT.value)) (map convertPennTree (toList (p^.PT.child)))
+          sq'           -> PN (cf (p^.PT.value)) (map decodeToPennTree (toList (p^.PT.child)))
+        sq''         -> PN (cf (p^.PT.value)) (map decodeToPennTree (toList (p^.PT.child)))
   where cf = fromMaybe "" . fmap cutf8
