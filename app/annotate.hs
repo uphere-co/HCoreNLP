@@ -47,6 +47,10 @@ import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph       as DG
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node  as DN
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Edge  as DE
 
+-- for entity linking
+import qualified NLP.Type.NamedEntity    as N 
+import           WikiEL                           (extractEntityMentions,loadEMtagger)
+
 
 instance MakeYaml Int where
   makeYaml _ x = YPrim (YInteger x)
@@ -135,4 +139,43 @@ runAnnotate = do
         when (tagNER opt) $
           mapM_ (print . sentToNER) sents
 
-main = runAnnotate
+
+runWikiEL :: IO ()
+runWikiEL = do
+  emTagger <- loadEMtagger "/data/groups/uphere/wikidata/testset/uid"
+                           [(N.Org, "/data/groups/uphere/wikidata/testset/ne.org"),
+                            (N.Person, "/data/groups/uphere/wikidata/testset/ne.person")]
+  opt <- execParser progOption
+  let fp = textFile opt
+  txt <- TIO.readFile fp
+  clspath <- getEnv "CLASSPATH"
+  J.withJVM [ B.pack ("-Djava.class.path=" ++ clspath) ] $ do
+    let pcfg = def & ( tokenizer .~ True )
+                   . ( words2sentences .~ True )
+                   . ( postagger .~ True )
+                   . ( lemma .~ False )
+                   . ( sutime .~ False )
+                   . ( depparse .~ False )
+                   . ( constituency .~ False )
+                   . ( ner .~ True )
+    pp <- prepare pcfg
+    let doc = Document txt (fromGregorian 2017 4 17)
+    ann <- annotate pp doc
+    rdoc <- protobufDoc ann
+    case rdoc of
+      Left e -> print e
+      Right d -> do
+        let sents = d ^.. D.sentence . traverse
+            Just newsents = mapM (convertSentence d) sents
+            cpt = mapMaybe S._parseTree sents
+            pt = map decodeToPennTree cpt
+            f (NERSentence tokens) = tokens
+            neTokens =  concatMap (f.sentToNER) sents
+            linked_mentions = emTagger neTokens
+            
+            text = T.unwords (map fst neTokens)
+
+        print text
+        mapM_ print linked_mentions 
+
+main = runWikiEL

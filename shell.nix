@@ -1,6 +1,7 @@
 { pkgs ? import <nixpkgs> {}
 , nlp-types ? <nlp-types>
 , textview ? <textview>
+, wiki-ner ? <wiki-ner>
 , uphere-nix-overlay ? <uphere-nix-overlay>
 }:
 
@@ -17,6 +18,7 @@ let
     self: super: {
       "nlp-types" = self.callPackage (import nlp-types) {};
       "textview" = self.callPackage (import textview) {};
+      "wiki-ner" = self.callPackage (import wiki-ner) {};
       "HCoreNLP-Proto" = self.callPackage ./HCoreNLP-Proto {};
       
       "lens-labels" = self.callPackage
@@ -142,7 +144,8 @@ let
             template-haskell
             p.HCoreNLP-Proto
             p.nlp-types
-            p.textview            
+            p.textview      
+            p.wiki-ner      
             yaml
             yayaml
           ]);
@@ -153,7 +156,8 @@ stdenv.mkDerivation {
   name = "corenlp-dev";
   buildInputs = [ hsenv jdk protobuf];
   shellHook = ''
-    CLASSPATH="${corenlp_models}:${corenlp}/stanford-corenlp-3.7.0.jar:${corenlp}/protobuf.jar:${corenlp}/joda-time.jar:${corenlp}/jollyday.jar";
+    export CLASSPATH="${corenlp_models}:${corenlp}/stanford-corenlp-3.7.0.jar:${corenlp}/protobuf.jar:${corenlp}/joda-time.jar:${corenlp}/jollyday.jar:${hsenv}/share/x86_64-linux-ghc-8.0.2/HCoreNLP-0.1.0.0/HCoreNLPProto.jar";
+     PS1="\n\[\033[0;36m\][\u@\h.devel:\w]\$\[\033[0m\] ";
   '';
 }
 
