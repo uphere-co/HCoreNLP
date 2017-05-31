@@ -48,8 +48,6 @@ import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node  as DN
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Edge  as DE
 
 
-
-
 instance MakeYaml Int where
   makeYaml _ x = YPrim (YInteger x)
 
@@ -98,8 +96,8 @@ progOption :: ParserInfo ProgOption
 progOption = info pOptions (fullDesc <> progDesc "Annotate using CoreNLP")
 
 
-main :: IO ()
-main = do
+runAnnotate :: IO ()
+runAnnotate = do
   opt <- execParser progOption
   let fp = textFile opt
   txt <- TIO.readFile fp
@@ -137,3 +135,4 @@ main = do
         when (tagNER opt) $
           mapM_ (print . sentToNER) sents
 
+main = runAnnotate
