@@ -14,6 +14,11 @@ $ cabal install
 $ export CLASSPATH+=":.cabal-sandbox/share/x86_64-linux-ghc-8.0.2/HCoreNLP-0.1.0.0/HCoreNLPProto.jar"
 $ cabal exec -- ghc test/callparser.hs
 $ ./test/callparser
+
+#Or Run it with the interpreter
+#$ cabal sandbox init
+$ cabal install
+$ cabal exec -- runhaskell app/annotate.hs
 ```
 
 `(uphere-nix-overlay)`, `(textview)` and `(nlp-types)` mean the corresponding source directories.
