@@ -2,6 +2,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -38,7 +39,7 @@ import           Data.Text                 (Text)
 import qualified Data.Text            as T
 import           Data.Text.Read       as TR
 --
-import           Debug.Trace
+
 
 -- | data type for time tagging from SUText
 data TimeTag = TimeTag { _tt_text :: Text
@@ -69,7 +70,7 @@ instance Default TimeTag where
 list :: Parser [Text]
 list = char '[' *> ((skipSpace *> takeTill (inClass ",]")) `sepBy` (char ',')) --  <* char ']'  
 
-
+next :: Parser Text
 next = test " Text=" <|>
        test " Tokens=" <|>
        test " TokenBegin=" <|>
@@ -88,22 +89,26 @@ next = test " Text=" <|>
        test " NamedEntityTag="
  where test = lookAhead . string 
 
-conv = T.pack
+getText :: Parser Text
+getText = T.pack <$> manyTill' anyChar next
 
-getText = conv <$> manyTill' anyChar next
-
+getKeyText :: Text -> Parser Text
 getKeyText k = (string k <?> T.unpack k) >> getText
 
+getKeyInt :: Text -> Parser Int
 getKeyInt k  = (string k <?> T.unpack k) >> (either fail (return . fst) . TR.decimal =<< getText )
 
+getKeyList :: Text -> Parser [Text]
 getKeyList k = (string k <?> T.unpack k) >> (either fail return . parseOnly list =<< getText)
 
+setvalue :: (Monad m) => Lens' s a -> m a -> StateT s m ()
 setvalue l p = lift p >>= \v -> modify (l .~ v)
 
+setvalue' :: (Monad m) => Lens' s (Maybe a) -> m a -> StateT s m ()
 setvalue' l p = lift p >>= \v -> modify (l .~ Just v)
 
 
-
+permuted :: StateT TimeTag Parser ()
 permuted = do
   choice
     [ setvalue tkend      (getKeyInt " TokenEnd=")
@@ -122,9 +127,10 @@ permuted = do
     , setvalue' numtokens  (getKeyList " NumerizedTokens=")
     ] 
 
+psentidx :: StateT TimeTag Parser ()
 psentidx = do
   lift $ string " SentenceIndex="  
-  setvalue sentidx    (either fail (return . fst) . TR.decimal . conv =<< manyTill' anyChar (string "]"))
+  setvalue sentidx    (either fail (return . fst) . TR.decimal . T.pack =<< manyTill' anyChar (string "]"))
 
 -- | parser for TimeTag from short notation output from SUTime TimeAnnotator.    
 timetag :: Parser TimeTag

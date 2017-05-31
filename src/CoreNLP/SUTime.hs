@@ -8,11 +8,6 @@
 
 module CoreNLP.SUTime where
 
-import           Control.Monad.IO.Class
-import           Control.Monad.Trans.Class
-import           Control.Monad.Trans.Reader
-import           Data.Int
-import qualified Data.ByteString.Char8 as B
 import           Data.Text                    (Text)
 import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
