@@ -95,6 +95,7 @@ Executable annotate
                         --
                         nlp-types,
                         yayaml,
+                        wiki-ner,
                         --
                         HCoreNLP,
                         HCoreNLP-Proto
