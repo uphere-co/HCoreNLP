@@ -9,8 +9,6 @@
 module CoreNLP where
 
 import           Control.Monad.IO.Class
-import           Control.Monad.Trans.Class
-import           Control.Monad.Trans.Reader
 import qualified Data.ByteString.Char8 as B
 import           Data.Text                    (Text)
 import           Language.Java         as J hiding (reflect,reify)
@@ -24,6 +22,7 @@ runCoreNLP :: [B.ByteString]  -> CoreNLP a -> IO a
 runCoreNLP params action = withJVM params (unCoreNLP action) 
   
 reflect = liftIO . Language.Java.reflect
+
 reify = liftIO . Language.Java.reify
 
 initProps :: CoreNLP (J ('Class "java.util.Properties"))

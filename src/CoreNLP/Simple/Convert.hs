@@ -7,7 +7,7 @@ import           Control.Monad                  (join)
 import           Data.Either.Extra              (maybeToEither)
 import           Data.Foldable                  (toList)
 import qualified Data.IntMap             as IM
-import           Data.Maybe                     (fromMaybe,listToMaybe)
+import           Data.Maybe                     (fromMaybe)
 import           Data.Monoid                    ((<>))
 import qualified Data.Sequence           as Seq
 import           Data.Text                      (Text)
@@ -59,7 +59,7 @@ sentToDep s = do
 convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Either String Dependency
 convertDep m g = Dependency <$> pure (fromIntegral (Seq.index (g^.DG.root) 0))
                             <*> mapM (convertN m) (toList (g^.DG.node))
-                            <*> mapM (convertE m) (toList (g^.DG.edge))
+                            <*> mapM convertE (toList (g^.DG.edge))
 
 convertN :: IM.IntMap Text -> DN.Node -> Either String Node
 convertN m n = do
@@ -67,10 +67,8 @@ convertN m n = do
   w <- maybeToEither ("token " <> show k) $ IM.lookup k m
   return (k,w)
 
--- parseDepRel' = Just
-  
-convertE :: IM.IntMap Text -> DE.Edge -> Either String Edge
-convertE m e = do
+convertE :: DE.Edge -> Either String Edge
+convertE e = do
   let deptxt = fromMaybe "" (fmap cutf8 (e^.DE.dep))
   dep <- parseDepRel =<< (case T.split (== ':') deptxt of [] -> Left "no deptxt" ; x:_ -> Right x)
   return ((fromIntegral (e^.DE.source),fromIntegral (e^.DE.target)), dep )
@@ -89,7 +87,7 @@ decodeToPennTree p =
       Seq.EmptyL   -> error "Error!"
       p' Seq.:< sq -> case Seq.viewl sq of
         Seq.EmptyL   -> case Seq.viewl (PT._child p') of
-          Seq.EmptyL    -> PL (cf (p^.PT.value)) (cf (p'^.PT.value))
-          sq'           -> PN (cf (p^.PT.value)) (map decodeToPennTree (toList (p^.PT.child)))
-        sq''         -> PN (cf (p^.PT.value)) (map decodeToPennTree (toList (p^.PT.child)))
+          Seq.EmptyL    -> PL (cf (p^.PT.value), cf (p'^.PT.value))
+          _sq'          -> PN (cf (p^.PT.value)) (map decodeToPennTree (toList (p^.PT.child)))
+        _sq''        -> PN (cf (p^.PT.value)) (map decodeToPennTree (toList (p^.PT.child)))
   where cf = fromMaybe "" . fmap cutf8
