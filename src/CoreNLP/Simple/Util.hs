@@ -5,17 +5,17 @@
 module CoreNLP.Simple.Util where
 
 import           Control.Lens
-import           Control.Monad                    (join)
-import qualified Data.ByteString.Lazy.Char8 as BL
-import           Data.Maybe                       (catMaybes, fromJust)
-import           Data.Text                        (Text)
-import qualified Data.Text                  as T
-import qualified Data.Text.Lazy             as TL
-import qualified Data.Text.Lazy.Encoding    as TLE
-import           Data.Time.Clock                  (getCurrentTime,UTCTime(..))
-import           Language.Java         as J
-import           Text.ProtocolBuffers.Basic (Utf8,utf8)
-import           Text.ProtocolBuffers.WireMessage (messageGet)
+import           Control.Monad                               (join)
+import qualified Data.ByteString.Lazy.Char8            as BL
+import           Data.Maybe                                  (catMaybes, fromJust)
+import           Data.Text                                   (Text)
+import qualified Data.Text                             as T
+import qualified Data.Text.Lazy                        as TL
+import qualified Data.Text.Lazy.Encoding               as TLE
+import           Data.Time.Clock                             (getCurrentTime,UTCTime(..))
+import           Language.Java                         as J
+import           Text.ProtocolBuffers.Basic                  (Utf8,utf8)
+import           Text.ProtocolBuffers.WireMessage            (messageGet)
 --
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
@@ -23,12 +23,12 @@ import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
 import           NLP.Type.PennTreebankII
 --
 import           CoreNLP.Simple
+import           CoreNLP.Simple.Convert                      (cutf8)
 import           CoreNLP.Simple.Type
 import           CoreNLP.Simple.Type.Simplified
 
-
-cutf8' :: Utf8 -> Text
-cutf8' = TL.toStrict . TLE.decodeUtf8 . utf8 
+-- cutf8' :: Utf8 -> Text
+-- cutf8' = TL.toStrict . TLE.decodeUtf8 . utf8 
 
 
 convertSentence :: D.Document -> S.Sentence -> Maybe Sentence
@@ -44,9 +44,9 @@ convertToken :: TK.Token -> Maybe Token
 convertToken t = do
   (b',e') <- (,) <$> t^.TK.tokenBeginIndex <*> t^.TK.tokenEndIndex
   let (b,e) = (fromIntegral b',fromIntegral e')
-  w <- cutf8' <$> (t^.TK.originalText)
-  p <- identifyPOS . cutf8' <$> (t^.TK.pos)
-  l <- cutf8' <$> (t^.TK.lemma)
+  w <- cutf8 <$> (t^.TK.originalText)
+  p <- identifyPOS . cutf8 <$> (t^.TK.pos)
+  l <- cutf8 <$> (t^.TK.lemma)
   return (Token (b,e) w p l)
 
 
@@ -71,12 +71,12 @@ getSents doc = convertProtoSents (getProtoSents doc) doc
 
 
 convertSenToText :: S.Sentence -> Text
-convertSenToText s = let tokens = map (\t -> cutf8' <$> (t^.TK.originalText)) $ getTKTokens s
+convertSenToText s = let tokens = map (\t -> cutf8 <$> (t^.TK.originalText)) $ getTKTokens s
                      in T.intercalate " " $ catMaybes tokens
 
 
 convertTokenToText :: TK.Token -> Text
-convertTokenToText tk = fromJust (cutf8' <$> (tk^.TK.originalText))
+convertTokenToText tk = fromJust (cutf8 <$> (tk^.TK.originalText))
 
 
 -- | Get tokens from ProtoSents.
@@ -105,3 +105,5 @@ getProtoDoc ann = do
   case (messageGet lbstr :: Either String (D.Document,BL.ByteString)) of
     Left  err     -> error err
     Right (doc,_) -> return doc
+
+
