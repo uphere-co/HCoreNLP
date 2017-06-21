@@ -5,49 +5,22 @@
 module CoreNLP.Simple.Util where
 
 import           Control.Lens
-import           Control.Monad                               (join)
 import qualified Data.ByteString.Lazy.Char8            as BL
 import           Data.Maybe                                  (catMaybes, fromJust)
 import           Data.Text                                   (Text)
 import qualified Data.Text                             as T
-import qualified Data.Text.Lazy                        as TL
-import qualified Data.Text.Lazy.Encoding               as TLE
 import           Data.Time.Clock                             (getCurrentTime,UTCTime(..))
 import           Language.Java                         as J
-import           Text.ProtocolBuffers.Basic                  (Utf8,utf8)
 import           Text.ProtocolBuffers.WireMessage            (messageGet)
 --
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
-import           NLP.Type.PennTreebankII
 --
 import           CoreNLP.Simple
-import           CoreNLP.Simple.Convert                      (cutf8)
+import           CoreNLP.Simple.Convert                      
 import           CoreNLP.Simple.Type
 import           CoreNLP.Simple.Type.Simplified
-
--- cutf8' :: Utf8 -> Text
--- cutf8' = TL.toStrict . TLE.decodeUtf8 . utf8 
-
-
-convertSentence :: D.Document -> S.Sentence -> Maybe Sentence
-convertSentence _ s = do
-  i <- fromIntegral <$> s^.S.sentenceIndex
-  b <- fromIntegral <$> join (firstOf (S.token . traverse . TK.beginChar) s)
-  e <- fromIntegral <$> join (lastOf  (S.token . traverse . TK.endChar) s)
-  return (Sentence i (b,e) 
-            (fromIntegral (s^.S.tokenOffsetBegin),fromIntegral (s^.S.tokenOffsetEnd)))
-
-
-convertToken :: TK.Token -> Maybe Token
-convertToken t = do
-  (b',e') <- (,) <$> t^.TK.tokenBeginIndex <*> t^.TK.tokenEndIndex
-  let (b,e) = (fromIntegral b',fromIntegral e')
-  w <- cutf8 <$> (t^.TK.originalText)
-  p <- identifyPOS . cutf8 <$> (t^.TK.pos)
-  l <- cutf8 <$> (t^.TK.lemma)
-  return (Token (b,e) w p l)
 
 
 getDoc :: Text -> IO Document
