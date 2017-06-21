@@ -76,6 +76,7 @@ Executable annotate
                         -threaded
                         -funbox-strict-fields
                         -fno-warn-unused-do-bind
+                        -fno-warn-orphans
 
   ghc-prof-options:     -auto-all
   extra-libraries:     
