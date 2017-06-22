@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module CoreNLP.Simple.Convert where
@@ -6,8 +7,10 @@ import           Control.Lens
 import           Control.Monad                  (join)
 import           Data.Either.Extra              (maybeToEither)
 import           Data.Foldable                  (toList)
+import           Data.IntMap                    (IntMap)
 import qualified Data.IntMap             as IM
-import           Data.Maybe                     (fromMaybe)
+import           Data.List                      (foldl')
+import           Data.Maybe                     (catMaybes,fromJust,fromMaybe)
 import           Data.Monoid                    ((<>))
 import qualified Data.Sequence           as Seq
 import           Data.Text                      (Text)
@@ -81,6 +84,7 @@ sentToNER s =
       cc x = (fromMaybe (error (show x)) . classify . cf) x
   in NERSentence $ map (\x -> (cf (x^.TK.word),cc (x^.TK.ner))) tks
 
+
 decodeToPennTree :: PT.ParseTree -> PennTree
 decodeToPennTree p =
     case Seq.viewl (p^.PT.child) of
@@ -91,3 +95,13 @@ decodeToPennTree p =
           _sq'          -> PN (cf (p^.PT.value)) (map decodeToPennTree (toList (p^.PT.child)))
         _sq''        -> PN (cf (p^.PT.value)) (map decodeToPennTree (toList (p^.PT.child)))
   where cf = fromMaybe "" . fmap cutf8
+
+
+mkLemmaMap :: S.Sentence -> IntMap Lemma
+mkLemmaMap sent = foldl' (\(!acc) (k,v) -> IM.insert k v acc) IM.empty $
+                    zip [0..] (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
+
+lemmatize :: IntMap Lemma
+          -> PennTreeIdxG (ANode a) (ALeaf b)
+          -> PennTreeIdxG (ANode a) (ALeaf (b,Lemma)) -- (POSTag,(Text,Text))
+lemmatize m = bimap id (\(i,ALeaf postxt annot) -> (i, ALeaf postxt (annot,fromJust (IM.lookup i m))))

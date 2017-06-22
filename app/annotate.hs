@@ -6,32 +6,24 @@
 module Main where
 
 import           Control.Lens
-import           Control.Monad                      (join,when)
+import           Control.Monad                      (when)
 import qualified Data.ByteString.Char8 as B
-import qualified Data.ByteString.Lazy.Char8 as BL
 import           Data.Default
-import           Data.Foldable                      (toList)
-import qualified Data.IntMap                as IM
-import           Data.Maybe                         (catMaybes,fromMaybe,mapMaybe,listToMaybe)
+import           Data.Maybe                         (mapMaybe)
 import           Data.Monoid                        ((<>))
-import qualified Data.Sequence              as Seq
 import           Data.Text                          (Text)
 import qualified Data.Text                  as T
 import qualified Data.Text.IO               as TIO
 import qualified Data.Text.Lazy             as TL
 import qualified Data.Text.Lazy.Builder     as TLB  (toLazyText)
-import qualified Data.Text.Lazy.Encoding    as TLE
 import qualified Data.Text.Lazy.IO          as TLIO
 import           Data.Traversable                   (traverse)
 import           Data.Time.Calendar                 (fromGregorian)
 import           Language.Java         as J
 import           Options.Applicative
-import           System.Environment               (getEnv,getArgs)
-import           Text.ProtocolBuffers.Basic       (Utf8, utf8)
+import           System.Environment               (getEnv)
 --
 import           NLP.Printer.PennTreebankII
-import           NLP.Type.PennTreebankII
-import           NLP.Type.UniversalDependencies2.Syntax
 import           YAML.Builder
 --
 import           CoreNLP.Simple
@@ -40,16 +32,8 @@ import           CoreNLP.Simple.Type
 import           CoreNLP.Simple.Type.Simplified
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
-import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
--- import qualified CoreNLP.Proto.CoreNLPProtos.ParseTree as PT
--- import qualified CoreNLP.Proto.HCoreNLPProto.ListTimex as T
-import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph       as DG
-import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node  as DN
-import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Edge  as DE
-
--- for entity linking
 import qualified NLP.Type.NamedEntity    as N 
-import           WikiEL                           (extractEntityMentions,loadEMtagger)
+import           WikiEL                           (loadEMtagger)
 
 
 instance MakeYaml Int where
@@ -166,16 +150,12 @@ runWikiEL = do
       Left e -> print e
       Right d -> do
         let sents = d ^.. D.sentence . traverse
-            Just newsents = mapM (convertSentence d) sents
-            cpt = mapMaybe S._parseTree sents
-            pt = map decodeToPennTree cpt
             f (NERSentence tokens) = tokens
             neTokens =  concatMap (f.sentToNER) sents
             linked_mentions = emTagger neTokens
-            
             text = T.unwords (map fst neTokens)
-
         print text
         mapM_ print linked_mentions 
 
+main :: IO ()
 main = runWikiEL
