@@ -97,11 +97,11 @@ decodeToPennTree p =
   where cf = fromMaybe "" . fmap cutf8
 
 
-mkLemmaMap :: S.Sentence -> IntMap Text
+mkLemmaMap :: S.Sentence -> IntMap Lemma
 mkLemmaMap sent = foldl' (\(!acc) (k,v) -> IM.insert k v acc) IM.empty $
                     zip [0..] (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
 
-lemmatize :: IntMap Text
-          -> PennTreeIdxG ChunkTag (POSTag,Text)
-          -> PennTreeIdxG ChunkTag (POSTag,(Text,Text))
-lemmatize m = bimap id (\(i,(p,x)) -> (i,(p,(x,fromJust (IM.lookup i m)))))
+lemmatize :: IntMap Lemma
+          -> PennTreeIdxG (ANode a) (ALeaf b)
+          -> PennTreeIdxG (ANode a) (ALeaf (b,Lemma)) -- (POSTag,(Text,Text))
+lemmatize m = bimap id (\(i,ALeaf postxt annot) -> (i, ALeaf postxt (annot,fromJust (IM.lookup i m))))
