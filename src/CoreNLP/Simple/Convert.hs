@@ -1,9 +1,11 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators #-}
 
 module CoreNLP.Simple.Convert where
 
-import           Control.Lens
+import           Control.Lens 
 import           Control.Monad                  (join)
 import           Data.Either.Extra              (maybeToEither)
 import           Data.Foldable                  (toList)
@@ -19,6 +21,7 @@ import qualified Data.Text.Lazy          as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import           Text.ProtocolBuffers.Basic     (Utf8, utf8)
 --
+import           Data.Attribute
 import           NLP.Type.NamedEntity
 import           NLP.Type.PennTreebankII
 import           NLP.Type.UniversalDependencies2.Syntax
@@ -98,10 +101,11 @@ decodeToPennTree p =
 
 
 mkLemmaMap :: S.Sentence -> IntMap Lemma
-mkLemmaMap sent = foldl' (\(!acc) (k,v) -> IM.insert k v acc) IM.empty $
+mkLemmaMap sent = foldl' (\(!acc) (k,v) -> IM.insert k (Lemma v) acc) IM.empty $
                     zip [0..] (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
 
 lemmatize :: IntMap Lemma
-          -> PennTreeIdxG (ANode a) (ALeaf b)
-          -> PennTreeIdxG (ANode a) (ALeaf (b,Lemma)) -- (POSTag,(Text,Text))
-lemmatize m = bimap id (\(i,ALeaf postxt annot) -> (i, ALeaf postxt (annot,fromJust (IM.lookup i m))))
+          -> PennTreeIdxG (ANode a) (ALeaf (AttribList bs))
+          -> PennTreeIdxG (ANode a) (ALeaf (AttribList (Lemma ': bs))) 
+lemmatize m = bimap id (\(i,ALeaf postxt annot)
+                        -> (i, ALeaf postxt (fromJust (IM.lookup i m) `acons` annot)))
