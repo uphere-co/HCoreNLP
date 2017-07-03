@@ -4,11 +4,14 @@
 
 module CoreNLP.Simple where
 
+import           Control.Exception
 import           Control.Lens
+import           Control.Monad
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy  as BL
 import qualified Data.Text             as T
 import           Data.Time.Calendar           (showGregorian)
+import           Foreign.JNI.Types
 import           Language.Haskell.TH.Syntax
 import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
@@ -84,15 +87,23 @@ annotate :: J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline") -- ^ annot
 annotate pipeline doc = do
   txt <- Language.Java.reflect (doc^.doctext)
   timetxt <- Language.Java.reflect (T.pack (showGregorian (doc^.docdate)))
-  [java|{
-          String text = $txt;
-          edu.stanford.nlp.pipeline.Annotation annotation = new edu.stanford.nlp.pipeline.Annotation(text);
-          annotation.set(edu.stanford.nlp.ling.CoreAnnotations.DocDateAnnotation.class, $timetxt);
+  r <- [java|{ try { 
+                 String text = $txt;
+                 edu.stanford.nlp.pipeline.Annotation annotation = new edu.stanford.nlp.pipeline.Annotation(text);
+                 annotation.set(edu.stanford.nlp.ling.CoreAnnotations.DocDateAnnotation.class, $timetxt);
           
-          $pipeline.annotate(annotation);
-          return annotation;
-        }
-  |]
+                 $pipeline.annotate(annotation);
+                 return annotation;
+               }
+               catch (RuntimeException e) {
+                 return null;
+
+               }
+             }
+       |]
+  when (r == Foreign.JNI.Types.jnull) $ ioError (userError "annotate fail")
+  return r
+    
 
 serialize :: J ('Class "com.google.protobuf.MessageLite") -> IO B.ByteString
 serialize obj = do
