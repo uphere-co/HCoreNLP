@@ -105,7 +105,6 @@ mkLemmaMap sent = foldl' (\(!acc) (k,v) -> IM.insert k (Lemma v) acc) IM.empty $
                     zip [0..] (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
 
 lemmatize :: IntMap Lemma
-          -> PennTreeIdxG (ANode a) (ALeaf (AttribList bs))
-          -> PennTreeIdxG (ANode a) (ALeaf (AttribList (Lemma ': bs))) 
-lemmatize m = bimap id (\(i,ALeaf postxt annot)
-                        -> (i, ALeaf postxt (fromJust (IM.lookup i m) `acons` annot)))
+          -> PennTreeIdxG n (ALAtt bs)
+          -> PennTreeIdxG n (ALAtt (Lemma ': bs)) 
+lemmatize m = bimap id (\(i,ALeaf postxt annot) -> (i, ALeaf postxt (fromJust (IM.lookup i m) `acons` annot)))
