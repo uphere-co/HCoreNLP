@@ -32,6 +32,7 @@ let
             inline-java
             aeson
             attoparsec
+            binary
             cabal-install
             data-default
             directory
