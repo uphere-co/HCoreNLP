@@ -5,15 +5,17 @@ module CoreNLP.Simple.Type.Simplified where
 
 import           Control.Lens
 import           Data.Aeson
-import           Data.Binary                  (Binary)
+import           Data.Binary                   (Binary)
 import qualified Data.Graph              as G
-import           Data.Text                    (Text)
+import qualified Data.IntMap             as IM
+import           Data.Maybe                    (fromMaybe)
+import           Data.Text                     (Text)
 import           Data.Tree
 import           GHC.Generics
 --
 import           NLP.Type.NamedEntity
 import           NLP.Type.PennTreebankII
-import           NLP.Type.UniversalDependencies2.Syntax
+import qualified NLP.Type.UniversalDependencies2.Syntax as U
 
 
 data Sentence = Sentence { _sent_index      :: Int
@@ -52,7 +54,7 @@ instance Binary Token
 
 type Node = (Int,Text)
 
-type Edge = ((Int,Int),DependencyRelation)
+type Edge = ((Int,Int),U.DependencyRelation)
 
 
 data Dependency = Dependency Int [Node] [Edge]
@@ -72,6 +74,13 @@ dependencyIndexTree (Dependency root nods edgs0) =
   let bnds = let xs = map fst nods in (minimum xs, maximum xs)
       edgs = map fst edgs0
   in head (G.dfs (G.buildG bnds edgs) [root])
+
+
+dependencyLabeledTree :: Dependency -> Tree (G.Vertex,U.DependencyRelation)
+dependencyLabeledTree dep@(Dependency root nods edgs0) =
+  let tr = dependencyIndexTree dep
+      emap = IM.fromList (map (\((_,i),rel) -> (i,rel)) edgs0)
+  in fmap (\i -> (i,fromMaybe U.ROOT (IM.lookup i emap))) tr
 
 
 
