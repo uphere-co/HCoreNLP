@@ -5,13 +5,16 @@ module CoreNLP.Simple.Type.Simplified where
 
 import           Control.Lens
 import           Data.Aeson
-import           Data.Binary      (Binary)
-import           Data.Text        (Text)
+import           Data.Binary                  (Binary)
+import qualified Data.Graph              as G
+import           Data.Text                    (Text)
+import           Data.Tree
 import           GHC.Generics
 --
 import           NLP.Type.NamedEntity
 import           NLP.Type.PennTreebankII
 import           NLP.Type.UniversalDependencies2.Syntax
+
 
 data Sentence = Sentence { _sent_index      :: Int
                          , _sent_charRange  :: (Int,Int)
@@ -62,6 +65,14 @@ instance FromJSON Dependency where
   parseJSON = genericParseJSON defaultOptions
 
 instance Binary Dependency
+
+
+dependencyIndexTree :: Dependency -> Tree G.Vertex
+dependencyIndexTree (Dependency root nods edgs0) =
+  let bnds = let xs = map fst nods in (minimum xs, maximum xs)
+      edgs = map fst edgs0
+  in head (G.dfs (G.buildG bnds edgs) [root])
+
 
 
 type NERToken = (Text,NamedEntityClass)
