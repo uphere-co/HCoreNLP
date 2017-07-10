@@ -34,19 +34,21 @@ library
                        containers,
                        data-default,
                        directory,
-                       HCoreNLP-Proto,
                        extra,
                        inline-java,
                        jni,
                        jvm,
                        lens,
-                       nlp-types,
                        protocol-buffers,
                        protocol-buffers-descriptor,
                        template-haskell,
                        text,
                        time,
-                       transformers
+                       transformers,
+                       --
+                       HCoreNLP-Proto,
+                       nlp-types
+
   Exposed-modules:
                        CoreNLP
                        CoreNLP.Simple
