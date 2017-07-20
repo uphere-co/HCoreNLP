@@ -56,9 +56,6 @@ library
                        CoreNLP.Simple.Type
                        CoreNLP.Simple.Type.Simplified
                        CoreNLP.Simple.Util
-                       CoreNLP.SUTime
-                       CoreNLP.SUTime.Parser
-                       -- CoreNLP.Type
   Other-modules:
                        TemplateTest
 
