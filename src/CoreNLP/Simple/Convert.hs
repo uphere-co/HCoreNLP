@@ -55,6 +55,15 @@ convertToken t = do
   l <- cutf8 <$> (t^.TK.lemma)
   return (Token (b,e) w p l)
 
+convertTokenInCharOffset :: TK.Token -> Maybe Token
+convertTokenInCharOffset t = do
+  (b',e') <- (,) <$> t^.TK.beginChar <*> t^.TK.endChar
+  let (b,e) = (fromIntegral b',fromIntegral e')
+  w <- cutf8 <$> (t^.TK.originalText)
+  p <- identifyPOS . cutf8 <$> (t^.TK.pos)
+  l <- cutf8 <$> (t^.TK.lemma)
+  return (Token (b,e) w p l)
+
 sentToDep :: S.Sentence -> Either String Dependency
 sentToDep s = do
   d <- maybeToEither ("no basicDependencies") $ s ^. S.basicDependencies
