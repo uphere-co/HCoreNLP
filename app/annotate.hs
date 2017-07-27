@@ -7,9 +7,10 @@ module Main where
 
 import           Control.Lens
 import           Control.Monad                      (when)
-import qualified Data.ByteString.Char8 as B
+import qualified Data.ByteString.Char8      as B
 import           Data.Default
-import           Data.Maybe                         (mapMaybe)
+import qualified Data.IntMap                as IM
+import           Data.Maybe                         (fromJust, mapMaybe)
 import           Data.Monoid                        ((<>))
 import           Data.Text                          (Text)
 import qualified Data.Text                  as T
@@ -21,17 +22,21 @@ import           Data.Traversable                   (traverse)
 import           Data.Time.Calendar                 (fromGregorian)
 import           Language.Java         as J
 import           Options.Applicative
-import           System.Environment               (getEnv)
+import           System.Environment                 (getEnv)
 --
 import           NLP.Printer.PennTreebankII
+import           NLP.Type.PennTreebankII
 import           YAML.Builder
 --
 import           CoreNLP.Simple
 import           CoreNLP.Simple.Convert
 import           CoreNLP.Simple.Type
 import           CoreNLP.Simple.Type.Simplified
+import           CoreNLP.Simple.Util
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
+import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
+
 
 instance MakeYaml Int where
   makeYaml _ x = YPrim (YInteger x)
@@ -106,14 +111,24 @@ runAnnotate = do
         let sents = d ^.. D.sentence . traverse
             Just newsents = mapM (convertSentence d) sents
             cpt = mapMaybe S._parseTree sents
-            pt = map decodeToPennTree cpt       
+            pt = map decodeToPennTree cpt
+
+            lmap= flip map sents $ \sent -> 
+                    let lemmamap = IM.toList (mkLemmaMap sent)
+                        tkns = map (^.TK.word.to (cutf8.fromJust)) . getTKTokens $ sent
+                    in map (\(o,(i,l)) -> (i,(unLemma l,o))) $ zip tkns lemmamap  
+        --      (map (_2 %~ unLemma) . IM.toList . mkLemmaMap) sents
+
         mapM_ print newsents
+        mapM_ print lmap
         let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
             result = SentenceTokens newsents toklst 
         TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
-        when (showDependency opt) $ 
-          mapM_ (print . sentToDep) sents
+        when (showDependency opt) $ do
+          let deps = map sentToDep sents
+          mapM_ print deps
         when (showConstituency opt) $ do
+          mapM_ print pt
           mapM_ (TIO.putStrLn . prettyPrint 0) pt
           mapM_ print cpt
           mapM_ print (mapMaybe (^.S.annotatedParseTree) sents)
