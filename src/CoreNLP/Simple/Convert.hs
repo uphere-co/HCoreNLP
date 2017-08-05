@@ -1,6 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeOperators #-}
 
 module CoreNLP.Simple.Convert where
@@ -12,7 +13,7 @@ import           Data.Foldable                  (toList)
 import           Data.IntMap                    (IntMap)
 import qualified Data.IntMap             as IM
 import           Data.List                      (foldl')
-import           Data.Maybe                     (catMaybes,fromJust,fromMaybe)
+import           Data.Maybe                     (catMaybes,fromJust,fromMaybe,mapMaybe)
 import           Data.Monoid                    ((<>))
 import qualified Data.Sequence           as Seq
 import           Data.Text                      (Text)
@@ -49,12 +50,19 @@ convertSentence _d s = do
 
 convertToken :: TK.Token -> Maybe Token
 convertToken t = do
-  (b',e') <- (,) <$> t^.TK.tokenBeginIndex <*> t^.TK.tokenEndIndex
-  let (b,e) = (fromIntegral b',fromIntegral e')
+  (tb',te') <- (,) <$> t^.TK.tokenBeginIndex <*> t^.TK.tokenEndIndex
+  let (tb,te) = (fromIntegral tb',fromIntegral te')
+  (cb',ce') <- (,) <$> t^.TK.beginChar <*> t^.TK.endChar
+  let (cb,ce) = (fromIntegral cb',fromIntegral ce')
+  
   w <- cutf8 <$> (t^.TK.originalText)
   p <- identifyPOS . cutf8 <$> (t^.TK.pos)
   l <- cutf8 <$> (t^.TK.lemma)
-  return (Token (b,e) w p l)
+  return (Token (tb,te) (cb,ce) w p l)
+
+
+sentToTokens :: S.Sentence -> [(Int,Token)]
+sentToTokens s = (mapMaybe (\(i,mt) -> (i,) <$> mt) .  zip [0..]) (s ^.. S.token . traverse . to convertToken)
 
 
 sentToDep :: S.Sentence -> Either String Dependency

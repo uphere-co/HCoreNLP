@@ -37,7 +37,8 @@ instance FromJSON Sentence where
 instance Binary Sentence
   
 
-data Token = Token { _token_range :: (Int,Int)
+data Token = Token { _token_tok_idx_range :: (Int,Int)
+                   , _token_char_idx_range :: (Int,Int)
                    , _token_text :: Text
                    , _token_pos :: POSTag
                    , _token_lemma :: Text }
