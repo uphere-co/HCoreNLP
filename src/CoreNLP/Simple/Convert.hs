@@ -46,6 +46,7 @@ convertSentence _d s = do
   return (Sentence i (b,e) 
             (fromIntegral (s^.S.tokenOffsetBegin),fromIntegral (s^.S.tokenOffsetEnd)))
 
+
 convertToken :: TK.Token -> Maybe Token
 convertToken t = do
   (b',e') <- (,) <$> t^.TK.tokenBeginIndex <*> t^.TK.tokenEndIndex
@@ -55,6 +56,7 @@ convertToken t = do
   l <- cutf8 <$> (t^.TK.lemma)
   return (Token (b,e) w p l)
 
+
 sentToDep :: S.Sentence -> Either String Dependency
 sentToDep s = do
   d <- maybeToEither ("no basicDependencies") $ s ^. S.basicDependencies
@@ -62,10 +64,12 @@ sentToDep s = do
       m = IM.fromList ts
   convertDep m d     
       
+
 convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Either String Dependency
 convertDep m g = Dependency <$> pure (fromIntegral (Seq.index (g^.DG.root) 0))
                             <*> mapM (convertN m) (toList (g^.DG.node))
                             <*> mapM convertE (toList (g^.DG.edge))
+
 
 convertN :: IM.IntMap Text -> DN.Node -> Either String Node
 convertN m n = do
@@ -73,11 +77,19 @@ convertN m n = do
   w <- maybeToEither ("token " <> show k) $ IM.lookup k m
   return (k,w)
 
+
 convertE :: DE.Edge -> Either String Edge
 convertE e = do
   let deptxt = fromMaybe "" (fmap cutf8 (e^.DE.dep))
   dep <- parseDepRel =<< (case T.split (== ':') deptxt of [] -> Left "no deptxt" ; x:_ -> Right x)
   return ((fromIntegral (e^.DE.source),fromIntegral (e^.DE.target)), dep )
+
+
+sentToWords :: S.Sentence -> [Text]
+sentToWords s =
+  let tks = toList (s ^. S.token)
+      cf = fromMaybe "" . fmap cutf8
+  in map (cf . (^.TK.word)) tks
 
 
 sentToNER :: S.Sentence -> NERSentence
