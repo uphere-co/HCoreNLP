@@ -64,7 +64,7 @@ convertToken t = do
 sentToTokens :: S.Sentence -> [(Int,Token)]
 sentToTokens s = (mapMaybe (\(i,mt) -> (i,) <$> mt) .  zip [0..]) (s ^.. S.token . traverse . to convertToken)
 
-
+{-
 convertTokenInCharOffset :: TK.Token -> Maybe Token
 convertTokenInCharOffset t = do
   (b',e') <- (,) <$> t^.TK.beginChar <*> t^.TK.endChar
@@ -73,6 +73,8 @@ convertTokenInCharOffset t = do
   p <- identifyPOS . cutf8 <$> (t^.TK.pos)
   l <- cutf8 <$> (t^.TK.lemma)
   return (Token (b,e) w p l)
+-}
+
 
 sentToDep :: S.Sentence -> Either String Dependency
 sentToDep s = do
