@@ -18,10 +18,7 @@ let
     self: super: {
       "nlp-types" = self.callPackage (import nlp-types) {};
       "textview" = self.callPackage (import textview) {};
-      "wiki-ner" = self.callPackage (import wiki-ner) {};
-      "HCoreNLP-Proto" = self.callPackage ./HCoreNLP-Proto {};
-
-  
+      "HCoreNLP-Proto" = self.callPackage ./HCoreNLP-Proto {};  
   };
 
   myhaskellpkgs = haskell.packages.ghc802.override {
@@ -47,8 +44,7 @@ let
             template-haskell
             p.HCoreNLP-Proto
             p.nlp-types
-            p.textview      
-            p.wiki-ner      
+            p.textview
             yaml
             yayaml
           ]);
