@@ -9,6 +9,7 @@ import           Control.Lens
 import           Control.Monad                      (when)
 import qualified Data.ByteString.Char8      as B
 import           Data.Default
+import           Data.Foldable
 import qualified Data.IntMap                as IM
 import           Data.Maybe                         (fromJust, mapMaybe)
 import           Data.Monoid                        ((<>))
@@ -75,6 +76,7 @@ data ProgOption = ProgOption { textFile :: FilePath
                              , showDependency :: Bool
                              , showConstituency :: Bool
                              , tagNER :: Bool
+                             , posOnly :: Bool
                              } deriving Show
 
 pOptions :: Parser ProgOption
@@ -82,6 +84,7 @@ pOptions = ProgOption <$> strOption (long "file" <> short 'f' <> help "Text File
                       <*> switch (long "dependency" <> short 'd' <> help "Whether to show dependency parsing result")
                       <*> switch (long "constituency" <> short 'c' <> help "Whether to show constituency parsing result")
                       <*> switch (long "ner" <> short 'n' <> help "Whether to tag NER")
+                      <*> switch (long "posonly" <> short 'p' <> help "POS only")
 
 progOption :: ParserInfo ProgOption 
 progOption = info pOptions (fullDesc <> progDesc "Annotate using CoreNLP")
@@ -100,7 +103,7 @@ runAnnotate = do
                    . ( lemma .~ True )
                    . ( sutime .~ True )
                    . ( depparse .~ showDependency opt )
-                   . ( constituency .~ showConstituency opt )
+                   . ( constituency .~ (showConstituency opt || posOnly opt) )
                    . ( ner .~ tagNER opt )
     pp <- prepare pcfg
     let doc = Document txt (fromGregorian 2017 4 17)
@@ -129,12 +132,16 @@ runAnnotate = do
           let deps = map sentToDep sents
           mapM_ print deps
         when (showConstituency opt) $ do
-          mapM_ print pt
+          mapM_ print pt  -- PennTree print
           mapM_ (TIO.putStrLn . prettyPrint 0) pt
           mapM_ print cpt
           mapM_ print (mapMaybe (^.S.annotatedParseTree) sents)
         when (tagNER opt) $
           mapM_ (print . sentToNER) sents
+        when (posOnly opt) $
+          mapM_ (print . toList . getADTPennTree) pt
+        
+        
 
 main :: IO ()
 main = runAnnotate
