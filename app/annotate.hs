@@ -138,10 +138,9 @@ runAnnotate = do
           mapM_ print (mapMaybe (^.S.annotatedParseTree) sents)
         when (tagNER opt) $
           mapM_ (print . sentToNER) sents
-        when (posOnly opt) $
-          mapM_ (print . toList . getADTPennTree) pt
-        
-        
+        when (posOnly opt) $ do
+          let tags = concatMap (toList . getADTPennTree) pt
+          print tags
 
 main :: IO ()
 main = runAnnotate
