@@ -64,6 +64,7 @@ convertToken t = do
 sentToTokens :: S.Sentence -> [(Int,Token)]
 sentToTokens s = (mapMaybe (\(i,mt) -> (i,) <$> mt) .  zip [0..]) (s ^.. S.token . traverse . to convertToken)
 
+sentToTokens' s = (mapMaybe (\(i,mt) -> (i,) <$> mt) .  zip [0..]) s
 {-
 convertTokenInCharOffset :: TK.Token -> Maybe Token
 convertTokenInCharOffset t = do
@@ -131,11 +132,28 @@ decodeToPennTree p =
   where cf = fromMaybe "" . fmap cutf8
 
 
+
 mkLemmaMap :: S.Sentence -> IntMap Lemma
 mkLemmaMap sent = foldl' (\(!acc) (k,v) -> IM.insert k (Lemma v) acc) IM.empty $
                     zip [0..] (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
 
+
+-- You should use this function when using loaded data.
+mkLemmaMap' :: [Text] -> IntMap Lemma
+mkLemmaMap' sent = foldl' (\(!acc) (k,v) -> IM.insert k (Lemma v) acc) IM.empty $
+                    zip [0..] sent -- (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
+
+convertPsent psent = ( catMaybes $ (psent ^.. S.token . traverse . TK.lemma . to (fmap cutf8))
+                     , (psent ^.. S.token . traverse . to convertToken)
+                     , (psent ^.. S.token . traverse . TK.word . to (fmap cutf8))
+                     , (psent ^.. S.token . traverse . TK.ner . to (fmap cutf8)))
+                     
 lemmatize :: IntMap Lemma
           -> PennTreeIdxG n (ALAtt bs)
           -> PennTreeIdxG n (ALAtt (Lemma ': bs)) 
 lemmatize m = bimap id (\(i,ALeaf postxt annot) -> (i, ALeaf postxt (fromJust (IM.lookup i m) `acons` annot)))
+
+sentToNER' w n =
+  let cf = fromMaybe ""
+      cc x = (fromMaybe (error (show x)) . classify . cf) x
+  in NERSentence $ map (\(x,y) -> (cf x,cc y)) (zip w n)
