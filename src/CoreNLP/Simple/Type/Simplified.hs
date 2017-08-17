@@ -20,22 +20,22 @@ import           NLP.Type.PennTreebankII
 import qualified NLP.Type.UniversalDependencies2.Syntax as U
 
 
-data Sentence = Sentence { _sent_index      :: Int
-                         , _sent_charRange  :: (Int,Int)
-                         , _sent_tokenRange :: (Int,Int)
-                         } 
-              deriving (Generic, Show)
+data SentenceIndex = SentenceIndex { _sent_index      :: Int
+                                   , _sent_charRange  :: (Int,Int)
+                                   , _sent_tokenRange :: (Int,Int)
+                                   } 
+                   deriving (Generic, Show)
 
-makeLenses ''Sentence
+makeLenses ''SentenceIndex
 
-instance ToJSON Sentence where
+instance ToJSON SentenceIndex where
   toJSON = genericToJSON defaultOptions
 
-instance FromJSON Sentence where
+instance FromJSON SentenceIndex where
   parseJSON = genericParseJSON defaultOptions
 
-instance Binary Sentence
-  
+instance Binary SentenceIndex
+
 
 data Token = Token { _token_tok_idx_range :: (Int,Int)
                    , _token_char_idx_range :: (Int,Int)
@@ -71,6 +71,22 @@ instance FromJSON Dependency where
 
 instance Binary Dependency
 
+
+data Sentence = Sentence { _sentenceLemma :: [Text]
+                         , _sentenceToken :: [Maybe Token]
+                         , _sentenceWord  :: [Maybe Text]
+                         , _sentenceNER   :: [Maybe Text]
+                         } deriving (Generic, Show)
+
+makeLenses ''Sentence
+
+instance ToJSON Sentence where
+  toJSON = genericToJSON defaultOptions
+
+instance FromJSON Sentence where
+  parseJSON = genericParseJSON defaultOptions
+
+instance Binary Sentence
 
 dependencyIndexTree :: Dependency -> Tree G.Vertex
 dependencyIndexTree (Dependency root nods edgs0) =
