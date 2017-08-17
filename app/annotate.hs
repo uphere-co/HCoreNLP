@@ -45,7 +45,7 @@ instance MakeYaml Int where
 instance MakeYaml (Int,Int) where
   makeYaml n (x,y) = YLArray Inline [ makeYaml n x, makeYaml n y ] 
 
-instance MakeYaml Sentence where
+instance MakeYaml SentenceIndex where
   makeYaml n s = YObject [ ("index"     , makeYaml n (s^.sent_index))
                          , ("charRange" , makeYaml n (s^.sent_charRange))
                          , ("tokenRange", makeYaml n (s^.sent_tokenRange)) ]
@@ -64,7 +64,7 @@ instance MakeYaml Token where
 instance MakeYaml a => MakeYaml [a] where
   makeYaml n xs = YIArray (map (makeYaml n) xs)
 
-data SentenceTokens = SentenceTokens [Sentence] [Token]
+data SentenceTokens = SentenceTokens [SentenceIndex] [Token]
 
 instance MakeYaml SentenceTokens where
   makeYaml n (SentenceTokens ss ts) = YObject [ ("sentences", makeYaml n ss)

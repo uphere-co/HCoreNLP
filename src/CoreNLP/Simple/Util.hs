@@ -33,13 +33,13 @@ getProtoSents :: D.Document -> [S.Sentence]
 getProtoSents doc = toListOf (D.sentence . traverse) doc
 
 
-convertProtoSents :: [S.Sentence] -> D.Document -> [Sentence]
+convertProtoSents :: [S.Sentence] -> D.Document -> [SentenceIndex]
 convertProtoSents psents doc =
   let Just newsents = mapM (convertSentence doc) psents
   in newsents
 
 
-getSents :: D.Document -> [Sentence]
+getSents :: D.Document -> [SentenceIndex]
 getSents doc = convertProtoSents (getProtoSents doc) doc
 
 

@@ -39,12 +39,12 @@ import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Edge  as DE
 cutf8 :: Utf8 -> Text
 cutf8 = TL.toStrict . TLE.decodeUtf8 . utf8 
 
-convertSentence :: D.Document -> S.Sentence -> Maybe Sentence
+convertSentence :: D.Document -> S.Sentence -> Maybe SentenceIndex
 convertSentence _d s = do
   i <- fromIntegral <$> s^.S.sentenceIndex
   b <- fromIntegral <$> join (firstOf (S.token . traverse . TK.beginChar) s)
   e <- fromIntegral <$> join (lastOf  (S.token . traverse . TK.endChar) s)
-  return (Sentence i (b,e) 
+  return (SentenceIndex i (b,e) 
             (fromIntegral (s^.S.tokenOffsetBegin),fromIntegral (s^.S.tokenOffsetEnd)))
 
 
@@ -64,17 +64,9 @@ convertToken t = do
 sentToTokens :: S.Sentence -> [(Int,Token)]
 sentToTokens s = (mapMaybe (\(i,mt) -> (i,) <$> mt) .  zip [0..]) (s ^.. S.token . traverse . to convertToken)
 
+
+-- sentToTokens' :: 
 sentToTokens' s = (mapMaybe (\(i,mt) -> (i,) <$> mt) .  zip [0..]) s
-{-
-convertTokenInCharOffset :: TK.Token -> Maybe Token
-convertTokenInCharOffset t = do
-  (b',e') <- (,) <$> t^.TK.beginChar <*> t^.TK.endChar
-  let (b,e) = (fromIntegral b',fromIntegral e')
-  w <- cutf8 <$> (t^.TK.originalText)
-  p <- identifyPOS . cutf8 <$> (t^.TK.pos)
-  l <- cutf8 <$> (t^.TK.lemma)
-  return (Token (b,e) w p l)
--}
 
 
 sentToDep :: S.Sentence -> Either String Dependency
@@ -143,6 +135,8 @@ mkLemmaMap' :: [Text] -> IntMap Lemma
 mkLemmaMap' sent = foldl' (\(!acc) (k,v) -> IM.insert k (Lemma v) acc) IM.empty $
                     zip [0..] sent -- (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
 
+
+convertPsent :: S.Sentence -> ([Text], [Maybe Token], [Maybe Text], [Maybe Text])
 convertPsent psent = ( catMaybes $ (psent ^.. S.token . traverse . TK.lemma . to (fmap cutf8))
                      , (psent ^.. S.token . traverse . to convertToken)
                      , (psent ^.. S.token . traverse . TK.word . to (fmap cutf8))
