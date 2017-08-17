@@ -35,7 +35,7 @@ instance FromJSON SentenceIndex where
   parseJSON = genericParseJSON defaultOptions
 
 instance Binary SentenceIndex
-  
+
 
 data Token = Token { _token_tok_idx_range :: (Int,Int)
                    , _token_char_idx_range :: (Int,Int)
@@ -71,6 +71,22 @@ instance FromJSON Dependency where
 
 instance Binary Dependency
 
+
+data Sentence = Sentence { _sentenceLemma :: [Text]
+                         , _sentenceToken :: [Maybe Token]
+                         , _sentenceWord  :: [Maybe Text]
+                         , _sentenceNER   :: [Maybe Text]
+                         } deriving (Generic, Show)
+
+makeLenses ''Sentence
+
+instance ToJSON Sentence where
+  toJSON = genericToJSON defaultOptions
+
+instance FromJSON Sentence where
+  parseJSON = genericParseJSON defaultOptions
+
+instance Binary Sentence
 
 dependencyIndexTree :: Dependency -> Tree G.Vertex
 dependencyIndexTree (Dependency root nods edgs0) =
