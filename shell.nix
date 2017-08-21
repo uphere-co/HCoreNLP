@@ -26,6 +26,8 @@ let
   }; 
 
   hsenv = myhaskellpkgs.ghcWithPackages (p: with p; [
+            alex
+            haskell-src-exts
             inline-java
             aeson
             attoparsec
@@ -36,7 +38,7 @@ let
             directory-tree
             extra
             haskeline
-            #hprotoc
+            hprotoc
             lens
             monad-loops
             optparse-applicative
