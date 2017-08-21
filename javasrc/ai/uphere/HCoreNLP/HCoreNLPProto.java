@@ -53,13 +53,13 @@ public final class HCoreNLPProto {
     int getTokenBegin();
 
     /**
-     * <code>required int32 toeknEnd = 5;</code>
+     * <code>required int32 tokenEnd = 5;</code>
      */
-    boolean hasToeknEnd();
+    boolean hasTokenEnd();
     /**
-     * <code>required int32 toeknEnd = 5;</code>
+     * <code>required int32 tokenEnd = 5;</code>
      */
-    int getToeknEnd();
+    int getTokenEnd();
   }
   /**
    * Protobuf type {@code ai.uphere.HCoreNLP.TimexWithOffset}
@@ -143,7 +143,7 @@ public final class HCoreNLPProto {
             }
             case 40: {
               bitField0_ |= 0x00000010;
-              toeknEnd_ = input.readInt32();
+              tokenEnd_ = input.readInt32();
               break;
             }
           }
@@ -252,19 +252,19 @@ public final class HCoreNLPProto {
       return tokenBegin_;
     }
 
-    public static final int TOEKNEND_FIELD_NUMBER = 5;
-    private int toeknEnd_;
+    public static final int TOKENEND_FIELD_NUMBER = 5;
+    private int tokenEnd_;
     /**
-     * <code>required int32 toeknEnd = 5;</code>
+     * <code>required int32 tokenEnd = 5;</code>
      */
-    public boolean hasToeknEnd() {
+    public boolean hasTokenEnd() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>required int32 toeknEnd = 5;</code>
+     * <code>required int32 tokenEnd = 5;</code>
      */
-    public int getToeknEnd() {
-      return toeknEnd_;
+    public int getTokenEnd() {
+      return tokenEnd_;
     }
 
     private void initFields() {
@@ -272,7 +272,7 @@ public final class HCoreNLPProto {
       characterOffsetBegin_ = 0;
       characterOffsetEnd_ = 0;
       tokenBegin_ = 0;
-      toeknEnd_ = 0;
+      tokenEnd_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -296,7 +296,7 @@ public final class HCoreNLPProto {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasToeknEnd()) {
+      if (!hasTokenEnd()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -320,7 +320,7 @@ public final class HCoreNLPProto {
         output.writeInt32(4, tokenBegin_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeInt32(5, toeknEnd_);
+        output.writeInt32(5, tokenEnd_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -349,7 +349,7 @@ public final class HCoreNLPProto {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(5, toeknEnd_);
+          .computeInt32Size(5, tokenEnd_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -481,7 +481,7 @@ public final class HCoreNLPProto {
         bitField0_ = (bitField0_ & ~0x00000004);
         tokenBegin_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
-        toeknEnd_ = 0;
+        tokenEnd_ = 0;
         bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
@@ -534,7 +534,7 @@ public final class HCoreNLPProto {
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.toeknEnd_ = toeknEnd_;
+        result.tokenEnd_ = tokenEnd_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -563,8 +563,8 @@ public final class HCoreNLPProto {
         if (other.hasTokenBegin()) {
           setTokenBegin(other.getTokenBegin());
         }
-        if (other.hasToeknEnd()) {
-          setToeknEnd(other.getToeknEnd());
+        if (other.hasTokenEnd()) {
+          setTokenEnd(other.getTokenEnd());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -587,7 +587,7 @@ public final class HCoreNLPProto {
           
           return false;
         }
-        if (!hasToeknEnd()) {
+        if (!hasTokenEnd()) {
           
           return false;
         }
@@ -825,34 +825,34 @@ public final class HCoreNLPProto {
         return this;
       }
 
-      private int toeknEnd_ ;
+      private int tokenEnd_ ;
       /**
-       * <code>required int32 toeknEnd = 5;</code>
+       * <code>required int32 tokenEnd = 5;</code>
        */
-      public boolean hasToeknEnd() {
+      public boolean hasTokenEnd() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required int32 toeknEnd = 5;</code>
+       * <code>required int32 tokenEnd = 5;</code>
        */
-      public int getToeknEnd() {
-        return toeknEnd_;
+      public int getTokenEnd() {
+        return tokenEnd_;
       }
       /**
-       * <code>required int32 toeknEnd = 5;</code>
+       * <code>required int32 tokenEnd = 5;</code>
        */
-      public Builder setToeknEnd(int value) {
+      public Builder setTokenEnd(int value) {
         bitField0_ |= 0x00000010;
-        toeknEnd_ = value;
+        tokenEnd_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required int32 toeknEnd = 5;</code>
+       * <code>required int32 tokenEnd = 5;</code>
        */
-      public Builder clearToeknEnd() {
+      public Builder clearTokenEnd() {
         bitField0_ = (bitField0_ & ~0x00000010);
-        toeknEnd_ = 0;
+        tokenEnd_ = 0;
         onChanged();
         return this;
       }
@@ -1588,7 +1588,7 @@ public final class HCoreNLPProto {
       "\030\001 \002(\0132 .edu.stanford.nlp.pipeline.Timex" +
       "\022\034\n\024characterOffsetBegin\030\002 \002(\005\022\032\n\022charac" +
       "terOffsetEnd\030\003 \002(\005\022\022\n\ntokenBegin\030\004 \002(\005\022\020" +
-      "\n\010toeknEnd\030\005 \002(\005\"A\n\tListTimex\0224\n\007timexes" +
+      "\n\010tokenEnd\030\005 \002(\005\"A\n\tListTimex\0224\n\007timexes" +
       "\030\001 \003(\0132#.ai.uphere.HCoreNLP.TimexWithOff" +
       "setB\017B\rHCoreNLPProto"
     };
@@ -1610,7 +1610,7 @@ public final class HCoreNLPProto {
     internal_static_ai_uphere_HCoreNLP_TimexWithOffset_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_ai_uphere_HCoreNLP_TimexWithOffset_descriptor,
-        new java.lang.String[] { "Timex", "CharacterOffsetBegin", "CharacterOffsetEnd", "TokenBegin", "ToeknEnd", });
+        new java.lang.String[] { "Timex", "CharacterOffsetBegin", "CharacterOffsetEnd", "TokenBegin", "TokenEnd", });
     internal_static_ai_uphere_HCoreNLP_ListTimex_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_ai_uphere_HCoreNLP_ListTimex_fieldAccessorTable = new

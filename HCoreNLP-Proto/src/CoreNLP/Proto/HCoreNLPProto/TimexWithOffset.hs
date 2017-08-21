@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell, BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses #-}
 {-# OPTIONS_GHC  -fno-warn-unused-imports #-}
 module CoreNLP.Proto.HCoreNLPProto.TimexWithOffset
-       (TimexWithOffset(..), timex, characterOffsetBegin, characterOffsetEnd, tokenBegin, toeknEnd) where
+       (TimexWithOffset(..), timex, characterOffsetBegin, characterOffsetEnd, tokenBegin, tokenEnd) where
 import Prelude ((+), (/))
 import qualified Prelude as Prelude'
 import qualified Data.Typeable as Prelude'
@@ -12,7 +12,7 @@ import qualified Control.Lens.TH
 import qualified CoreNLP.Proto.CoreNLPProtos.Timex as CoreNLPProtos (Timex)
 
 data TimexWithOffset = TimexWithOffset{_timex :: !(CoreNLPProtos.Timex), _characterOffsetBegin :: !(P'.Int32),
-                                       _characterOffsetEnd :: !(P'.Int32), _tokenBegin :: !(P'.Int32), _toeknEnd :: !(P'.Int32)}
+                                       _characterOffsetEnd :: !(P'.Int32), _tokenBegin :: !(P'.Int32), _tokenEnd :: !(P'.Int32)}
                      deriving (Prelude'.Show, Prelude'.Eq, Prelude'.Ord, Prelude'.Typeable, Prelude'.Data, Prelude'.Generic)
 
 Control.Lens.TH.makeLenses ''TimexWithOffset
@@ -62,7 +62,7 @@ instance P'.Wire TimexWithOffset where
              16 -> Prelude'.fmap (\ !new'Field -> old'Self{_characterOffsetBegin = new'Field}) (P'.wireGet 5)
              24 -> Prelude'.fmap (\ !new'Field -> old'Self{_characterOffsetEnd = new'Field}) (P'.wireGet 5)
              32 -> Prelude'.fmap (\ !new'Field -> old'Self{_tokenBegin = new'Field}) (P'.wireGet 5)
-             40 -> Prelude'.fmap (\ !new'Field -> old'Self{_toeknEnd = new'Field}) (P'.wireGet 5)
+             40 -> Prelude'.fmap (\ !new'Field -> old'Self{_tokenEnd = new'Field}) (P'.wireGet 5)
              _ -> let (field'Number, wire'Type) = P'.splitWireTag wire'Tag in P'.unknown field'Number wire'Type old'Self
 
 instance P'.MessageAPI msg' (msg' -> TimexWithOffset) TimexWithOffset where
@@ -74,7 +74,7 @@ instance P'.ReflectDescriptor TimexWithOffset where
   getMessageInfo _ = P'.GetMessageInfo (P'.fromDistinctAscList [10, 16, 24, 32, 40]) (P'.fromDistinctAscList [10, 16, 24, 32, 40])
   reflectDescriptorInfo _
    = Prelude'.read
-      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".ai.uphere.HCoreNLP.TimexWithOffset\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"HCoreNLPProto\"], baseName = MName \"TimexWithOffset\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"HCoreNLPProto\",\"TimexWithOffset.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.timex\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"timex\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 10}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 11}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.Timex\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"Timex\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.characterOffsetBegin\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"characterOffsetBegin\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.characterOffsetEnd\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"characterOffsetEnd\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.tokenBegin\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"tokenBegin\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 4}, wireTag = WireTag {getWireTag = 32}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.toeknEnd\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"toeknEnd\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 5}, wireTag = WireTag {getWireTag = 40}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
+      "DescriptorInfo {descName = ProtoName {protobufName = FIName \".ai.uphere.HCoreNLP.TimexWithOffset\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"HCoreNLPProto\"], baseName = MName \"TimexWithOffset\"}, descFilePath = [\"CoreNLP\",\"Proto\",\"HCoreNLPProto\",\"TimexWithOffset.hs\"], isGroup = False, fields = fromList [FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.timex\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"timex\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 1}, wireTag = WireTag {getWireTag = 10}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 11}, typeName = Just (ProtoName {protobufName = FIName \".edu.stanford.nlp.pipeline.Timex\", haskellPrefix = [MName \"CoreNLP\",MName \"Proto\"], parentModule = [MName \"CoreNLPProtos\"], baseName = MName \"Timex\"}), hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.characterOffsetBegin\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"characterOffsetBegin\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 2}, wireTag = WireTag {getWireTag = 16}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.characterOffsetEnd\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"characterOffsetEnd\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 3}, wireTag = WireTag {getWireTag = 24}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.tokenBegin\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"tokenBegin\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 4}, wireTag = WireTag {getWireTag = 32}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing},FieldInfo {fieldName = ProtoFName {protobufName' = FIName \".ai.uphere.HCoreNLP.TimexWithOffset.tokenEnd\", haskellPrefix' = [MName \"CoreNLP\",MName \"Proto\"], parentModule' = [MName \"HCoreNLPProto\",MName \"TimexWithOffset\"], baseName' = FName \"tokenEnd\", baseNamePrefix' = \"_\"}, fieldNumber = FieldId {getFieldId = 5}, wireTag = WireTag {getWireTag = 40}, packedTag = Nothing, wireTagLength = 1, isPacked = False, isRequired = True, canRepeat = False, mightPack = False, typeCode = FieldType {getFieldType = 5}, typeName = Nothing, hsRawDefault = Nothing, hsDefault = Nothing}], descOneofs = fromList [], keys = fromList [], extRanges = [], knownKeys = fromList [], storeUnknown = False, lazyFields = False, makeLenses = True}"
 
 instance P'.TextType TimexWithOffset where
   tellT = P'.tellSubMessage
@@ -87,12 +87,12 @@ instance P'.TextMsg TimexWithOffset where
        P'.tellT "characterOffsetBegin" (_characterOffsetBegin msg)
        P'.tellT "characterOffsetEnd" (_characterOffsetEnd msg)
        P'.tellT "tokenBegin" (_tokenBegin msg)
-       P'.tellT "toeknEnd" (_toeknEnd msg)
+       P'.tellT "tokenEnd" (_tokenEnd msg)
   textGet
    = do
        mods <- P'.sepEndBy
                 (P'.choice
-                  [parse'_timex, parse'_characterOffsetBegin, parse'_characterOffsetEnd, parse'_tokenBegin, parse'_toeknEnd])
+                  [parse'_timex, parse'_characterOffsetBegin, parse'_characterOffsetEnd, parse'_tokenBegin, parse'_tokenEnd])
                 P'.spaces
        Prelude'.return (Prelude'.foldl (\ v f -> f v) P'.defaultValue mods)
     where
@@ -116,8 +116,8 @@ instance P'.TextMsg TimexWithOffset where
             (do
                v <- P'.getT "tokenBegin"
                Prelude'.return (\ o -> o{_tokenBegin = v}))
-        parse'_toeknEnd
+        parse'_tokenEnd
          = P'.try
             (do
-               v <- P'.getT "toeknEnd"
-               Prelude'.return (\ o -> o{_toeknEnd = v}))
+               v <- P'.getT "tokenEnd"
+               Prelude'.return (\ o -> o{_tokenEnd = v}))
