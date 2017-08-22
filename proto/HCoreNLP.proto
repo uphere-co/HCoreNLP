@@ -8,6 +8,8 @@ message TimexWithOffset {
   required edu.stanford.nlp.pipeline.Timex  timex                = 1;
   required int32                            characterOffsetBegin = 2;
   required int32                            characterOffsetEnd   = 3;
+  required int32                            tokenBegin           = 4;
+  required int32                            tokenEnd             = 5;
 }
 
 // List of Timex
