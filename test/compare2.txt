@@ -1,0 +1,78 @@
+Global electronics makers are scrambling to stock up on memory chips to keep production lines running as Apple Inc's (APPL.O) new iPhone 8 launch later this year threatens to worsen a global squeeze on supply.
+
+(ROOT 
+  (S    
+    (NP   
+      (NP   JJ   Global NNS  electronics) 
+      (SBAR 
+        (S    
+          (NP   NNS  makers) 
+          (VP   VBP  are 
+            (VP   VBG  scrambling 
+              (S    
+                (VP   TO   to 
+                  (VP   VB   stock 
+                    (PRT  RP   up) 
+                    (PP   IN   on 
+                      (NP   NN   memory NNS  chips)) 
+                    (S    
+                      (VP   TO   to 
+                        (VP   VB   keep 
+                          (NP   NN   production NNS  lines) 
+                          (S    
+                            (VP   VBG  running 
+                              (PP   IN   as 
+                                (NP   
+                                  (NP   NNP  Apple NNP  Inc POS  's) 
+                                  (NP   
+                                    (NP   -LRB -LRB- NN   APPL.O -RRB -RRB-) 
+                                    (NP-T JJ   new NNP  iPhone)))) 
+                              (NP-T 
+                                (ADVP 
+                                  (NP   CD   8 NN   launch) RBR  later) DT   this NN   year)))))))))))))) 
+    (VP   VBZ  threatens 
+      (S    
+        (VP   TO   to 
+          (VP   VB   worsen 
+            (NP   DT   a JJ   global NN   squeeze) 
+            (PP   IN   on 
+              (NP   NN   supply)))))) 
+    (.     .)))
+
+
+
+Global electronics makers are scrambling to stock up on memory chips to keep production lines running as Apple Inc's (APPL.O) new iPhone 8 launch later this year threatens to worsen a global squeeze on supply.
+
+
+
+(ROOT 
+  (S    
+    (NP   JJ   Global NNS  electronics NNS  makers) 
+    (VP   VBP  are 
+      (VP   VBG  scrambling 
+        (S    
+          (VP   TO   to 
+            (VP   VB   stock 
+              (PRT  RP   up) 
+              (PP   IN   on 
+                (NP   NN   memory NNS  chips)) 
+              (S    
+                (VP   TO   to 
+                  (VP   VB   keep 
+                    (NP   NN   production NNS  lines) 
+                    (S    
+                      (VP   VBG  running 
+                        (SBAR IN   as 
+                          (S    
+                            (NP   
+                              (NP   
+                                (NP   NNP  Apple NNP  Inc POS  's) JJ   new NNP  iPhone CD   8 NN   launch) 
+                              (NP-T RBR  later DT   this NN   year)) 
+                            (VP   VBZ  threatens 
+                              (S    
+                                (VP   TO   to 
+                                  (VP   VB   worsen 
+                                    (NP   DT   a JJ   global NN   squeeze) 
+                                    (PP   IN   on 
+                                      (NP   NN   supply)))))))))))))))))) 
+    (.     .)))
