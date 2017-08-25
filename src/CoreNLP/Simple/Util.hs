@@ -13,6 +13,7 @@ import           Data.Time.Clock                             (getCurrentTime,UTC
 import           Language.Java                         as J
 import           Text.ProtocolBuffers.WireMessage            (messageGet)
 --
+import           NLP.Type.CoreNLP
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
 import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
@@ -20,7 +21,6 @@ import qualified CoreNLP.Proto.CoreNLPProtos.Token     as TK
 import           CoreNLP.Simple
 import           CoreNLP.Simple.Convert                      
 import           CoreNLP.Simple.Type
-import           CoreNLP.Simple.Type.Simplified
 
 
 getDoc :: Text -> IO Document
