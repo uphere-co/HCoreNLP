@@ -1,0 +1,42 @@
+Foot Locker Inc. plunged as much as 11 percent, while Finish Line. fell 5.9 percent.
+
+(ROOT 
+  (S    
+    (NP   NNP  Foot NNP  Locker NNP  Inc.) 
+    (VP   VBD  plunged 
+      (NP   
+        (NP   
+          (QP   RB   as JJ   much IN   as CD   11) NN   percent) 
+        (,     ,) 
+        (SBAR IN   while 
+          (S    
+            (VP   VB   Finish 
+              (NP   NN   Line)))))) 
+    (.     .)))
+
+(ROOT 
+  (S    
+    (VP   VBD  fell 
+      (NP   CD   5.9 NN   percent)) 
+    (.     .)))
+
+
+----------------------------------------------------------------------------------------------
+
+
+Foot Locker Inc. plunged as much as 11 percent, while Finish-Line-period fell 5.9 percent.
+
+(ROOT 
+  (S    
+    (NP   NNP  Foot NNP  Locker NNP  Inc.) 
+    (VP   VBD  plunged 
+      (NP   
+        (NP   
+          (QP   RB   as JJ   much IN   as CD   11) NN   percent) 
+        (,     ,) 
+        (SBAR IN   while 
+          (S    
+            (NP   NNP  Finish-Line-period) 
+            (VP   VBD  fell 
+              (NP   CD   5.9 NN   percent)))))) 
+    (.     .)))

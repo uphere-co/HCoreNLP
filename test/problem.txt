@@ -1,0 +1,4 @@
+prob1 = "Foot Locker Inc. plunged as much as 11 percent, while Finish Line. fell 5.9 percent."
+prob2 = "Global electronics makers are scrambling to stock up on memory chips to keep production lines running as Apple Inc's (APPL.O) new iPhone 8 launch later this year threatens to worsen a global squeeze on supply."
+
+
