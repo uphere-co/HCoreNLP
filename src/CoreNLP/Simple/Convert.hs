@@ -23,11 +23,11 @@ import qualified Data.Text.Lazy.Encoding as TLE
 import           Text.ProtocolBuffers.Basic     (Utf8, utf8)
 --
 import           Data.Attribute
+import           NLP.Type.CoreNLP
 import           NLP.Type.NamedEntity
 import           NLP.Type.PennTreebankII
 import           NLP.Type.UniversalDependencies2.Syntax
 --
-import           CoreNLP.Simple.Type.Simplified
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.ParseTree as PT
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
