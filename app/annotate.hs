@@ -26,13 +26,13 @@ import           Options.Applicative
 import           System.Environment                 (getEnv)
 --
 import           NLP.Printer.PennTreebankII
+import 	       	 NLP.Type.CoreNLP
 import           NLP.Type.PennTreebankII
 import           YAML.Builder
 --
 import           CoreNLP.Simple
 import           CoreNLP.Simple.Convert
 import           CoreNLP.Simple.Type
-import           CoreNLP.Simple.Type.Simplified
 import           CoreNLP.Simple.Util
 import qualified CoreNLP.Proto.CoreNLPProtos.Document  as D
 import qualified CoreNLP.Proto.CoreNLPProtos.Sentence  as S
