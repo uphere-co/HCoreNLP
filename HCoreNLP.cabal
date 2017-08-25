@@ -54,7 +54,6 @@ library
                        CoreNLP.Simple
                        CoreNLP.Simple.Convert
                        CoreNLP.Simple.Type
-                       CoreNLP.Simple.Type.Simplified
                        CoreNLP.Simple.Util
   Other-modules:
                        TemplateTest
