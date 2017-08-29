@@ -8,6 +8,11 @@ We have the following examples in `test` directory:
 
 
 ```
+# Update dependent libraries
+[uphere-nix-overlay]$ git pull origin master
+[nlp-types]$ git pull origin master
+$ nix-shell shell.nix --arg pkgs "import $HOME/repo/srcc/nixpkgs {}" --max-jobs 20 --cores 20
+# Or
 $ nix-shell shell.nix --argstr uphere-nix-overlay (uphere-nix-overlay) --argstr textview (textview) --argstr nlp-types (nlp-types)
 $ cabal sandbox init
 $ cabal install
