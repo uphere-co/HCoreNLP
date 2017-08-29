@@ -51,6 +51,6 @@ library
                    CoreNLP.Proto.HCoreNLPProto.TimexWithOffset
   -- other-modules:       
   other-extensions:    BangPatterns, DeriveDataTypeable, DeriveGeneric, FlexibleInstances, MultiParamTypeClasses, TemplateHaskell
-  build-depends:       base >=4.9 && <4.10, protocol-buffers >=2.4 && <2.5, protocol-buffers-descriptor >=2.4 && <2.5, lens >=4.15 && <4.16
+  build-depends:       base, protocol-buffers >=2.4 && <2.5, protocol-buffers-descriptor >=2.4 && <2.5, lens >=4.15 && <4.16
   hs-source-dirs:      src
   default-language:    Haskell2010
