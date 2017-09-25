@@ -26,6 +26,9 @@ $ cabal install
 $ cabal exec -- runhaskell app/annotate.hs
 # Extract POS tags only:
 $ cabal exec -- runhaskell app/annotate.hs -f input.txt -p
+# Compiled one is faster:
+$ cabal build annotate
+$ ./dist/build/annotate/annotate -f input.txt -p
 ```
 
 `(uphere-nix-overlay)`, `(textview)` and `(nlp-types)` mean the corresponding source directories.
