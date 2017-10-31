@@ -1,3 +1,4 @@
+
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -78,7 +79,10 @@ sentToDep s = do
       
 
 convertDep :: IM.IntMap Text -> DG.DependencyGraph -> Either String Dependency
-convertDep m g = Dependency <$> pure (fromIntegral (Seq.index (g^.DG.root) 0))
+convertDep m g = Dependency <$> (let root = g^.DG.root
+                                 in case (Seq.null root) of
+                                      True  -> Left "Dependency graph has an empty root."
+                                      False -> Right $ fromIntegral (Seq.index root 0))
                             <*> mapM (convertN m) (toList (g^.DG.node))
                             <*> mapM convertE (toList (g^.DG.edge))
 
