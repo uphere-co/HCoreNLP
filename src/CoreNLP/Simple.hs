@@ -27,7 +27,7 @@ import           TemplateTest
 prepare :: PipelineConfig -> IO (J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline"))
 prepare p = do
     $(getCurrentDir >> getCompileEnv "CLASSPATH" >> return (AppE (VarE (mkName "return")) (ConE (mkName "()"))))
-
+    isShiftReduce <- Language.Java.reflect (p^.isShiftReduce)
     ptkn <- Language.Java.reflect (p^.tokenizer)
     pw2s <- Language.Java.reflect (p^.words2sentences)
     ppos <- Language.Java.reflect (p^.postagger)
@@ -37,53 +37,82 @@ prepare p = do
     pconstituency <- Language.Java.reflect (p^.constituency)
     pner <- Language.Java.reflect (p^.ner)
     [java|{
-            //edu.stanford.nlp.pipeline.AnnotationPipeline pipeline = new edu.stanford.nlp.pipeline.AnnotationPipeline();
-            edu.stanford.nlp.pipeline.StanfordCoreNLP pipeline = new edu.stanford.nlp.pipeline.StanfordCoreNLP (
-              edu.stanford.nlp.util.PropertiesUtils.asProperties(
-                "annotators", "tokenize,ssplit,pos,lemma,parse",
-                "ssplit.isOneSentence", "false",
-                "parse.model", "edu/stanford/nlp/models/srparser/englishSR.ser.gz",
-                "tokenize.language","en")
-            ); 
-            //if($ptkn) {
-            //  pipeline.addAnnotator(new edu.stanford.nlp.pipeline.TokenizerAnnotator());
-            //}
-            //if($pw2s) {
-            //  pipeline.addAnnotator(new edu.stanford.nlp.pipeline.WordsToSentencesAnnotator());
-            //}
-            //if($ppos) {
-            //  pipeline.addAnnotator(new edu.stanford.nlp.pipeline.POSTaggerAnnotator());
-            //}
-            //if($plemma) {
-            //  pipeline.addAnnotator(new edu.stanford.nlp.pipeline.MorphaAnnotator());
-            //}
-            if($pdepparse) {
-              java.util.Properties props = new java.util.Properties();
-              //props.setProperty("parse.keepPunct","true");
+            if($isShiftReduce) { 
+              edu.stanford.nlp.pipeline.StanfordCoreNLP pipeline = new edu.stanford.nlp.pipeline.StanfordCoreNLP (
+                edu.stanford.nlp.util.PropertiesUtils.asProperties(
+                  "annotators", "tokenize,ssplit,pos,lemma,parse",
+                  "ssplit.isOneSentence", "false",
+                  "parse.model", "edu/stanford/nlp/models/srparser/englishSR.ser.gz",
+                  "tokenize.language","en")
+              );
+              if($pdepparse) {
+                java.util.Properties props = new java.util.Properties();
+                //props.setProperty("parse.keepPunct","true");
 
-              edu.stanford.nlp.pipeline.DependencyParseAnnotator dpann =
-                new edu.stanford.nlp.pipeline.DependencyParseAnnotator(props);
-              pipeline.addAnnotator(dpann);
-            }
-            //if($pconstituency) {
-            //  pipeline.addAnnotator(new edu.stanford.nlp.pipeline.ParserAnnotator(true,500));
-            //}
-            if($pner) {
-              try {
-                pipeline.addAnnotator(new edu.stanford.nlp.pipeline.NERCombinerAnnotator());
+                edu.stanford.nlp.pipeline.DependencyParseAnnotator dpann =
+                  new edu.stanford.nlp.pipeline.DependencyParseAnnotator(props);
+                pipeline.addAnnotator(dpann);
               }
-              catch ( java.io.IOException ex ) {
-                System.out.println(ex.toString());
+              if($pner) {
+                try {
+                  pipeline.addAnnotator(new edu.stanford.nlp.pipeline.NERCombinerAnnotator());
+                }
+                catch ( java.io.IOException ex ) {
+                  System.out.println(ex.toString());
+                }
+                catch ( java.lang.ClassNotFoundException ex ) {
+                  System.out.println(ex.toString());
+                }
               }
-              catch ( java.lang.ClassNotFoundException ex ) {
-                System.out.println(ex.toString());
+              if($ptim) {
+                java.util.Properties props = new java.util.Properties();
+                pipeline.addAnnotator(new edu.stanford.nlp.time.TimeAnnotator("sutime", props));
               }
+              return pipeline;
+              
             }
-            if($ptim) {
-              java.util.Properties props = new java.util.Properties();
-              pipeline.addAnnotator(new edu.stanford.nlp.time.TimeAnnotator("sutime", props));
+            else {
+              edu.stanford.nlp.pipeline.AnnotationPipeline pipeline = new edu.stanford.nlp.pipeline.AnnotationPipeline();
+              if($ptkn) {
+                pipeline.addAnnotator(new edu.stanford.nlp.pipeline.TokenizerAnnotator());
+              }
+              if($pw2s) {
+                pipeline.addAnnotator(new edu.stanford.nlp.pipeline.WordsToSentencesAnnotator());
+              }
+              if($ppos) {
+                pipeline.addAnnotator(new edu.stanford.nlp.pipeline.POSTaggerAnnotator());
+              }
+              if($plemma) {
+                pipeline.addAnnotator(new edu.stanford.nlp.pipeline.MorphaAnnotator());
+              }
+              if($pdepparse) {
+                java.util.Properties props = new java.util.Properties();
+                //props.setProperty("parse.keepPunct","true");
+
+                edu.stanford.nlp.pipeline.DependencyParseAnnotator dpann =
+                  new edu.stanford.nlp.pipeline.DependencyParseAnnotator(props);
+                pipeline.addAnnotator(dpann);
+              }
+              if($pconstituency) {
+                pipeline.addAnnotator(new edu.stanford.nlp.pipeline.ParserAnnotator(true,500));
+              }
+              if($pner) {
+                try {
+                  pipeline.addAnnotator(new edu.stanford.nlp.pipeline.NERCombinerAnnotator());
+                }
+                catch ( java.io.IOException ex ) {
+                  System.out.println(ex.toString());
+                }
+                catch ( java.lang.ClassNotFoundException ex ) {
+                  System.out.println(ex.toString());
+                }
+              }
+              if($ptim) {
+                java.util.Properties props = new java.util.Properties();
+                pipeline.addAnnotator(new edu.stanford.nlp.time.TimeAnnotator("sutime", props));
+              }
+              return pipeline;
             }
-            return pipeline;
           }
     |]
 

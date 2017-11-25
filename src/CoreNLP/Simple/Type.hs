@@ -15,12 +15,13 @@ data PipelineConfig = PPConfig { _tokenizer       :: Bool
                                , _depparse        :: Bool
                                , _constituency    :: Bool
                                , _ner             :: Bool
+                               , _isShiftReduce   :: Bool
                                } deriving (Show,Eq,Ord)
 
 makeLenses ''PipelineConfig
 
 instance Default PipelineConfig where
-  def = PPConfig False False False False False False False False
+  def = PPConfig False False False False False False False False True
 
 data Document = Document { _doctext :: Text
                          , _docdate :: Day
