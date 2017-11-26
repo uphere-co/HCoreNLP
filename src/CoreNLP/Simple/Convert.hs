@@ -140,10 +140,6 @@ convertPsent psent = Sentence (catMaybes $ psent ^.. S.token . traverse . TK.lem
                               (psent ^.. S.token . traverse . TK.word . to (fmap cutf8))
                               (psent ^.. S.token . traverse . TK.ner . to (fmap cutf8))
                      
-lemmatize :: IntMap Lemma
-          -> PennTreeIdxG n (ALAtt bs)
-          -> PennTreeIdxG n (ALAtt (Lemma ': bs)) 
-lemmatize m = bimap id (\(i,ALeaf postxt annot) -> (i, ALeaf postxt (fromJust (IM.lookup i m) `acons` annot)))
 
 -- sentToNER' :: [Word] -> [NER] -> NERSentence
 sentToNER' :: [Maybe Text] -> [Maybe Text] -> NERSentence
