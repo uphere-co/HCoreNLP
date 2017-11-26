@@ -125,15 +125,9 @@ decodeToPennTree p =
 
 
 
-mkLemmaMap :: S.Sentence -> IntMap Lemma
-mkLemmaMap sent = foldl' (\(!acc) (k,v) -> IM.insert k (Lemma v) acc) IM.empty $
-                    zip [0..] (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
-
-
 -- You should use this function when using loaded data.
-mkLemmaMap' :: [Text] -> IntMap Lemma
-mkLemmaMap' sent = foldl' (\(!acc) (k,v) -> IM.insert k (Lemma v) acc) IM.empty $
-                    zip [0..] sent -- (catMaybes (sent ^.. S.token . traverse . TK.lemma . to (fmap cutf8)))
+mkLemmaMap :: [Text] -> IntMap Lemma
+mkLemmaMap = foldl' (\(!acc) (k,v) -> IM.insert k (Lemma v) acc) IM.empty . zip [0..]
 
 
 convertPsent :: S.Sentence -> Sentence
