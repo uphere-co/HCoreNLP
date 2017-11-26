@@ -135,7 +135,7 @@ runAnnotate = do
             pt = map decodeToPennTree cpt
 
             lmap= flip map sents $ \sent -> 
-                    let lemmamap = IM.toList (mkLemmaMap sent)
+                    let lemmamap = IM.toList (mkLemmaMapFromPSent sent)
                         tkns = map (^.TK.word.to (cutf8.fromJust)) . getTKTokens $ sent
                     in map (\(o,(i,l)) -> (i,(unLemma l,o))) $ zip tkns lemmamap  
 
