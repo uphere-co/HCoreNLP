@@ -15,15 +15,22 @@ import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline 
 import qualified Language.Java                (reflect,reify)
 
+
 newtype CoreNLP a = CoreNLP { unCoreNLP :: IO a }
                   deriving (Functor, Applicative, Monad, MonadIO)
 
+
 runCoreNLP :: [B.ByteString]  -> CoreNLP a -> IO a
 runCoreNLP params action = withJVM params (unCoreNLP action) 
-  
+
+
+reflect :: Text -> CoreNLP (J (Interp (Uncurry Text)))
 reflect = liftIO . Language.Java.reflect
 
+
+reify :: J (Interp (Uncurry B.ByteString)) -> CoreNLP B.ByteString
 reify = liftIO . Language.Java.reify
+
 
 initProps :: CoreNLP (J ('Class "java.util.Properties"))
 initProps =

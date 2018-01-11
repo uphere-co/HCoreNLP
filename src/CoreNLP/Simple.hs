@@ -4,7 +4,6 @@
 
 module CoreNLP.Simple where
 
-import           Control.Exception
 import           Control.Lens
 import           Control.Monad
 import qualified Data.ByteString.Char8 as B
@@ -13,7 +12,6 @@ import qualified Data.Text             as T
 import           Data.Time.Calendar           (showGregorian)
 import           Foreign.JNI.Types
 import           Language.Haskell.TH.Syntax
-import           Language.Java         as J hiding (reflect,reify)
 import           Language.Java.Inline
 import qualified Language.Java                (reflect,reify)
 import           Text.ProtocolBuffers.WireMessage (messageGet)
@@ -27,7 +25,7 @@ import           TemplateTest
 prepare :: PipelineConfig -> IO (J ('Class "edu.stanford.nlp.pipeline.AnnotationPipeline"))
 prepare p = do
     $(getCurrentDir >> getCompileEnv "CLASSPATH" >> return (AppE (VarE (mkName "return")) (ConE (mkName "()"))))
-    isShiftReduce <- Language.Java.reflect (p^.isShiftReduce)
+    isSR <- Language.Java.reflect (p^.isShiftReduce)
     ptkn <- Language.Java.reflect (p^.tokenizer)
     pw2s <- Language.Java.reflect (p^.words2sentences)
     ppos <- Language.Java.reflect (p^.postagger)
@@ -37,7 +35,7 @@ prepare p = do
     pconstituency <- Language.Java.reflect (p^.constituency)
     pner <- Language.Java.reflect (p^.ner)
     [java|{
-            if($isShiftReduce) { 
+            if($isSR) { 
               edu.stanford.nlp.pipeline.StanfordCoreNLP pipeline = new edu.stanford.nlp.pipeline.StanfordCoreNLP (
                 edu.stanford.nlp.util.PropertiesUtils.asProperties(
                   "annotators", "tokenize,ssplit,pos,lemma,parse",
