@@ -60,7 +60,7 @@ library
 
   default-language:    Haskell2010
 
-  ghc-options:          -O2 -Wall -Werror
+  ghc-options:          -O2 -Wall
                         -funbox-strict-fields
                         -fno-warn-unused-do-bind
                         -fno-warn-orphans
@@ -71,7 +71,7 @@ Executable annotate
   Main-is:              annotate.hs
   hs-source-dirs:       app
   default-language:    Haskell2010
-  ghc-options:          -Wall -O2 -Werror
+  ghc-options:          -Wall -O2
                         -threaded
                         -funbox-strict-fields
                         -fno-warn-unused-do-bind
