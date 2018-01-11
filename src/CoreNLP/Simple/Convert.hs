@@ -1,4 +1,3 @@
-
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -14,7 +13,7 @@ import           Data.Foldable                  (toList)
 import           Data.IntMap                    (IntMap)
 import qualified Data.IntMap             as IM
 import           Data.List                      (foldl')
-import           Data.Maybe                     (catMaybes,fromJust,fromMaybe,mapMaybe)
+import           Data.Maybe                     (catMaybes,fromMaybe,mapMaybe)
 import           Data.Monoid                    ((<>))
 import qualified Data.Sequence           as Seq
 import           Data.Text                      (Text)
@@ -23,7 +22,6 @@ import qualified Data.Text.Lazy          as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import           Text.ProtocolBuffers.Basic     (Utf8, utf8)
 --
-import           Data.Attribute
 import           NLP.Type.CoreNLP
 import           NLP.Type.NamedEntity
 import           NLP.Type.PennTreebankII
@@ -37,8 +35,10 @@ import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph       as DG
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Node  as DN
 import qualified CoreNLP.Proto.CoreNLPProtos.DependencyGraph.Edge  as DE
 
+
 cutf8 :: Utf8 -> Text
 cutf8 = TL.toStrict . TLE.decodeUtf8 . utf8 
+
 
 convertSentence :: D.Document -> S.Sentence -> Maybe SentenceIndex
 convertSentence _d s = do

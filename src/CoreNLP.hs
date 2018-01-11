@@ -12,22 +12,29 @@ import           Control.Monad.IO.Class
 import qualified Data.ByteString.Char8 as B
 import           Data.Text                    (Text)
 import           Language.Java         as J hiding (reflect,reify)
-import           Language.Java.Inline 
+import           Language.Java.Inline
 import qualified Language.Java                (reflect,reify)
+
 
 newtype CoreNLP a = CoreNLP { unCoreNLP :: IO a }
                   deriving (Functor, Applicative, Monad, MonadIO)
 
+
 runCoreNLP :: [B.ByteString]  -> CoreNLP a -> IO a
-runCoreNLP params action = withJVM params (unCoreNLP action) 
-  
+runCoreNLP params action = withJVM params (unCoreNLP action)
+
+
+reflect :: Text -> CoreNLP (J (Interp (Uncurry Text)))
 reflect = liftIO . Language.Java.reflect
 
+
+reify :: J (Interp (Uncurry B.ByteString)) -> CoreNLP B.ByteString
 reify = liftIO . Language.Java.reify
+
 
 initProps :: CoreNLP (J ('Class "java.util.Properties"))
 initProps =
- CoreNLP 
+ CoreNLP
   [java|{
           // omit regexner, it crashed.
           String defaultAnnotators = "tokenize,ssplit,pos,lemma,ner,parse,depparse,mention,coref,natlog,openie";
@@ -80,10 +87,8 @@ runAnnotator props pipeline otxt = do
                }
                catch( java.io.IOException e ) {
                  System.out.println(e);
-                 return null; 
+                 return null;
                }
              }
        |]
   reify r
-
-

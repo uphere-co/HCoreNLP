@@ -18,8 +18,6 @@ import           Data.Text                          (Text)
 import qualified Data.Text                  as T
 import qualified Data.Text.IO               as TIO
 import qualified Data.Text.Lazy             as TL
-import qualified Data.Text.Lazy.Builder     as TLB  (toLazyText)
-import qualified Data.Text.Lazy.IO          as TLIO
 import           Data.Traversable                   (traverse)
 import           Data.Time.Calendar                 (fromGregorian)
 import           Language.Java              as J
@@ -27,8 +25,7 @@ import           Options.Applicative
 import           System.Environment                 (getEnv)
 import           Text.ProtocolBuffers.WireMessage   (messageGet)
 --
-import           NLP.Printer.PennTreebankII
-import 	       	 NLP.Type.CoreNLP
+import           NLP.Type.CoreNLP
 import           NLP.Type.PennTreebankII
 import           NLP.Type.TagPos
 import           YAML.Builder
@@ -48,19 +45,19 @@ instance MakeYaml Int where
   makeYaml _ x = YPrim (YInteger x)
 
 instance MakeYaml (Int,Int) where
-  makeYaml n (x,y) = YLArray Inline [ makeYaml n x, makeYaml n y ] 
+  makeYaml n (x,y) = YLArray Inline [ makeYaml n x, makeYaml n y ]
 
 instance MakeYaml SentenceIndex where
   makeYaml n s = YObject [ ("index"     , makeYaml n (s^.sent_index))
                          , ("charRange" , makeYaml n (s^.sent_charRange))
                          , ("tokenRange", makeYaml n (s^.sent_tokenRange)) ]
-                 
+
 instance MakeYaml Text where
   makeYaml _ txt = YPrim (YString Plain (TL.fromStrict txt))
 
 instance MakeYaml Token where
   makeYaml n t = YObject [ ("token_range", makeYaml n (t^.token_tok_idx_range))
-                         , ("char_range", makeYaml n (t^.token_char_idx_range))                           
+                         , ("char_range", makeYaml n (t^.token_char_idx_range))
                          , ("text" , makeYaml n (t^.token_text))
                          , ("pos"  , makeYaml n (T.pack (show (t^.token_pos))))
                          , ("lemma", makeYaml n (t^.token_lemma))
@@ -102,7 +99,7 @@ pOptions = ProgOption <$> strOption (long "file" <> short 'f' <> help "Text File
                       <*> switch    (long "posonly"      <> short 'p' <> help "POS only")
                       <*> switch    (long "time"         <> short 't' <> help "Time tagging (SUTime)")
 
-progOption :: ParserInfo ProgOption 
+progOption :: ParserInfo ProgOption
 progOption = info pOptions (fullDesc <> progDesc "Annotate using CoreNLP")
 
 
@@ -125,26 +122,26 @@ runAnnotate = do
     let doc = Document txt (fromGregorian 2017 4 17)
     ann <- annotate pp doc
     rdoc <- protobufDoc ann
-    
+
     case rdoc of
       Left e -> print e
       Right d -> do
         let sents = d ^.. D.sentence . traverse
-            Just newsents = mapM (convertSentence d) sents
+            -- Just newsents = mapM (convertSentence d) sents
             cpt = mapMaybe S._parseTree sents
             pt = map decodeToPennTree cpt
 
-            lmap= flip map sents $ \sent -> 
-                    let lemmamap = IM.toList (mkLemmaMapFromPSent sent)
-                        tkns = map (^.TK.word.to (cutf8.fromJust)) . getTKTokens $ sent
-                    in map (\(o,(i,l)) -> (i,(unLemma l,o))) $ zip tkns lemmamap  
+            lmp= flip map sents $ \sent ->
+                   let lemmamap = IM.toList (mkLemmaMapFromPSent sent)
+                       tkns = map (^.TK.word.to (cutf8.fromJust)) . getTKTokens $ sent
+                   in map (\(o,(i,l)) -> (i,(unLemma l,o))) $ zip tkns lemmamap
 
         -- mapM_ print newsents
         when (showLemma opt) $
-          mapM_ print lmap
-              
+          mapM_ print lmp
+
         -- let Just (toklst :: [Token]) = mapM convertToken . concatMap (toListOf (S.token . traverse)) $ sents
-        --     result = SentenceTokens newsents toklst 
+        --     result = SentenceTokens newsents toklst
         -- TLIO.putStrLn $ TLB.toLazyText (buildYaml 0 (makeYaml 0 result))
         when (showDependency opt) $ do
           let deps = map sentToDep sents
@@ -166,7 +163,7 @@ runAnnotate = do
             Left _ -> return ()
             Right tmxs -> do
               print (listTimexToTagPos tmxs)
-          
+
 
 main :: IO ()
 main = runAnnotate
