@@ -1,9 +1,16 @@
-{ pkgs ? import <nixpkgs> {}
-, nlp-types ? <nlp-types>
-, textview ? <textview>
-, wiki-ner ? <wiki-ner>
-, uphere-nix-overlay ? <uphere-nix-overlay>
-}:
+{ revision }:
+
+with revision;
+
+let pkgs0 = import nixpkgs { config.allowUnfree = true; };
+
+    pkgs = import pkgs0.path {
+                overlays = [ (self: super: {
+                               libsvm = import (uphere-nix-overlay + "/nix/cpp-modules/libsvm/default.nix") { inherit (self) stdenv fetchurl; };
+                             })
+                           ];
+              };
+in
 
 with pkgs;
 
@@ -13,19 +20,16 @@ let
   };
   corenlp = res_corenlp.corenlp;
   corenlp_models = res_corenlp.corenlp_models;
-  config1 = import (uphere-nix-overlay + "/nix/haskell-modules/configuration-ghc-8.0.x.nix") { inherit pkgs; };
-  config2 =
-    self: super: {
-      "nlp-types" = self.callPackage (import nlp-types) {};
-      "textview" = self.callPackage (import textview) {};
-      "HCoreNLP-Proto" = self.callPackage ./HCoreNLP-Proto {};  
+
+  hsconfig = lib.callPackageWith (pkgs//revision) (uphere-nix-overlay + "/nix/haskell-modules/configuration-semantic-parser-api.nix") {
+    inherit corenlp corenlp_models;
+    fasttext = null;
+    haskellLib = haskell.lib;
   };
 
-  myhaskellpkgs = haskell.packages.ghc802.override {
-    overrides = self: super: config1 self super // config2 self super;
-  }; 
+  newHaskellPackages = haskellPackages.override { overrides = hsconfig; };
 
-  hsenv = myhaskellpkgs.ghcWithPackages (p: with p; [
+  hsenv = newHaskellPackages.ghcWithPackages (p: with p; [
             alex
             haskell-src-exts
             inline-java
@@ -61,4 +65,3 @@ stdenv.mkDerivation {
      PS1="\n\[\033[0;36m\][\u@\h.devel:\w]\$\[\033[0m\] ";
   '';
 }
-
