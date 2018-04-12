@@ -24,11 +24,11 @@ runCoreNLP :: [B.ByteString]  -> CoreNLP a -> IO a
 runCoreNLP params action = withJVM params (unCoreNLP action)
 
 
-reflect :: Text -> CoreNLP (J (Interp (Uncurry Text)))
+reflect :: Text -> CoreNLP (J (Interp Text))
 reflect = liftIO . Language.Java.reflect
 
 
-reify :: J (Interp (Uncurry B.ByteString)) -> CoreNLP B.ByteString
+reify :: J (Interp B.ByteString) -> CoreNLP B.ByteString
 reify = liftIO . Language.Java.reify
 
 
