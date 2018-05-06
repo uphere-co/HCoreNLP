@@ -9,5 +9,6 @@ mkDerivation {
     base lens protocol-buffers protocol-buffers-descriptor
   ];
   doHaddock = false;
+  jailbreak = true;
   license = stdenv.lib.licenses.unfree;
 }
