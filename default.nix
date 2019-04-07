@@ -23,7 +23,7 @@ mkDerivation {
     bytestring containers data-default jvm lens optparse-applicative protocol-buffers text time
     nlp-types yayaml HCoreNLP-Proto
   ];
-  
+
   buildDepends = [ jdk ];
   license = "unknown";
   doHaddock = false;
